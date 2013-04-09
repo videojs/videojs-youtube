@@ -3,11 +3,12 @@ Allows you to use YouTube URL as source with [Video.js](https://github.com/zenco
 
 ## How does it work?
 Including the script vjs.youtube.js will add the YouTube as a tech. You just have to add it to your techOrder option.
+**You must use the last version of VideoJS available in the folder lib, the current version on CDN will not work until it is updated**
 
 Here is an example:
 
-	<link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">
-	<script src="http://vjs.zencdn.net/c/video.js"></script>
+	<link href="video-js.css" rel="stylesheet">
+	<script src="video.js"></script>
 	<script src="vjs.youtube.js"></script>
 	<video id="vid1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube", "html5", "flash"] }'>
 	  <source src="http://www.youtube.com/watch?v=ebO5jK5NKXw" type="video/youtube">
