@@ -4,13 +4,15 @@
 
 /**
  * YouTube Media Controller - Wrapper for YouTube Media API
- * @param {vjs.Player|Object} player
+ * @param {videojs.Player|Object} player
  * @param {Object=} options
  * @param {Function=} ready
  * @constructor
  */
-vjs.Youtube = function(player, options, ready){
+videojs.Youtube = function(player, options, ready){
   goog.base(this, player, options, ready);
+  this.player_ = player;
+  this.player_el_ = document.getElementById(this.player_.id());
 
   // Regex that parse the video ID for any YouTube URL
   var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -20,68 +22,20 @@ vjs.Youtube = function(player, options, ready){
     this.videoId = match[2];
 
     // Show the YouTube poster only if we don't use YouTube poster (otherwise the controls pop, it's not nice)
-    if (!this.player_.options_.ytcontrols){
+    if (!this.player_.options().ytcontrols){
       this.player_.poster('http://img.youtube.com/vi/' + this.videoId + '/0.jpg');
 
       // Cover the entire iframe to have the same poster than YouTube
       // Doesn't exist right away because the DOM hasn't created it
       var self = this;
-      setTimeout(function(){ self.player_.posterImage.el_.style.backgroundSize = 'cover'; }, 50);
+      setTimeout(function(){ self.player_.posterImage.el().style.backgroundSize = 'cover'; }, 50);
     }
   }
 
   this.id_ = this.player_.id() + '_youtube_api';
 
-  var params = {
-    enablejsapi: 1,
-    iv_load_policy: 3,
-    playerapiid: this.id(),
-    disablekb: 1,
-    controls: (this.player_.options_.ytcontrols)?1:0,
-    showinfo: 0,
-    modestbranding: 1,
-    rel: 0,
-    origin: window.location.origin,
-    autoplay: (this.player_.options_.autoplay)?1:0,
-    loop: (this.player_.options_.loop)?1:0
-  };
-
-  this.el_.src = 'http://www.youtube.com/embed/' + this.videoId + '?' + vjs.Youtube.makeQueryString(params);
-
-  if (this.player_.options_.ytcontrols){
-    // Hide the big play button when using YouTube controls
-    // Doesn't exist right away because the DOM hasn't created it
-    var self = this;
-    setTimeout(function(){ self.player_.bigPlayButton.hide(); }, 50);
-  }
-
-  if (vjs.Youtube.apiReady){
-    this.loadYoutube();
-  } else {
-    // Add to the queue because the YouTube API is not ready
-    vjs.Youtube.loadingQueue.push(this);
-
-    // Load the YouTube API if it is the first YouTube video
-    if(!vjs.Youtube.apiLoading){
-      var tag = vjs.createEl('script', { src: 'http://www.youtube.com/iframe_api' });
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      vjs.Youtube.apiLoading = true;
-    }
-  }
-};
-goog.inherits(vjs.Youtube, vjs.MediaTechController);
-
-vjs.Youtube.prototype.dispose = function(){
-  goog.base(this, 'dispose');
-  this.ytplayer.destroy();
-};
-
-vjs.Youtube.prototype.createEl = function(){
-  var player = this.player_;
-
-  var iframe = vjs.createEl('iframe', {
-    id: player.id() + '_youtube_api',
+  this.el_ = videojs.Component.prototype.createEl('iframe', {
+    id: this.id_,
     className: 'vjs-tech',
     scrolling: 'no',
     marginWidth: 0,
@@ -91,14 +45,57 @@ vjs.Youtube.prototype.createEl = function(){
     mozallowfullscreen: '',
     allowFullScreen: ''
   });
+  
+  this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
 
-  vjs.insertFirst(iframe, player.el());
+  var params = {
+    enablejsapi: 1,
+    iv_load_policy: 3,
+    playerapiid: this.id(),
+    disablekb: 1,
+    controls: (this.player_.options().ytcontrols)?1:0,
+    showinfo: 0,
+    modestbranding: 1,
+    rel: 0,
+    origin: window.location.origin,
+    autoplay: (this.player_.options().autoplay)?1:0,
+    loop: (this.player_.options().loop)?1:0
+  };
 
-  return iframe;
+  this.el_.src = 'http://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+
+  if (this.player_.options().ytcontrols){
+    // Hide the big play button when using YouTube controls
+    // Doesn't exist right away because the DOM hasn't created it
+    var self = this;
+    setTimeout(function(){ self.player_.bigPlayButton.hide(); }, 50);
+  }
+
+  if (videojs.Youtube.apiReady){
+    this.loadYoutube();
+  } else {
+    // Add to the queue because the YouTube API is not ready
+    videojs.Youtube.loadingQueue.push(this);
+
+    // Load the YouTube API if it is the first YouTube video
+    if(!videojs.Youtube.apiLoading){
+      var tag = document.createElement('script');
+      tag.src = 'http://www.youtube.com/iframe_api';
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      videojs.Youtube.apiLoading = true;
+    }
+  }
+};
+goog.inherits(videojs.Youtube, videojs.MediaTechController);
+
+videojs.Youtube.prototype.dispose = function(){
+  goog.base(this, 'dispose');
+  this.ytplayer.destroy();
 };
 
-vjs.Youtube.prototype.play = function(){
-  if (this.player_.isReady_){ 
+videojs.Youtube.prototype.play = function(){
+  if (this.isReady_){ 
     this.ytplayer.playVideo(); 
   } else { 
     // We will play it when the API will be ready
@@ -111,21 +108,21 @@ vjs.Youtube.prototype.play = function(){
   }
 };
 
-vjs.Youtube.prototype.pause = function(){ this.ytplayer.pauseVideo(); };
-vjs.Youtube.prototype.paused = function(){
+videojs.Youtube.prototype.pause = function(){ this.ytplayer.pauseVideo(); };
+videojs.Youtube.prototype.paused = function(){
   return this.lastState !== YT.PlayerState.PLAYING &&
          this.lastState !== YT.PlayerState.BUFFERING;
 };
 
-vjs.Youtube.prototype.currentTime = function(){ return this.ytplayer.getCurrentTime(); };
+videojs.Youtube.prototype.currentTime = function(){ return this.ytplayer.getCurrentTime(); };
 
-vjs.Youtube.prototype.setCurrentTime = function(seconds){
+videojs.Youtube.prototype.setCurrentTime = function(seconds){
   this.ytplayer.seekTo(seconds, true);
   this.player_.trigger('timeupdate');
 };
 
-vjs.Youtube.prototype.duration = function(){ return this.ytplayer.getDuration(); };
-vjs.Youtube.prototype.buffered = function(){
+videojs.Youtube.prototype.duration = function(){ return this.ytplayer.getDuration(); };
+videojs.Youtube.prototype.buffered = function(){
   var loadedBytes = this.ytplayer.getVideoBytesLoaded();
   var totalBytes = this.ytplayer.getVideoBytesTotal();
   if (!loadedBytes || !totalBytes) return 0;
@@ -133,10 +130,10 @@ vjs.Youtube.prototype.buffered = function(){
   var duration = this.ytplayer.getDuration();
   var secondsBuffered = (loadedBytes / totalBytes) * duration;
   var secondsOffset = (this.ytplayer.getVideoStartBytes() / totalBytes) * duration;
-  return vjs.createTimeRange(secondsOffset, secondsOffset + secondsBuffered);
+  return videojs.createTimeRange(secondsOffset, secondsOffset + secondsBuffered);
 };
 
-vjs.Youtube.prototype.volume = function() { 
+videojs.Youtube.prototype.volume = function() { 
   if (isNaN(this.volumeVal)) {
     this.volumeVal = this.ytplayer.getVolume() / 100.0;
   }
@@ -144,7 +141,7 @@ vjs.Youtube.prototype.volume = function() {
   return this.volumeVal;
 };
 
-vjs.Youtube.prototype.setVolume = function(percentAsDecimal){
+videojs.Youtube.prototype.setVolume = function(percentAsDecimal){
   if (percentAsDecimal && percentAsDecimal != this.volumeVal) {
     this.ytplayer.setVolume(percentAsDecimal * 100.0); 
     this.volumeVal = percentAsDecimal;
@@ -152,8 +149,8 @@ vjs.Youtube.prototype.setVolume = function(percentAsDecimal){
   }
 };
 
-vjs.Youtube.prototype.muted = function() { return this.ytplayer.isMuted(); };
-vjs.Youtube.prototype.setMuted = function(muted) { 
+videojs.Youtube.prototype.muted = function() { return this.ytplayer.isMuted(); };
+videojs.Youtube.prototype.setMuted = function(muted) { 
   if (muted) {
     this.ytplayer.mute(); 
   } else { 
@@ -164,7 +161,8 @@ vjs.Youtube.prototype.setMuted = function(muted) {
   setTimeout(function() { self.player_.trigger('volumechange'); }, 50);
 };
 
-vjs.Youtube.prototype.onReady = function(){
+videojs.Youtube.prototype.onReady = function(){
+  this.isReady_ = true;
   this.player_.trigger('techready');
 
   // Hide the poster when ready because YouTube has it's own
@@ -178,13 +176,13 @@ vjs.Youtube.prototype.onReady = function(){
     this.ytplayer.playVideo();
   }
 
-  if (!this.player_.options_.controls || this.player_.options_.ytcontrols){
+  if (!this.player_.options().controls || this.player_.options().ytcontrols){
     // Hide the VideoJS controls
     this.player_.controlBar.hide();
   }
 };
 
-vjs.Youtube.prototype.onStateChange = function(state){
+videojs.Youtube.prototype.onStateChange = function(state){
   if (state != this.lastState){
     switch(state){
       case -1:
@@ -194,7 +192,7 @@ vjs.Youtube.prototype.onStateChange = function(state){
       case YT.PlayerState.ENDED:
         this.player_.trigger('ended');
 
-        if (!this.player_.options_.ytcontrols){
+        if (!this.player_.options().ytcontrols){
           this.player_.bigPlayButton.show();
         }
         break;
@@ -226,7 +224,7 @@ vjs.Youtube.prototype.onStateChange = function(state){
   }
 };
 
-vjs.Youtube.prototype.onPlaybackQualityChange = function(quality){
+videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
   switch(quality){
     case 'medium':
       this.player_.videoWidth = 480;
@@ -267,35 +265,27 @@ vjs.Youtube.prototype.onPlaybackQualityChange = function(quality){
   this.player_.trigger('ratechange');
 };
 
-vjs.Youtube.prototype.onError = function(error){
+videojs.Youtube.prototype.onError = function(error){
   this.player_.error = error;
   this.player_.trigger('error');
 };
 
-vjs.Youtube.isSupported = function(){
+videojs.Youtube.isSupported = function(){
   return true;
 };
 
-vjs.Youtube.canPlaySource = function(srcObj){
+videojs.Youtube.canPlaySource = function(srcObj){
   return (srcObj.type == 'video/youtube');
 };
 
-vjs.Youtube.prototype.features = {
-  fullscreen: true,
-  volumeControl: true,
-
-  // Optional events that we can manually mimic with timers
-  // currently not triggered by video-js-swf
-  progressEvents: false,
-  timeupdateEvents: false
-};
+videojs.Youtube.prototype.features = {};
 
 // All videos created before YouTube API is loaded
-vjs.Youtube.loadingQueue = [];
+videojs.Youtube.loadingQueue = [];
 
 // Create the YouTube player
-vjs.Youtube.prototype.loadYoutube = function(){
-  this.ytplayer = new YT.Player(this.id(), {
+videojs.Youtube.prototype.loadYoutube = function(){
+  this.ytplayer = new YT.Player(this.id_, {
     events: {
       onReady: function(e) { e.target.vjsTech.onReady(); },
       onStateChange: function(e) { e.target.vjsTech.onStateChange(e.data); },
@@ -307,7 +297,7 @@ vjs.Youtube.prototype.loadYoutube = function(){
   this.ytplayer.vjsTech = this;
 };
 
-vjs.Youtube.makeQueryString = function(args){
+videojs.Youtube.makeQueryString = function(args){
   var array = [];
   for (var key in args){
     if (args.hasOwnProperty(key)){
@@ -320,9 +310,25 @@ vjs.Youtube.makeQueryString = function(args){
 
 // Called when YouTube API is ready to be used
 window.onYouTubeIframeAPIReady = function(){
+
   var yt;
-  while ((yt = vjs.Youtube.loadingQueue.shift())){
+  while ((yt = videojs.Youtube.loadingQueue.shift())){
     yt.loadYoutube();
   }
-  vjs.Youtube.loadingQueue = [];
+  videojs.Youtube.loadingQueue = [];
+  videojs.Youtube.apiReady = true;
 }
+
+// Export for advanced closure compiler
+
+goog.exportProperty(videojs, 'Youtube', videojs.Youtube);
+goog.exportProperty(videojs.Youtube, 'Events', videojs.Youtube.Events);
+goog.exportProperty(videojs.Youtube, 'isSupported', videojs.Youtube.isSupported);
+goog.exportProperty(videojs.Youtube, 'canPlaySource', videojs.Youtube.canPlaySource);
+
+goog.exportProperty(videojs.Youtube.prototype, 'setCurrentTime', videojs.Youtube.prototype.setCurrentTime);
+goog.exportProperty(videojs.Youtube.prototype, 'setVolume', videojs.Youtube.prototype.setVolume);
+goog.exportProperty(videojs.Youtube.prototype, 'setMuted', videojs.Youtube.prototype.setMuted);
+goog.exportProperty(videojs.Youtube.prototype, 'setPreload', videojs.Youtube.prototype.setPreload);
+goog.exportProperty(videojs.Youtube.prototype, 'setAutoplay', videojs.Youtube.prototype.setAutoplay);
+goog.exportProperty(videojs.Youtube.prototype, 'setLoop', videojs.Youtube.prototype.setLoop);
