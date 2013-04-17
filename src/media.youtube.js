@@ -278,8 +278,6 @@ videojs.Youtube.canPlaySource = function(srcObj){
   return (srcObj.type == 'video/youtube');
 };
 
-videojs.Youtube.prototype.features = {};
-
 // All videos created before YouTube API is loaded
 videojs.Youtube.loadingQueue = [];
 
