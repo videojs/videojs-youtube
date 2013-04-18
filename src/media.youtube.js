@@ -47,7 +47,7 @@ videojs.Youtube = function(player, options, ready){
   });
   
   this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
-
+  
   var params = {
     enablejsapi: 1,
     iv_load_policy: 3,
@@ -57,10 +57,14 @@ videojs.Youtube = function(player, options, ready){
     showinfo: 0,
     modestbranding: 1,
     rel: 0,
-    origin: window.location.origin,
     autoplay: (this.player_.options().autoplay)?1:0,
     loop: (this.player_.options().loop)?1:0
   };
+  
+  // If we are not on a server, don't specify the origin (it will crash)
+  if (window.location.protocol != 'file:') {
+    params.origin = window.location.origin;
+  }
 
   this.el_.src = 'http://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
 

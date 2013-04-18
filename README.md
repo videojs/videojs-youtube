@@ -18,8 +18,5 @@ Here is an example:
 ## Additional Informations
 ytcontrols: Display the YouTube controls instead of Video.js.
 
-## Warning
-It will not run properly without a Web server.
-
 ##Special Thank You
 Thanks to John Hurliman for the original code on the old Video.js
