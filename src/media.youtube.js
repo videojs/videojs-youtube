@@ -9,93 +9,95 @@
  * @param {Function=} ready
  * @constructor
  */
-videojs.Youtube = function(player, options, ready){
-  goog.base(this, player, options, ready);
-  this.player_ = player;
-  this.player_el_ = document.getElementById(this.player_.id());
+videojs.Youtube = videojs.MediaTechController.extend({
+  init: function(player, options, ready){
+    videojs.MediaTechController.call(this, player, options, ready);
+    
+    this.player_ = player;
+    this.player_el_ = document.getElementById(this.player_.id());
 
-  // Regex that parse the video ID for any YouTube URL
-  var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  var match = options.source.src.match(regExp);
+    // Regex that parse the video ID for any YouTube URL
+    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match = options.source.src.match(regExp);
 
-  if (match && match[2].length == 11){
-    this.videoId = match[2];
+    if (match && match[2].length == 11){
+      this.videoId = match[2];
 
-    // Show the YouTube poster only if we don't use YouTube poster (otherwise the controls pop, it's not nice)
-    if (!this.player_.options().ytcontrols){
-      this.player_.poster('http://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+      // Show the YouTube poster only if we don't use YouTube poster (otherwise the controls pop, it's not nice)
+      if (!this.player_.options().ytcontrols){
+        this.player_.poster('http://img.youtube.com/vi/' + this.videoId + '/0.jpg');
 
-      // Cover the entire iframe to have the same poster than YouTube
+        // Cover the entire iframe to have the same poster than YouTube
+        // Doesn't exist right away because the DOM hasn't created it
+        var self = this;
+        setTimeout(function(){ self.player_.posterImage.el().style.backgroundSize = 'cover'; }, 50);
+      }
+    }
+
+    this.id_ = this.player_.id() + '_youtube_api';
+
+    this.el_ = videojs.Component.prototype.createEl('iframe', {
+      id: this.id_,
+      className: 'vjs-tech',
+      scrolling: 'no',
+      marginWidth: 0,
+      marginHeight: 0,
+      frameBorder: 0,
+      webkitAllowFullScreen: '',
+      mozallowfullscreen: '',
+      allowFullScreen: ''
+    });
+    
+    this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
+    
+    var params = {
+      enablejsapi: 1,
+      iv_load_policy: 3,
+      playerapiid: this.id(),
+      disablekb: 1,
+      controls: (this.player_.options().ytcontrols)?1:0,
+      showinfo: 0,
+      modestbranding: 1,
+      rel: 0,
+      autoplay: (this.player_.options().autoplay)?1:0,
+      loop: (this.player_.options().loop)?1:0
+    };
+    
+    // If we are not on a server, don't specify the origin (it will crash)
+    if (window.location.protocol != 'file:') {
+      params.origin = window.location.origin;
+    }
+
+    this.el_.src = 'http://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+
+    if (this.player_.options().ytcontrols){
+      // Hide the big play button when using YouTube controls
       // Doesn't exist right away because the DOM hasn't created it
       var self = this;
-      setTimeout(function(){ self.player_.posterImage.el().style.backgroundSize = 'cover'; }, 50);
+      setTimeout(function(){ self.player_.bigPlayButton.hide(); }, 50);
+    }
+
+    if (videojs.Youtube.apiReady){
+      this.loadYoutube();
+    } else {
+      // Add to the queue because the YouTube API is not ready
+      videojs.Youtube.loadingQueue.push(this);
+
+      // Load the YouTube API if it is the first YouTube video
+      if(!videojs.Youtube.apiLoading){
+        var tag = document.createElement('script');
+        tag.src = 'http://www.youtube.com/iframe_api';
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        videojs.Youtube.apiLoading = true;
+      }
     }
   }
-
-  this.id_ = this.player_.id() + '_youtube_api';
-
-  this.el_ = videojs.Component.prototype.createEl('iframe', {
-    id: this.id_,
-    className: 'vjs-tech',
-    scrolling: 'no',
-    marginWidth: 0,
-    marginHeight: 0,
-    frameBorder: 0,
-    webkitAllowFullScreen: '',
-    mozallowfullscreen: '',
-    allowFullScreen: ''
-  });
-  
-  this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
-  
-  var params = {
-    enablejsapi: 1,
-    iv_load_policy: 3,
-    playerapiid: this.id(),
-    disablekb: 1,
-    controls: (this.player_.options().ytcontrols)?1:0,
-    showinfo: 0,
-    modestbranding: 1,
-    rel: 0,
-    autoplay: (this.player_.options().autoplay)?1:0,
-    loop: (this.player_.options().loop)?1:0
-  };
-  
-  // If we are not on a server, don't specify the origin (it will crash)
-  if (window.location.protocol != 'file:') {
-    params.origin = window.location.origin;
-  }
-
-  this.el_.src = 'http://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
-
-  if (this.player_.options().ytcontrols){
-    // Hide the big play button when using YouTube controls
-    // Doesn't exist right away because the DOM hasn't created it
-    var self = this;
-    setTimeout(function(){ self.player_.bigPlayButton.hide(); }, 50);
-  }
-
-  if (videojs.Youtube.apiReady){
-    this.loadYoutube();
-  } else {
-    // Add to the queue because the YouTube API is not ready
-    videojs.Youtube.loadingQueue.push(this);
-
-    // Load the YouTube API if it is the first YouTube video
-    if(!videojs.Youtube.apiLoading){
-      var tag = document.createElement('script');
-      tag.src = 'http://www.youtube.com/iframe_api';
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      videojs.Youtube.apiLoading = true;
-    }
-  }
-};
-goog.inherits(videojs.Youtube, videojs.MediaTechController);
+});
 
 videojs.Youtube.prototype.dispose = function(){
-  goog.base(this, 'dispose');
   this.ytplayer.destroy();
+  videojs.MediaTechController.prototype.dispose.call(this);
 };
 
 videojs.Youtube.prototype.play = function(){
@@ -321,9 +323,10 @@ window.onYouTubeIframeAPIReady = function(){
   videojs.Youtube.apiReady = true;
 }
 
+// TODO: Use advanced optimization
 // Export for advanced closure compiler
 
-goog.exportProperty(videojs, 'Youtube', videojs.Youtube);
+/*goog.exportProperty(videojs, 'Youtube', videojs.Youtube);
 goog.exportProperty(videojs.Youtube, 'Events', videojs.Youtube.Events);
 goog.exportProperty(videojs.Youtube, 'isSupported', videojs.Youtube.isSupported);
 goog.exportProperty(videojs.Youtube, 'canPlaySource', videojs.Youtube.canPlaySource);
@@ -333,4 +336,4 @@ goog.exportProperty(videojs.Youtube.prototype, 'setVolume', videojs.Youtube.prot
 goog.exportProperty(videojs.Youtube.prototype, 'setMuted', videojs.Youtube.prototype.setMuted);
 goog.exportProperty(videojs.Youtube.prototype, 'setPreload', videojs.Youtube.prototype.setPreload);
 goog.exportProperty(videojs.Youtube.prototype, 'setAutoplay', videojs.Youtube.prototype.setAutoplay);
-goog.exportProperty(videojs.Youtube.prototype, 'setLoop', videojs.Youtube.prototype.setLoop);
+goog.exportProperty(videojs.Youtube.prototype, 'setLoop', videojs.Youtube.prototype.setLoop);*/
