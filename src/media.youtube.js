@@ -323,17 +323,3 @@ window.onYouTubeIframeAPIReady = function(){
   videojs.Youtube.apiReady = true;
 }
 
-// TODO: Use advanced optimization
-// Export for advanced closure compiler
-
-/*goog.exportProperty(videojs, 'Youtube', videojs.Youtube);
-goog.exportProperty(videojs.Youtube, 'Events', videojs.Youtube.Events);
-goog.exportProperty(videojs.Youtube, 'isSupported', videojs.Youtube.isSupported);
-goog.exportProperty(videojs.Youtube, 'canPlaySource', videojs.Youtube.canPlaySource);
-
-goog.exportProperty(videojs.Youtube.prototype, 'setCurrentTime', videojs.Youtube.prototype.setCurrentTime);
-goog.exportProperty(videojs.Youtube.prototype, 'setVolume', videojs.Youtube.prototype.setVolume);
-goog.exportProperty(videojs.Youtube.prototype, 'setMuted', videojs.Youtube.prototype.setMuted);
-goog.exportProperty(videojs.Youtube.prototype, 'setPreload', videojs.Youtube.prototype.setPreload);
-goog.exportProperty(videojs.Youtube.prototype, 'setAutoplay', videojs.Youtube.prototype.setAutoplay);
-goog.exportProperty(videojs.Youtube.prototype, 'setLoop', videojs.Youtube.prototype.setLoop);*/
