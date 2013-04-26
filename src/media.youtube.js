@@ -193,10 +193,12 @@ videojs.Youtube.prototype.onReady = function(){
     this.player_.bigPlayButton.hide();
     this.ytplayer.playVideo();
   }
-
-  if (!this.player_.options().controls || this.player_.options().ytcontrols){
+  
+  if (this.player_.options().ytcontrols){
     // Hide the VideoJS controls
-    this.player_.controlBar.hide();
+    var p_options = this.player_.options();
+    p_options.controls = false;
+    this.player_.options(p_options);
   }
 };
 
