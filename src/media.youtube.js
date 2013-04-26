@@ -59,6 +59,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       iv_load_policy: 3,
       playerapiid: this.id(),
       disablekb: 1,
+      wmode: 'transparent',
       controls: (this.player_.options().ytcontrols)?1:0,
       showinfo: 0,
       modestbranding: 1,
