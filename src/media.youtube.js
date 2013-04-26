@@ -34,6 +34,8 @@ videojs.Youtube = videojs.MediaTechController.extend({
         var self = this;
         setTimeout(function(){ self.player_.posterImage.el().style.backgroundSize = 'cover'; }, 50);
       }
+    } else {
+      this.videoId = '';
     }
 
     this.id_ = this.player_.id() + '_youtube_api';
@@ -64,6 +66,14 @@ videojs.Youtube = videojs.MediaTechController.extend({
       autoplay: (this.player_.options().autoplay)?1:0,
       loop: (this.player_.options().loop)?1:0
     };
+    
+    // Check if we have a playlist
+    var regExp = /[?&]list=([^#\&\?]+)/;
+    var match = player.options().src.match(regExp);
+    
+    if (match != null && match.length > 1) {
+      params.list = match[1];
+    }
     
     // If we are not on a server, don't specify the origin (it will crash)
     if (window.location.protocol != 'file:') {
