@@ -20,7 +20,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
 
     // Regex that parse the video ID for any YouTube URL
     var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    var match = options.source.src.match(regExp);
+    var match = player.options().src.match(regExp);
 
     if (match && match[2].length == 11){
       this.videoId = match[2];
