@@ -13,6 +13,8 @@ videojs.Youtube = videojs.MediaTechController.extend({
   init: function(player, options, ready){
     videojs.MediaTechController.call(this, player, options, ready);
     
+    this.features.fullscreenResize = true;
+    
     this.player_ = player;
     this.player_el_ = document.getElementById(this.player_.id());
 
