@@ -18,6 +18,11 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.player_ = player;
     this.player_el_ = document.getElementById(this.player_.id());
 
+    // Disable lockShowing because YouTube controls are there
+    if (this.player_.options().ytcontrols){
+      this.player_.controls(false);
+    }
+    
     // Regex that parse the video ID for any YouTube URL
     var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     var match = player.options().src.match(regExp);
@@ -119,11 +124,6 @@ videojs.Youtube.prototype.play = function(){
   } else { 
     // We will play it when the API will be ready
     this.playOnReady = true;
-      
-    if (!this.player_.options.ytcontrols) {
-      // Keep the big play button until it plays for real
-      this.player_.bigPlayButton.show();
-    }
   }
 };
 
@@ -185,25 +185,21 @@ videojs.Youtube.prototype.onReady = function(){
   this.player_.trigger('techready');
 
   // Hide the poster when ready because YouTube has it's own
-  this.player_.posterImage.hide();
   this.triggerReady();
   this.player_.trigger('durationchange');
-
+  
   // Play right away if we clicked before ready
   if (this.playOnReady){
-    this.player_.bigPlayButton.hide();
     this.ytplayer.playVideo();
-  }
-  
-  if (this.player_.options().ytcontrols){
-    // Hide the VideoJS controls
-    var p_options = this.player_.options();
-    p_options.controls = false;
-    this.player_.options(p_options);
   }
 };
 
 videojs.Youtube.prototype.onStateChange = function(state){
+  // If we're using the YouTube controls, don't even bother listening to the events
+  if (this.player_.options().ytcontrols){
+    return;
+  }
+
   if (state != this.lastState){
     switch(state){
       case -1:
@@ -212,10 +208,6 @@ videojs.Youtube.prototype.onStateChange = function(state){
 
       case YT.PlayerState.ENDED:
         this.player_.trigger('ended');
-
-        if (!this.player_.options().ytcontrols){
-          this.player_.bigPlayButton.show();
-        }
         break;
 
       case YT.PlayerState.PLAYING:
@@ -232,9 +224,6 @@ videojs.Youtube.prototype.onStateChange = function(state){
       case YT.PlayerState.BUFFERING:
         this.player_.trigger('timeupdate');
         this.player_.trigger('waiting');
-
-        // Hide the waiting spinner since YouTube has its own
-        this.player_.loadingSpinner.hide();
         break;
 
       case YT.PlayerState.CUED:
