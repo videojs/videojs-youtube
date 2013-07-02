@@ -73,6 +73,11 @@ videojs.Youtube = videojs.MediaTechController.extend({
       loop: (this.player_.options().loop)?1:0
     };
     
+    // Make autoplay work for iOS
+    if (this.player_.options().autoplay) {
+      this.playOnReady = true;
+    }
+    
     // Check if we have a playlist
     var regExp = /[?&]list=([^#\&\?]+)/;
     var match = player.options().src.match(regExp);
