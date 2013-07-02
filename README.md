@@ -17,7 +17,7 @@ Here is an example:
 	<link href="video-js.css" rel="stylesheet">
 	<script src="video.js"></script>
 	<script src="vjs.youtube.js"></script>
-	<video id="vid1" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F" }'></video>
+	<video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F" }'></video>
 
 ## Additional Informations
 ytcontrols: Display the YouTube controls instead of Video.js.
