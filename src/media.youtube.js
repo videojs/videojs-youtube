@@ -289,6 +289,10 @@ videojs.Youtube.isSupported = function(){
   return true;
 };
 
+videojs.Youtube.prototype.supportsFullScreen = function() {
+  return false;
+};
+
 videojs.Youtube.canPlaySource = function(srcObj){
   return (srcObj.type == 'video/youtube');
 };
