@@ -94,10 +94,16 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.el_.src = 'http://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
 
     if (this.player_.options().ytcontrols){
-      // Hide the big play button when using YouTube controls
+      // Remove the big play button and the control bar, we use Vimeo controls
       // Doesn't exist right away because the DOM hasn't created it
       var self = this;
-      setTimeout(function(){ self.player_.bigPlayButton.hide(); }, 50);
+      setTimeout(function(){ 
+        var bigPlayDom = self.player_.bigPlayButton.el();
+        bigPlayDom.parentNode.removeChild(bigPlayDom);
+        
+        var controlBarDom = self.player_.controlBar.el();
+        controlBarDom.parentNode.removeChild(controlBarDom);
+      }, 50);
     }
 
     if (videojs.Youtube.apiReady){
@@ -200,11 +206,6 @@ videojs.Youtube.prototype.onReady = function(){
 };
 
 videojs.Youtube.prototype.onStateChange = function(state){
-  // If we're using the YouTube controls, don't even bother listening to the events
-  if (this.player_.options().ytcontrols){
-    return;
-  }
-
   if (state != this.lastState){
     switch(state){
       case -1:
