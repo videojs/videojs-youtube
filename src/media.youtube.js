@@ -32,7 +32,10 @@ videojs.Youtube = videojs.MediaTechController.extend({
 
       // Show the YouTube poster only if we don't use YouTube poster (otherwise the controls pop, it's not nice)
       if (!this.player_.options().ytcontrols){
-        this.player_.poster('http://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        // Set the YouTube poster only if none is specified
+        if (typeof this.player_.poster() == 'undefined') {
+          this.player_.poster('http://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        }
 
         // Cover the entire iframe to have the same poster than YouTube
         // Doesn't exist right away because the DOM hasn't created it
