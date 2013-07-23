@@ -31,19 +31,16 @@ videojs.Youtube = videojs.MediaTechController.extend({
 	
 	if ( typeof player.options().src === 'undefined' ) {
 		
-		if ( sources.length > 0 ) {
-		
-			var i = sources.length;
+		var i = sources.length;
 			
-			while ( i > 0 ) {
-				
-				i--;
-				
-				if ( typeof sources[i].type !== 'undefined' && 'video/youtube' == sources[i].type ) {
-				
-					src = sources[i].src;
-					break;
-				}
+		while ( i > 0 ) {
+			
+			i--;
+			
+			if ( typeof sources[i].type !== 'undefined' && 'video/youtube' == sources[i].type ) {
+			
+				src = sources[i].src;
+				break;
 			}
 		}
 		
