@@ -23,10 +23,37 @@ videojs.Youtube = videojs.MediaTechController.extend({
       this.player_.controls(false);
     }
     
-    // Regex that parse the video ID for any YouTube URL
-    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    var match = player.options().src.match(regExp);
-
+	// Regex that parse the video ID for any YouTube URL
+	var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+	var	sources = player.options().sources;
+	var src = '';
+	var match;
+	
+	if ( typeof player.options().src === 'undefined' ) {
+		
+		if ( sources.length > 0 ) {
+		
+			var i = sources.length;
+			
+			while ( i > 0 ) {
+				
+				i--;
+				
+				if ( typeof sources[i].type !== 'undefined' && 'video/youtube' == sources[i].type ) {
+				
+					src = sources[i].src;
+					break;
+				}
+			}
+		}
+		
+	} else {
+		
+		src = player.options().src;
+	}
+	
+	match = src.match(regExp);
+	
     if (match && match[2].length == 11){
       this.videoId = match[2];
 
@@ -83,7 +110,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     
     // Check if we have a playlist
     var regExp = /[?&]list=([^#\&\?]+)/;
-    var match = player.options().src.match(regExp);
+    var match = src.match(regExp);
     
     if (match != null && match.length > 1) {
       params.list = match[1];
