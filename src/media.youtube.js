@@ -20,11 +20,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
 
     // Copy the Javascript options if they exist
     if (typeof options.source != 'undefined') {
-      this.player_.options().src = options.source.src || this.player_.options().src;
-      this.player_.options().controls = options.source.controls || this.player_.options().controls;
-      this.player_.options().ytcontrols = options.source.ytcontrols || this.player_.options().ytcontrols;
-      this.player_.options().autoplay = options.source.autoplay || this.player_.options().autoplay;
-      this.player_.options().loop = options.source.loop || this.player_.options().loop;
+      for (var key in options.source) {
+        this.player_.options()[key] = options.source[key];
+      }
     }
     
     // Disable lockShowing because YouTube controls are there
@@ -79,6 +77,10 @@ videojs.Youtube = videojs.MediaTechController.extend({
       loop: (this.player_.options().loop)?1:0,
       list: videojs.Youtube.parsePlaylist(this.player_.options().src)
     };
+    
+    if (typeof params.list == 'undefined') {
+      delete params.list;
+    }
     
     // Make autoplay work for iOS
     if (this.player_.options().autoplay) {
