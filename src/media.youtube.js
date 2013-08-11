@@ -18,42 +18,23 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.player_ = player;
     this.player_el_ = document.getElementById(this.player_.id());
 
+    // Copy the Javascript options if they exist
+    if (typeof options.source != 'undefined') {
+      this.player_.options().src = options.source.src || this.player_.options().src;
+      this.player_.options().controls = options.source.controls || this.player_.options().controls;
+      this.player_.options().ytcontrols = options.source.ytcontrols || this.player_.options().ytcontrols;
+      this.player_.options().autoplay = options.source.autoplay || this.player_.options().autoplay;
+      this.player_.options().loop = options.source.loop || this.player_.options().loop;
+    }
+    
     // Disable lockShowing because YouTube controls are there
     if (this.player_.options().ytcontrols){
       this.player_.controls(false);
     }
     
-	// Regex that parse the video ID for any YouTube URL
-	var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-	var	sources = player.options().sources;
-	var src = '';
-	var match;
-	
-	if ( typeof player.options().src === 'undefined' ) {
-		
-		var i = sources.length;
-			
-		while ( i > 0 ) {
-			
-			i--;
-			
-			if ( typeof sources[i].type !== 'undefined' && 'video/youtube' == sources[i].type ) {
-			
-				src = sources[i].src;
-				break;
-			}
-		}
-		
-	} else {
-		
-		src = player.options().src;
-	}
-	
-	match = src.match(regExp);
-	
-    if (match && match[2].length == 11){
-      this.videoId = match[2];
-
+    this.videoId = videojs.Youtube.parseVideoId(this.player_.options().src);
+    
+    if (typeof this.videoId != 'undefined') {
       // Show the YouTube poster only if we don't use YouTube poster (otherwise the controls pop, it's not nice)
       if (!this.player_.options().ytcontrols){
         // Set the YouTube poster only if none is specified
@@ -66,8 +47,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
         var self = this;
         setTimeout(function(){ self.player_.posterImage.el().style.backgroundSize = 'cover'; }, 50);
       }
-    } else {
-      this.videoId = '';
     }
 
     this.id_ = this.player_.id() + '_youtube_api';
@@ -97,20 +76,13 @@ videojs.Youtube = videojs.MediaTechController.extend({
       modestbranding: 1,
       rel: 0,
       autoplay: (this.player_.options().autoplay)?1:0,
-      loop: (this.player_.options().loop)?1:0
+      loop: (this.player_.options().loop)?1:0,
+      list: videojs.Youtube.parsePlaylist(this.player_.options().src)
     };
     
     // Make autoplay work for iOS
     if (this.player_.options().autoplay) {
       this.playOnReady = true;
-    }
-    
-    // Check if we have a playlist
-    var regExp = /[?&]list=([^#\&\?]+)/;
-    var match = src.match(regExp);
-    
-    if (match != null && match.length > 1) {
-      params.list = match[1];
     }
     
     // If we are not on a server, don't specify the origin (it will crash)
@@ -152,8 +124,22 @@ videojs.Youtube = videojs.MediaTechController.extend({
 });
 
 videojs.Youtube.prototype.dispose = function(){
-  this.ytplayer.destroy();
+  if (this.el_){
+    this.el_.parentNode.removeChild(this.el_);
+  }
+  
+  if (this.ytplayer) {
+    this.ytplayer.destroy();
+  }
+  
   videojs.MediaTechController.prototype.dispose.call(this);
+};
+
+videojs.Youtube.prototype.src = function(src){
+  this.ytplayer.loadVideoById({
+    videoId: videojs.Youtube.parseVideoId(src), 
+    list: videojs.Youtube.parsePlaylist(src)
+  });
 };
 
 videojs.Youtube.prototype.play = function(){
@@ -351,6 +337,26 @@ videojs.Youtube.makeQueryString = function(args){
   }
 
   return array.join('&');
+};
+
+videojs.Youtube.parseVideoId = function(src){
+// Regex that parse the video ID for any YouTube URL
+  var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  var match = src.match(regExp);
+  
+  if (match && match[2].length == 11){
+    return match[2];
+  }
+};
+
+videojs.Youtube.parsePlaylist = function(src){
+  // Check if we have a playlist
+  var regExp = /[?&]list=([^#\&\?]+)/;
+  var match = src.match(regExp);
+  
+  if (match != null && match.length > 1) {
+    return match[1];
+  }
 };
 
 // Called when YouTube API is ready to be used
