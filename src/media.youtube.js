@@ -89,7 +89,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     
     // If we are not on a server, don't specify the origin (it will crash)
     if (window.location.protocol != 'file:') {
-      params.origin = window.location.protocol + '//' + window.location.hostname;
+      params.origin = window.location.protocol + '//' + window.location.host;
     }
 
     this.el_.src = 'http://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
