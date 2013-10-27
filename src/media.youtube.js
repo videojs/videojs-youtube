@@ -37,7 +37,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       if (!this.player_.options().ytcontrols){
         // Set the YouTube poster only if none is specified
         if (typeof this.player_.poster() == 'undefined') {
-          this.player_.poster('http://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+          this.player_.poster('//img.youtube.com/vi/' + this.videoId + '/0.jpg');
         }
 
         // Cover the entire iframe to have the same poster than YouTube
@@ -92,7 +92,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       params.origin = window.location.protocol + '//' + window.location.host;
     }
 
-    this.el_.src = 'http://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+    this.el_.src = '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
 
     if (this.player_.options().ytcontrols){
       // Remove the big play button and the control bar, we use Vimeo controls
@@ -116,7 +116,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       // Load the YouTube API if it is the first YouTube video
       if(!videojs.Youtube.apiLoading){
         var tag = document.createElement('script');
-        tag.src = 'http://www.youtube.com/iframe_api';
+        tag.src = '//www.youtube.com/iframe_api';
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         videojs.Youtube.apiLoading = true;
