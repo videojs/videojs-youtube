@@ -92,7 +92,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       params.origin = window.location.protocol + '//' + window.location.host;
     }
 
-    this.el_.src = '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+    this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
 
     if (this.player_.options().ytcontrols){
       // Remove the big play button and the control bar, we use Vimeo controls
