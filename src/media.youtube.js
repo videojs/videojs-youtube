@@ -56,9 +56,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
       marginWidth: 0,
       marginHeight: 0,
       frameBorder: 0,
-      webkitAllowFullScreen: '',
-      mozallowfullscreen: '',
-      allowFullScreen: ''
+      webkitAllowFullScreen: "true",
+      mozallowfullscreen: "true",
+      allowFullScreen: "true"
     });
 
     this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
@@ -94,15 +94,16 @@ videojs.Youtube = videojs.MediaTechController.extend({
 
     this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
 
+
     if (this.player_.options().ytcontrols){
       // Remove the big play button and the control bar, we use Vimeo controls
       // Doesn't exist right away because the DOM hasn't created it
-      var self = this;
+      var _this = this;
       setTimeout(function(){
-        var bigPlayDom = self.player_.bigPlayButton.el();
+        var bigPlayDom = _this.player_.bigPlayButton.el();
         bigPlayDom.parentNode.removeChild(bigPlayDom);
 
-        var controlBarDom = self.player_.controlBar.el();
+        var controlBarDom = _this.player_.controlBar.el();
         controlBarDom.parentNode.removeChild(controlBarDom);
       }, 50);
     }
@@ -306,7 +307,18 @@ videojs.Youtube.isSupported = function(){
 };
 
 videojs.Youtube.prototype.supportsFullScreen = function() {
-  return false;
+  window.console.log("we support fullscreen!");
+  return true;
+};
+
+videojs.Youtube.prototype.enterFullScreen = function() {
+  window.console.log("enterfullscreen");
+  this.el_.webkitEnterFullScreen();
+};
+
+videojs.Youtube.prototype.exitFullScreen = function(){
+  window.console.log("EXITfullscreen");
+  this.el_.webkitExitFullScreen();
 };
 
 videojs.Youtube.canPlaySource = function(srcObj){
@@ -356,7 +368,7 @@ videojs.Youtube.parsePlaylist = function(src){
   var regExp = /[?&]list=([^#\&\?]+)/;
   var match = src.match(regExp);
 
-  if (match != null && match.length > 1) {
+  if (match !== null && match.length > 1) {
     return match[1];
   }
 };
@@ -370,5 +382,4 @@ window.onYouTubeIframeAPIReady = function(){
   }
   videojs.Youtube.loadingQueue = [];
   videojs.Youtube.apiReady = true;
-}
-
+};
