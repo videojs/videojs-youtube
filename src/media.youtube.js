@@ -12,9 +12,9 @@
 videojs.Youtube = videojs.MediaTechController.extend({
   init: function(player, options, ready){
     videojs.MediaTechController.call(this, player, options, ready);
-    
+
     this.features.fullscreenResize = true;
-    
+
     this.player_ = player;
     this.player_el_ = document.getElementById(this.player_.id());
 
@@ -24,14 +24,14 @@ videojs.Youtube = videojs.MediaTechController.extend({
         this.player_.options()[key] = options.source[key];
       }
     }
-    
+
     // Disable lockShowing because YouTube controls are there
     if (this.player_.options().ytcontrols){
       this.player_.controls(false);
     }
-    
+
     this.videoId = videojs.Youtube.parseVideoId(this.player_.options().src);
-    
+
     if (typeof this.videoId != 'undefined') {
       // Show the YouTube poster only if we don't use YouTube poster (otherwise the controls pop, it's not nice)
       if (!this.player_.options().ytcontrols){
@@ -60,9 +60,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
       mozallowfullscreen: '',
       allowFullScreen: ''
     });
-    
+
     this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
-    
+
     var params = {
       enablejsapi: 1,
       iv_load_policy: 3,
@@ -77,16 +77,16 @@ videojs.Youtube = videojs.MediaTechController.extend({
       loop: (this.player_.options().loop)?1:0,
       list: videojs.Youtube.parsePlaylist(this.player_.options().src)
     };
-    
+
     if (typeof params.list == 'undefined') {
       delete params.list;
     }
-    
+
     // Make autoplay work for iOS
     if (this.player_.options().autoplay) {
       this.playOnReady = true;
     }
-    
+
     // If we are not on a server, don't specify the origin (it will crash)
     if (window.location.protocol != 'file:') {
       params.origin = window.location.protocol + '//' + window.location.host;
@@ -98,10 +98,10 @@ videojs.Youtube = videojs.MediaTechController.extend({
       // Remove the big play button and the control bar, we use Vimeo controls
       // Doesn't exist right away because the DOM hasn't created it
       var self = this;
-      setTimeout(function(){ 
+      setTimeout(function(){
         var bigPlayDom = self.player_.bigPlayButton.el();
         bigPlayDom.parentNode.removeChild(bigPlayDom);
-        
+
         var controlBarDom = self.player_.controlBar.el();
         controlBarDom.parentNode.removeChild(controlBarDom);
       }, 50);
@@ -129,25 +129,25 @@ videojs.Youtube.prototype.dispose = function(){
   if (this.el_){
     this.el_.parentNode.removeChild(this.el_);
   }
-  
+
   if (this.ytplayer) {
     this.ytplayer.destroy();
   }
-  
+
   videojs.MediaTechController.prototype.dispose.call(this);
 };
 
 videojs.Youtube.prototype.src = function(src){
   this.ytplayer.loadVideoById({
-    videoId: videojs.Youtube.parseVideoId(src), 
+    videoId: videojs.Youtube.parseVideoId(src),
     list: videojs.Youtube.parsePlaylist(src)
   });
 };
 
 videojs.Youtube.prototype.play = function(){
-  if (this.isReady_){ 
-    this.ytplayer.playVideo(); 
-  } else { 
+  if (this.isReady_){
+    this.ytplayer.playVideo();
+  } else {
     // We will play it when the API will be ready
     this.playOnReady = true;
   }
@@ -178,7 +178,7 @@ videojs.Youtube.prototype.buffered = function(){
   return videojs.createTimeRange(secondsOffset, secondsOffset + secondsBuffered);
 };
 
-videojs.Youtube.prototype.volume = function() { 
+videojs.Youtube.prototype.volume = function() {
   if (isNaN(this.volumeVal)) {
     this.volumeVal = this.ytplayer.getVolume() / 100.0;
   }
@@ -188,19 +188,19 @@ videojs.Youtube.prototype.volume = function() {
 
 videojs.Youtube.prototype.setVolume = function(percentAsDecimal){
   if (percentAsDecimal && percentAsDecimal != this.volumeVal) {
-    this.ytplayer.setVolume(percentAsDecimal * 100.0); 
+    this.ytplayer.setVolume(percentAsDecimal * 100.0);
     this.volumeVal = percentAsDecimal;
     this.player_.trigger('volumechange');
   }
 };
 
 videojs.Youtube.prototype.muted = function() { return this.ytplayer.isMuted(); };
-videojs.Youtube.prototype.setMuted = function(muted) { 
+videojs.Youtube.prototype.setMuted = function(muted) {
   if (muted) {
-    this.ytplayer.mute(); 
-  } else { 
-    this.ytplayer.unMute(); 
-  } 
+    this.ytplayer.mute();
+  } else {
+    this.ytplayer.unMute();
+  }
 
   var self = this;
   setTimeout(function() { self.player_.trigger('volumechange'); }, 50);
@@ -213,7 +213,7 @@ videojs.Youtube.prototype.onReady = function(){
   // Hide the poster when ready because YouTube has it's own
   this.triggerReady();
   this.player_.trigger('durationchange');
-  
+
   // Play right away if we clicked before ready
   if (this.playOnReady){
     this.ytplayer.playVideo();
@@ -345,7 +345,7 @@ videojs.Youtube.parseVideoId = function(src){
 // Regex that parse the video ID for any YouTube URL
   var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   var match = src.match(regExp);
-  
+
   if (match && match[2].length == 11){
     return match[2];
   }
@@ -355,7 +355,7 @@ videojs.Youtube.parsePlaylist = function(src){
   // Check if we have a playlist
   var regExp = /[?&]list=([^#\&\?]+)/;
   var match = src.match(regExp);
-  
+
   if (match != null && match.length > 1) {
     return match[1];
   }
