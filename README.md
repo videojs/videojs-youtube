@@ -12,14 +12,42 @@ It supports:
 - Embeded URLs: http://www.youtube.com/embed/xjS6SftYQaQ
 - Playlist URLs: http://www.youtube.com/playlist?list=PLA60DCEB33156E51F OR http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F
 
-Here is an example:
+Here is 3 examples:
+1. using autoplay/loop
+2. using YouTube controls
+3. using JavaScript events
 
-	<link href="video-js.css" rel="stylesheet">
-	<script src="video.js"></script>
-	<script src="vjs.youtube.js"></script>
-	<video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F" }'></video>
+	<!DOCTYPE html>
+	<html>
+	<head>
+	  <link href="video-js.min.css" rel="stylesheet" />
+	</head>
+	<body>
+  	<video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" autoplay="autoplay" loop="loop" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }'></video>
+  	<br />
+  	<video id="vid2" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ", "ytcontrols": true }'></video>
+  	<br />
+  	<video id="vid3" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360"></video>
+	  
+	  <script src="video.min.js"></script>
+	  <script src="vjs.youtube.js"></script>
+	  <script>
+	  videojs('vid3', { "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }).ready(function() {
+	    // Detect when the YouTube API is ready
+	    this.on('apiready', function() {
+	      console.log('YouTube API is ready!');
+	    });
+	
+	    // Cue a video using ended event
+	    this.one('ended', function() {
+	      this.src('http://www.youtube.com/watch?v=6h-sZkglI8Y');
+	    });
+	  });
+	  </script>
+	</body>
+	</html>
 
-## Additional Informations
+## Additional Options
 ytcontrols: Display the YouTube controls instead of Video.js.
 
 ##Special Thank You
