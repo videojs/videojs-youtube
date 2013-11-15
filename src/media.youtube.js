@@ -124,13 +124,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
       }
     }
     
-    // Create a new function 
-    var self = this;
-    this.player_.cue = function(src) {
-      self.parseSrc(src)
-      self.ytplayer.cueVideoById(this.videoId);
-    };
-    
     this.triggerReady();
   }
 });
