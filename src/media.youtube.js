@@ -207,16 +207,16 @@ videojs.Youtube.prototype.setVolume = function(percentAsDecimal){
   }
 };
 
-videojs.Youtube.prototype.muted = function() { return (this.ytplayer)?this.ytplayer.isMuted():false; };
+videojs.Youtube.prototype.muted = function() { return this.mutedVal; };
 videojs.Youtube.prototype.setMuted = function(muted) { 
   if (muted) {
     this.ytplayer.mute(); 
   } else { 
     this.ytplayer.unMute(); 
   } 
-
-  var self = this;
-  setTimeout(function() { self.player_.trigger('volumechange'); }, 50);
+  
+  this.mutedVal = muted;
+  this.player_.trigger('volumechange');
 };
 
 videojs.Youtube.prototype.buffered = function(){
