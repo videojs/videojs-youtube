@@ -72,15 +72,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
     
     this.parseSrc(player.options()['src']);
     
-    // Make sure to update the poster if they change the video
-    /*if (this.srcVal) {
-      var poster = this.player_el_.getElementsByClassName('vjs-poster')[0];
-      poster.style.display = 'block';
-      poster.style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
-      this.id_ = this.id_ + 'x';
-      this.player_el_.id = this.id_;
-    }*/
-    
     var params = {
       enablejsapi: 1,
       iv_load_policy: 3,
