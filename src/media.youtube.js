@@ -138,6 +138,7 @@ videojs.Youtube.prototype.play = function(){
   } else {
     // Display the spinner until the YouTube video is ready to play
     this.player_.trigger('waiting');
+    
     this.playOnReady = true;
   }
 };
@@ -275,6 +276,7 @@ window.onYouTubeIframeAPIReady = function(){
 
 videojs.Youtube.prototype.onReady = function(){
   this.isReady_ = true;
+  this.player_.trigger('apiready');
   
   // Play ASAP if they clicked play before it's ready
   if (this.playOnReady) {
