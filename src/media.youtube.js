@@ -176,10 +176,6 @@ videojs.Youtube.prototype.load = function(){};
 
 videojs.Youtube.prototype.play = function(){
   if (this.isReady_){
-    // Make sure the spinner or poster is not in the way
-    //this.player_el_.getElementsByClassName('vjs-poster')[0].style.display = 'none';
-    //this.player_el_.getElementsByClassName('vjs-loading-spinner')[0].style.display = 'none';
-    
     this.ytplayer.playVideo();
   } else {
     // Display the spinner until the YouTube video is ready to play
