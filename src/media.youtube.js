@@ -26,21 +26,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.player_el_ = document.getElementById(player.id());
     this.player_el_.className = this.player_el_.className + ' vjs-youtube';
     
-    this.parseVideoUrl(player.options()['src']);
-    
     // Make sure nothing get in the way of the native player for iOS
     if (videojs.IS_IOS) {
       player.options()['ytcontrols'] = true;
-    }
-    
-    if (player.options()['ytcontrols']){
-      // Disable the video.js controls if we use the YouTube controls
-      player.controls(false);
-    } else {
-      // Show the YouTube poster if their is no custom poster
-      if (!player.poster()) {
-        player.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
-      }
     }
     
     this.id_ = this.player_.id() + '_youtube_api';
@@ -63,20 +51,35 @@ videojs.Youtube = videojs.MediaTechController.extend({
       className: 'iframeblocker'
     });
     
-    // Make sure to not block the pause
+    // Make sure to not block the play or pause
     var self = this;
-    var pauseThis = function() {
-      self.pause();
+    var toggleThis = function() {
+      if (self.paused()) {
+        self.play();
+      } else {
+        self.pause();
+      }
     };
     
     if (iframeblocker.addEventListener) {
-      iframeblocker.addEventListener('click', pauseThis);
+      iframeblocker.addEventListener('click', toggleThis);
     } else {
-      iframeblocker.attachEvent('onclick', pauseThis);
+      iframeblocker.attachEvent('onclick', toggleThis);
     }
     
     this.player_el_.insertBefore(iframeblocker, this.player_el_.firstChild);
     this.player_el_.insertBefore(this.el_, iframeblocker);
+    
+    this.parseSrc(player.options()['src']);
+    
+    // Make sure to update the poster if they change the video
+    /*if (this.srcVal) {
+      var poster = this.player_el_.getElementsByClassName('vjs-poster')[0];
+      poster.style.display = 'block';
+      poster.style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
+      this.id_ = this.id_ + 'x';
+      this.player_el_.id = this.id_;
+    }*/
     
     var params = {
       enablejsapi: 1,
@@ -84,12 +87,12 @@ videojs.Youtube = videojs.MediaTechController.extend({
       playerapiid: this.id(),
       disablekb: 1,
       wmode: 'transparent',
-      controls: (player.options()['ytcontrols'])?1:0,
+      controls: (this.player_.options()['ytcontrols'])?1:0,
       showinfo: 0,
       modestbranding: 1,
       rel: 0,
-      autoplay: (player.options()['autoplay'])?1:0,
-      loop: (player.options()['loop'])?1:0,
+      autoplay: (this.player_.options()['autoplay'])?1:0,
+      loop: (this.player_.options()['loop'])?1:0,
       list: this.playlistId
     };
     
@@ -103,6 +106,16 @@ videojs.Youtube = videojs.MediaTechController.extend({
     }
     
     this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+    
+    if (this.player_.options()['ytcontrols']){
+      // Disable the video.js controls if we use the YouTube controls
+      this.player_.controls(false);
+    } else {
+      // Show the YouTube poster if their is no custom poster
+      if (!this.player_.poster()) {
+        this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+      }
+    }
     
     if (videojs.Youtube.apiReady){
       this.loadYoutube();
@@ -120,6 +133,13 @@ videojs.Youtube = videojs.MediaTechController.extend({
       }
     }
     
+    // Create a new function 
+    var self = this;
+    this.player_.cue = function(src) {
+      self.parseSrc(src)
+      self.ytplayer.cueVideoById(this.videoId);
+    };
+    
     this.triggerReady();
   }
 });
@@ -128,12 +148,54 @@ videojs.Youtube.prototype.dispose = function(){
   videojs.MediaTechController.prototype.dispose.call(this);
 };
 
-videojs.Youtube.prototype.src = function(src){
-  this.parseVideoUrl(src);
+videojs.Youtube.prototype.parseSrc = function(src){
+  this.srcVal = src;
+    
+  // Regex to parse the video ID
+  var regId = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  var match = src.match(regId);
+  
+  if (match && match[2].length == 11){
+    this.videoId = match[2];
+  } else {
+    this.videoId = null;
+  }
+  
+  // Regex to parse the playlist ID
+  var regPlaylist = /[?&]list=([^#\&\?]+)/;
+  match = src.match(regPlaylist);
+  
+  if (match != null && match.length > 1) {
+    this.playlistId = match[1];
+  } else {
+    // Make sure their is no playlist
+    if (this.playlistId) {
+      delete this.playlistId;
+    }
+  }
 };
+
+videojs.Youtube.prototype.src = function(src){
+  if (src) {
+    this.parseSrc(src);
+    this.ytplayer.loadVideoById(this.videoId);
+    
+    // Update the poster
+    this.player_el_.getElementsByClassName('vjs-poster')[0].style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
+    this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+  }
+  
+  return this.srcVal;
+};
+
+videojs.Youtube.prototype.load = function(){};
 
 videojs.Youtube.prototype.play = function(){
   if (this.isReady_){
+    // Make sure the spinner or poster is not in the way
+    //this.player_el_.getElementsByClassName('vjs-poster')[0].style.display = 'none';
+    //this.player_el_.getElementsByClassName('vjs-loading-spinner')[0].style.display = 'none';
+    
     this.ytplayer.playVideo();
   } else {
     // Display the spinner until the YouTube video is ready to play
@@ -208,32 +270,6 @@ videojs.Youtube.canControlVolume = function(){ return true; };
 
 ////////////////////////////// YouTube specific functions //////////////////////////////
 
-// Parse the whole URL
-videojs.Youtube.prototype.parseVideoUrl = function(url){
-  // Regex to parse the video ID
-  var regId = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  var match = url.match(regId);
-  
-  if (match && match[2].length == 11){
-    this.videoId = match[2];
-  } else {
-    this.videoId = null;
-  }
-  
-  // Regex to parse the playlist ID
-  var regPlaylist = /[?&]list=([^#\&\?]+)/;
-  match = url.match(regPlaylist);
-  
-  if (match != null && match.length > 1) {
-    this.playlistId = match[1];
-  } else {
-    // Make sure their is no playlist
-    if (this.playlistId) {
-      delete this.playlistId;
-    }
-  }
-};
-
 // All videos created before YouTube API is loaded
 videojs.Youtube.loadingQueue = [];
 
@@ -279,7 +315,7 @@ videojs.Youtube.prototype.onReady = function(){
   this.player_.trigger('apiready');
   
   // Play ASAP if they clicked play before it's ready
-  if (this.playOnReady) {
+  if (this.playOnReady) {      
     this.play();
   }
 };
@@ -292,10 +328,19 @@ videojs.Youtube.prototype.onStateChange = function(state){
         break;
 
       case YT.PlayerState.ENDED:
+        // Replace YouTube play button by our own
+        if (!this.player_.options()['ytcontrols']) {
+          this.player_el_.getElementsByClassName('vjs-poster')[0].style.display = 'block';
+          this.player_.bigPlayButton.show();
+        }
+        
         this.player_.trigger('ended');
         break;
 
       case YT.PlayerState.PLAYING:
+        // Make sure the big play is not there
+        this.player_.bigPlayButton.hide();
+        
         this.player_.trigger('timeupdate');
         this.player_.trigger('durationchange');
         this.player_.trigger('playing');
