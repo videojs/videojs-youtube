@@ -12,8 +12,6 @@ It supports:
 - Embeded URLs: http://www.youtube.com/embed/xjS6SftYQaQ
 - Playlist URLs: http://www.youtube.com/playlist?list=PLA60DCEB33156E51F OR http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F
 
-**You must use the last version of VideoJS available in the folder lib, the current version on CDN will not work until it is updated**
-
 Here is an example:
 
 	<link href="video-js.css" rel="stylesheet">
