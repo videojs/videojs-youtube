@@ -10,45 +10,36 @@
  * @constructor
  */
 videojs.Youtube = videojs.MediaTechController.extend({
+  /** @constructor */
   init: function(player, options, ready){
     videojs.MediaTechController.call(this, player, options, ready);
     
-    this.features.fullscreenResize = true;
+    // Copy the JavaScript options if they exists
+    if (typeof options['source'] != 'undefined') {
+      for (var key in options['source']) {
+        player.options()[key] = options['source'][key];
+      }
+    }
     
+    // Save those for internal usage
     this.player_ = player;
-    this.player_el_ = document.getElementById(this.player_.id());
-
-    // Copy the Javascript options if they exist
-    if (typeof options.source != 'undefined') {
-      for (var key in options.source) {
-        this.player_.options()[key] = options.source[key];
+    this.player_el_ = document.getElementById(player.id());
+    this.player_el_.className = this.player_el_.className + ' vjs-youtube';
+    
+    this.parseVideoUrl(player.options()['src']);
+    
+    if (player.options()['ytcontrols']){
+      // Disable the video.js controls if we use the YouTube controls
+      player.controls(false);
+    } else {
+      // Show the YouTube poster if their is no custom poster
+      if (!player.poster()) {
+        player.poster('//img.youtube.com/vi/' + this.videoId + '/0.jpg');
       }
     }
     
-    // Disable lockShowing because YouTube controls are there
-    if (this.player_.options().ytcontrols){
-      this.player_.controls(false);
-    }
-    
-    this.videoId = videojs.Youtube.parseVideoId(this.player_.options().src);
-    
-    if (typeof this.videoId != 'undefined') {
-      // Show the YouTube poster only if we don't use YouTube poster (otherwise the controls pop, it's not nice)
-      if (!this.player_.options().ytcontrols){
-        // Set the YouTube poster only if none is specified
-        if (typeof this.player_.poster() == 'undefined') {
-          this.player_.poster('//img.youtube.com/vi/' + this.videoId + '/0.jpg');
-        }
-
-        // Cover the entire iframe to have the same poster than YouTube
-        // Doesn't exist right away because the DOM hasn't created it
-        var self = this;
-        setTimeout(function(){ self.player_.posterImage.el().style.backgroundSize = 'cover'; }, 50);
-      }
-    }
-
     this.id_ = this.player_.id() + '_youtube_api';
-
+    
     this.el_ = videojs.Component.prototype.createEl('iframe', {
       id: this.id_,
       className: 'vjs-tech',
@@ -61,7 +52,26 @@ videojs.Youtube = videojs.MediaTechController.extend({
       allowFullScreen: ''
     });
     
-    this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
+    // This makes sure the mousemove is not lost within the iframe
+    // Only way to make sure the control bar shows when we come back in the video player
+    var iframeblocker = videojs.Component.prototype.createEl('div', {
+      className: 'iframeblocker'
+    });
+    
+    // Make sure to not block the pause
+    var self = this;
+    var pauseThis = function() {
+      self.pause();
+    };
+    
+    if (iframeblocker.addEventListener) {
+      iframeblocker.addEventListener('click', pauseThis);
+    } else {
+      iframeblocker.attachEvent('onclick', pauseThis);
+    }
+    
+    this.player_el_.insertBefore(iframeblocker, this.player_el_.firstChild);
+    this.player_el_.insertBefore(this.el_, iframeblocker);
     
     var params = {
       enablejsapi: 1,
@@ -69,44 +79,26 @@ videojs.Youtube = videojs.MediaTechController.extend({
       playerapiid: this.id(),
       disablekb: 1,
       wmode: 'transparent',
-      controls: (this.player_.options().ytcontrols)?1:0,
+      controls: (player.options()['ytcontrols'])?1:0,
       showinfo: 0,
       modestbranding: 1,
       rel: 0,
-      autoplay: (this.player_.options().autoplay)?1:0,
-      loop: (this.player_.options().loop)?1:0,
-      list: videojs.Youtube.parsePlaylist(this.player_.options().src)
+      autoplay: (player.options()['autoplay'])?1:0,
+      loop: (player.options()['loop'])?1:0,
+      list: this.playlistId
     };
     
     if (typeof params.list == 'undefined') {
       delete params.list;
     }
     
-    // Make autoplay work for iOS
-    if (this.player_.options().autoplay) {
-      this.playOnReady = true;
-    }
-    
     // If we are not on a server, don't specify the origin (it will crash)
-    if (window.location.protocol != 'file:') {
+    if (window.location.protocol != 'file:'){
       params.origin = window.location.protocol + '//' + window.location.host;
     }
-
+    
     this.el_.src = '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
-
-    if (this.player_.options().ytcontrols){
-      // Remove the big play button and the control bar, we use Vimeo controls
-      // Doesn't exist right away because the DOM hasn't created it
-      var self = this;
-      setTimeout(function(){ 
-        var bigPlayDom = self.player_.bigPlayButton.el();
-        bigPlayDom.parentNode.removeChild(bigPlayDom);
-        
-        var controlBarDom = self.player_.controlBar.el();
-        controlBarDom.parentNode.removeChild(controlBarDom);
-      }, 50);
-    }
-
+    
     if (videojs.Youtube.apiReady){
       this.loadYoutube();
     } else {
@@ -122,64 +114,37 @@ videojs.Youtube = videojs.MediaTechController.extend({
         videojs.Youtube.apiLoading = true;
       }
     }
+    
+    this.triggerReady();
   }
 });
 
-videojs.Youtube.prototype.dispose = function(){
-  if (this.el_){
-    this.el_.parentNode.removeChild(this.el_);
-  }
-  
-  if (this.ytplayer) {
-    this.ytplayer.destroy();
-  }
-  
+videojs.Youtube.prototype.dipose = function(){
   videojs.MediaTechController.prototype.dispose.call(this);
 };
 
 videojs.Youtube.prototype.src = function(src){
-  this.ytplayer.loadVideoById({
-    videoId: videojs.Youtube.parseVideoId(src), 
-    list: videojs.Youtube.parsePlaylist(src)
-  });
+  this.parseVideoUrl(src);
 };
 
 videojs.Youtube.prototype.play = function(){
-  if (this.isReady_){ 
-    this.ytplayer.playVideo(); 
-  } else { 
-    // We will play it when the API will be ready
+  if (this.isReady_){
+    this.ytplayer.playVideo();
+  } else {
+    // Display the spinner until the YouTube video is ready to play
+    this.player_.trigger('waiting');
     this.playOnReady = true;
   }
 };
 
 videojs.Youtube.prototype.pause = function(){ this.ytplayer.pauseVideo(); };
-videojs.Youtube.prototype.paused = function(){
-  return this.lastState !== YT.PlayerState.PLAYING &&
-         this.lastState !== YT.PlayerState.BUFFERING;
-};
-
-videojs.Youtube.prototype.currentTime = function(){ return this.ytplayer.getCurrentTime(); };
-
-videojs.Youtube.prototype.setCurrentTime = function(seconds){
-  this.ytplayer.seekTo(seconds, true);
-  this.player_.trigger('timeupdate');
-};
-
-videojs.Youtube.prototype.duration = function(){ return this.ytplayer.getDuration(); };
-videojs.Youtube.prototype.buffered = function(){
-  var loadedBytes = this.ytplayer.getVideoBytesLoaded();
-  var totalBytes = this.ytplayer.getVideoBytesTotal();
-  if (!loadedBytes || !totalBytes) return 0;
-
-  var duration = this.ytplayer.getDuration();
-  var secondsBuffered = (loadedBytes / totalBytes) * duration;
-  var secondsOffset = (this.ytplayer.getVideoStartBytes() / totalBytes) * duration;
-  return videojs.createTimeRange(secondsOffset, secondsOffset + secondsBuffered);
-};
+videojs.Youtube.prototype.paused = function(){ return (this.ytplayer)?(this.lastState !== YT.PlayerState.PLAYING && this.lastState !== YT.PlayerState.BUFFERING):true; };
+videojs.Youtube.prototype.currentTime = function(){ return (this.ytplayer)?this.ytplayer.getCurrentTime():0; };
+videojs.Youtube.prototype.setCurrentTime = function(seconds){ this.ytplayer.seekTo(seconds, true); this.player_.trigger('timeupdate'); };
+videojs.Youtube.prototype.duration = function(){ return (this.ytplayer)?this.ytplayer.getDuration():0; };
 
 videojs.Youtube.prototype.volume = function() { 
-  if (isNaN(this.volumeVal)) {
+  if (this.ytplayer && isNaN(this.volumeVal)) {
     this.volumeVal = this.ytplayer.getVolume() / 100.0;
   }
 
@@ -194,7 +159,7 @@ videojs.Youtube.prototype.setVolume = function(percentAsDecimal){
   }
 };
 
-videojs.Youtube.prototype.muted = function() { return this.ytplayer.isMuted(); };
+videojs.Youtube.prototype.muted = function() { return (this.ytplayer)?this.ytplayer.isMuted():false; };
 videojs.Youtube.prototype.setMuted = function(muted) { 
   if (muted) {
     this.ytplayer.mute(); 
@@ -206,17 +171,109 @@ videojs.Youtube.prototype.setMuted = function(muted) {
   setTimeout(function() { self.player_.trigger('volumechange'); }, 50);
 };
 
+videojs.Youtube.prototype.buffered = function(){
+  if (this.ytplayer && this.ytplayer.getVideoBytesLoaded) {
+    var loadedBytes = this.ytplayer.getVideoBytesLoaded();
+    var totalBytes = this.ytplayer.getVideoBytesTotal();
+    if (!loadedBytes || !totalBytes) return 0;
+
+    var duration = this.ytplayer.getDuration();
+    var secondsBuffered = (loadedBytes / totalBytes) * duration;
+    var secondsOffset = (this.ytplayer.getVideoStartBytes() / totalBytes) * duration;
+    
+    return videojs.createTimeRange(secondsOffset, secondsOffset + secondsBuffered);
+  } else {
+    return videojs.createTimeRange(0, 0);
+  }
+};
+
+videojs.Youtube.prototype.supportsFullScreen = function(){ return true; };
+
+// YouTube is supported on all platforms
+videojs.Youtube.isSupported = function(){ return true; };
+
+// You can use video/youtube as a media in your HTML5 video to specify the source
+videojs.Youtube.canPlaySource = function(srcObj){
+  return (srcObj.type == 'video/youtube');
+};
+
+// Always can control the volume
+videojs.Youtube.canControlVolume = function(){ return true; };
+
+////////////////////////////// YouTube specific functions //////////////////////////////
+
+// Parse the whole URL
+videojs.Youtube.prototype.parseVideoUrl = function(url){
+  // Regex to parse the video ID
+  var regId = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  var match = url.match(regId);
+  
+  if (match && match[2].length == 11){
+    this.videoId = match[2];
+  } else {
+    this.videoId = null;
+  }
+  
+  // Regex to parse the playlist ID
+  var regPlaylist = /[?&]list=([^#\&\?]+)/;
+  match = url.match(regPlaylist);
+  
+  if (match != null && match.length > 1) {
+    this.playlistId = match[1];
+  } else {
+    // Make sure their is no playlist
+    if (this.playlistId) {
+      delete this.playlistId;
+    }
+  }
+};
+
+// All videos created before YouTube API is loaded
+videojs.Youtube.loadingQueue = [];
+
+// Create the YouTube player
+videojs.Youtube.prototype.loadYoutube = function(){
+  this.ytplayer = new YT.Player(this.id_, {
+    events: {
+      onReady: function(e) { e.target.vjsTech.onReady(); },
+      onStateChange: function(e) { e.target.vjsTech.onStateChange(e.data); },
+      onPlaybackQualityChange: function(e){ e.target.vjsTech.onPlaybackQualityChange(e.data); },
+      onError: function(e){ e.target.vjsTech.onError(e.data); }
+    }
+  });
+
+  this.ytplayer.vjsTech = this;
+};
+
+// Transform a JavaScript object into URL params
+videojs.Youtube.makeQueryString = function(args){
+  var array = [];
+  for (var key in args){
+    if (args.hasOwnProperty(key)){
+      array.push(encodeURIComponent(key) + '=' + encodeURIComponent(args[key]));
+    }
+  }
+  
+  return array.join('&');
+};
+
+// Called when YouTube API is ready to be used
+window.onYouTubeIframeAPIReady = function(){
+
+  var yt;
+  while ((yt = videojs.Youtube.loadingQueue.shift())){
+    yt.loadYoutube();
+  }
+  videojs.Youtube.loadingQueue = [];
+  videojs.Youtube.apiReady = true;
+};
+
 videojs.Youtube.prototype.onReady = function(){
   this.isReady_ = true;
-  this.player_.trigger('techready');
-
-  // Hide the poster when ready because YouTube has it's own
-  this.triggerReady();
-  this.player_.trigger('durationchange');
   
-  // Play right away if we clicked before ready
-  if (this.playOnReady){
-    this.ytplayer.playVideo();
+  // Play ASAP if they clicked play before it's ready
+  if (this.playOnReady) {
+    this.play();
   }
 };
 
@@ -301,74 +358,14 @@ videojs.Youtube.prototype.onError = function(error){
   this.player_.trigger('error');
 };
 
-videojs.Youtube.isSupported = function(){
-  return true;
-};
-
-videojs.Youtube.prototype.supportsFullScreen = function() {
-  return false;
-};
-
-videojs.Youtube.canPlaySource = function(srcObj){
-  return (srcObj.type == 'video/youtube');
-};
-
-// All videos created before YouTube API is loaded
-videojs.Youtube.loadingQueue = [];
-
-// Create the YouTube player
-videojs.Youtube.prototype.loadYoutube = function(){
-  this.ytplayer = new YT.Player(this.id_, {
-    events: {
-      onReady: function(e) { e.target.vjsTech.onReady(); },
-      onStateChange: function(e) { e.target.vjsTech.onStateChange(e.data); },
-      onPlaybackQualityChange: function(e){ e.target.vjsTech.onPlaybackQualityChange(e.data); },
-      onError: function(e){ e.target.vjsTech.onError(e.data); }
-    }
-  });
-
-  this.ytplayer.vjsTech = this;
-};
-
-videojs.Youtube.makeQueryString = function(args){
-  var array = [];
-  for (var key in args){
-    if (args.hasOwnProperty(key)){
-      array.push(encodeURIComponent(key) + '=' + encodeURIComponent(args[key]));
-    }
-  }
-
-  return array.join('&');
-};
-
-videojs.Youtube.parseVideoId = function(src){
-// Regex that parse the video ID for any YouTube URL
-  var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  var match = src.match(regExp);
-  
-  if (match && match[2].length == 11){
-    return match[2];
-  }
-};
-
-videojs.Youtube.parsePlaylist = function(src){
-  // Check if we have a playlist
-  var regExp = /[?&]list=([^#\&\?]+)/;
-  var match = src.match(regExp);
-  
-  if (match != null && match.length > 1) {
-    return match[1];
-  }
-};
-
-// Called when YouTube API is ready to be used
-window.onYouTubeIframeAPIReady = function(){
-
-  var yt;
-  while ((yt = videojs.Youtube.loadingQueue.shift())){
-    yt.loadYoutube();
-  }
-  videojs.Youtube.loadingQueue = [];
-  videojs.Youtube.apiReady = true;
-}
-
+// Stretch the YouTube poster
+// Keep the iframeblocker in front of the player when the user is inactive 
+// (ONLY way because the iframe is so selfish with events)
+(function() {
+  var style = document.createElement('style');
+  style.innerHTML = ' \
+  .vjs-youtube .vjs-poster { background-size: cover; }\
+  .vjs-youtube.vjs-user-inactive .iframeblocker { position:absolute;top:0;left:0;width:100%;height:100%; }\
+  ';
+  document.head.appendChild(style);
+})();

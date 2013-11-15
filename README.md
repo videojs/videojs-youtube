@@ -1,3 +1,5 @@
+## Now fully support VideoJS 4.3.0!
+
 # Video.js - YouTube Source Support
 Allows you to use YouTube URL as source with [Video.js](https://github.com/zencoder/video-js/).
 
