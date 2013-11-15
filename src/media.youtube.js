@@ -34,7 +34,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     } else {
       // Show the YouTube poster if their is no custom poster
       if (!player.poster()) {
-        player.poster('//img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        player.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
       }
     }
     
@@ -47,9 +47,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
       marginWidth: 0,
       marginHeight: 0,
       frameBorder: 0,
-      webkitAllowFullScreen: '',
-      mozallowfullscreen: '',
-      allowFullScreen: ''
+      webkitAllowFullScreen: 'true',
+      mozallowfullscreen: 'true',
+      allowFullScreen: 'true'
     });
     
     // This makes sure the mousemove is not lost within the iframe
@@ -97,7 +97,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       params.origin = window.location.protocol + '//' + window.location.host;
     }
     
-    this.el_.src = '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+    this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     
     if (videojs.Youtube.apiReady){
       this.loadYoutube();
