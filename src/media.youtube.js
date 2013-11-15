@@ -29,7 +29,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.parseVideoUrl(player.options()['src']);
     
     // Make sure nothing get in the way of the native player for iOS
-    if (vjs.IS_IOS) {
+    if (videojs.IS_IOS) {
       player.options()['ytcontrols'] = true;
     }
     
