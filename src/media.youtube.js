@@ -124,7 +124,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
   }
 });
 
-videojs.Youtube.prototype.dipose = function(){
+videojs.Youtube.prototype.dispose = function(){
   videojs.MediaTechController.prototype.dispose.call(this);
 };
 
