@@ -71,7 +71,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.player_el_.insertBefore(this.el_, iframeblocker);
 
     this.parseSrc(player.options()['src']);
-    
+
+    this.playOnReady = this.player_.options()['autoplay'] || false
+
     var params = {
       enablejsapi: 1,
       iv_load_policy: 3,
@@ -82,7 +84,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       showinfo: 0,
       modestbranding: 1,
       rel: 0,
-      autoplay: (this.player_.options()['autoplay'])?1:0,
+      autoplay: (this.playOnReady)?1:0,
       loop: (this.player_.options()['loop'])?1:0,
       list: this.playlistId
     };
@@ -90,12 +92,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     if (typeof params.list == 'undefined') {
       delete params.list;
     }
-    
-    // Make autoplay work for iOS
-    if (this.player_.options().autoplay) {
-      this.playOnReady = true;
-    }
-    
+
     // If we are not on a server, don't specify the origin (it will crash)
     if (window.location.protocol != 'file:'){
       params.origin = window.location.protocol + '//' + window.location.host;
