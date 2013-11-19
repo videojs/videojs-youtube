@@ -125,8 +125,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
         videojs.Youtube.apiLoading = true;
       }
     }
-    
-    this.triggerReady();
   }
 });
 
@@ -295,7 +293,8 @@ window.onYouTubeIframeAPIReady = function(){
 videojs.Youtube.prototype.onReady = function(){
   this.isReady_ = true;
   this.player_.trigger('apiready');
-  
+  this.triggerReady();
+
   // Play ASAP if they clicked play before it's ready
   if (this.playOnReady) {
     this.play();
