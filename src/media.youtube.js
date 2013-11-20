@@ -99,9 +99,10 @@ videojs.Youtube = videojs.MediaTechController.extend({
     // If we are not on a server, don't specify the origin (it will crash)
     if (window.location.protocol != 'file:'){
       params.origin = window.location.protocol + '//' + window.location.host;
+      this.el_.src = window.location.protocol + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+    } else {
+      this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     }
-
-    this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
 
     if (this.player_.options()['ytcontrols']){
       // Disable the video.js controls if we use the YouTube controls
