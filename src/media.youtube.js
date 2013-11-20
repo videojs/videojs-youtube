@@ -47,7 +47,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     
     // This makes sure the mousemove is not lost within the iframe
     // Only way to make sure the control bar shows when we come back in the video player
-    var iframeblocker = videojs.Component.prototype.createEl('div', {
+    this.iframeblocker = videojs.Component.prototype.createEl('div', {
       className: 'iframeblocker'
     });
     
@@ -61,14 +61,14 @@ videojs.Youtube = videojs.MediaTechController.extend({
       }
     };
     
-    if (iframeblocker.addEventListener) {
-      iframeblocker.addEventListener('click', toggleThis);
+    if (this.iframeblocker.addEventListener) {
+      this.iframeblocker.addEventListener('click', toggleThis);
     } else {
-      iframeblocker.attachEvent('onclick', toggleThis);
+      this.iframeblocker.attachEvent('onclick', toggleThis);
     }
     
-    this.player_el_.insertBefore(iframeblocker, this.player_el_.firstChild);
-    this.player_el_.insertBefore(this.el_, iframeblocker);
+    this.player_el_.insertBefore(this.iframeblocker, this.player_el_.firstChild);
+    this.player_el_.insertBefore(this.el_, this.iframeblocker);
     
     this.parseSrc(player.options()['src']);
     
@@ -104,7 +104,13 @@ videojs.Youtube = videojs.MediaTechController.extend({
     } else {
       // Show the YouTube poster if their is no custom poster
       if (!this.player_.poster()) {
-        this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        if (this.videoId == null) {
+          // Set the black background if their is no video initially
+          this.iframeblocker.style.backgroundColor = 'black';
+          this.iframeblocker.style.display = 'block';
+        } else {
+          this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        }
       }
     }
     
@@ -162,11 +168,20 @@ videojs.Youtube.prototype.parseSrc = function(src){
 videojs.Youtube.prototype.src = function(src){
   if (src) {
     this.parseSrc(src);
-    this.ytplayer.loadVideoById(this.videoId);
     
-    // Update the poster
-    this.player_el_.getElementsByClassName('vjs-poster')[0].style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
-    this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+    if (this.videoId == null) {
+      // Set the black background if the URL isn't valid
+      this.iframeblocker.style.backgroundColor = 'black';
+      this.iframeblocker.style.display = 'block';
+    } else {
+      this.ytplayer.loadVideoById(this.videoId);
+      
+      // Update the poster
+      this.player_el_.getElementsByClassName('vjs-poster')[0].style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
+      this.iframeblocker.style.backgroundColor = '';
+      this.iframeblocker.style.display = '';
+      this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+    }
   }
   
   return this.srcVal;
@@ -175,13 +190,15 @@ videojs.Youtube.prototype.src = function(src){
 videojs.Youtube.prototype.load = function(){};
 
 videojs.Youtube.prototype.play = function(){
-  if (this.isReady_){
-    this.ytplayer.playVideo();
-  } else {
-    // Display the spinner until the YouTube video is ready to play
-    this.player_.trigger('waiting');
-    
-    this.playOnReady = true;
+  if (this.videoId != null) {
+    if (this.isReady_){
+      this.ytplayer.playVideo();
+    } else {
+      // Display the spinner until the YouTube video is ready to play
+      this.player_.trigger('waiting');
+      
+      this.playOnReady = true;
+    }
   }
 };
 
@@ -397,7 +414,8 @@ videojs.Youtube.prototype.onError = function(error){
   var style = document.createElement('style');
   style.innerHTML = ' \
   .vjs-youtube .vjs-poster { background-size: cover; }\
-  .vjs-youtube.vjs-user-inactive .iframeblocker { position:absolute;top:0;left:0;width:100%;height:100%; }\
+  .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%; }\
+  .vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } \
   ';
   document.head.appendChild(style);
 })();
