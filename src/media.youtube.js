@@ -13,26 +13,26 @@ videojs.Youtube = videojs.MediaTechController.extend({
   /** @constructor */
   init: function(player, options, ready){
     videojs.MediaTechController.call(this, player, options, ready);
-    
+
     // Copy the JavaScript options if they exists
     if (typeof options['source'] != 'undefined') {
       for (var key in options['source']) {
         player.options()[key] = options['source'][key];
       }
     }
-    
+
     // Save those for internal usage
     this.player_ = player;
     this.player_el_ = document.getElementById(player.id());
     this.player_el_.className = this.player_el_.className + ' vjs-youtube';
-    
+
     // Make sure nothing get in the way of the native player for iOS
     if (videojs.IS_IOS) {
       player.options()['ytcontrols'] = true;
     }
-    
+
     this.id_ = this.player_.id() + '_youtube_api';
-    
+
     this.el_ = videojs.Component.prototype.createEl('iframe', {
       id: this.id_,
       className: 'vjs-tech',
@@ -44,13 +44,13 @@ videojs.Youtube = videojs.MediaTechController.extend({
       mozallowfullscreen: 'true',
       allowFullScreen: 'true'
     });
-    
+
     // This makes sure the mousemove is not lost within the iframe
     // Only way to make sure the control bar shows when we come back in the video player
     this.iframeblocker = videojs.Component.prototype.createEl('div', {
       className: 'iframeblocker'
     });
-    
+
     // Make sure to not block the play or pause
     var self = this;
     var toggleThis = function() {
@@ -60,18 +60,23 @@ videojs.Youtube = videojs.MediaTechController.extend({
         self.pause();
       }
     };
-    
+
     if (this.iframeblocker.addEventListener) {
       this.iframeblocker.addEventListener('click', toggleThis);
     } else {
       this.iframeblocker.attachEvent('onclick', toggleThis);
     }
-    
+
+    // Before the tech is ready, we have to take care of the play action
+    this.iframeblocker.style.display = 'block';
+
     this.player_el_.insertBefore(this.iframeblocker, this.player_el_.firstChild);
     this.player_el_.insertBefore(this.el_, this.iframeblocker);
-    
+
     this.parseSrc(player.options()['src']);
-    
+
+    this.playOnReady = this.player_.options()['autoplay'] || false;
+
     var params = {
       enablejsapi: 1,
       iv_load_policy: 3,
@@ -82,22 +87,22 @@ videojs.Youtube = videojs.MediaTechController.extend({
       showinfo: 0,
       modestbranding: 1,
       rel: 0,
-      autoplay: (this.player_.options()['autoplay'])?1:0,
+      autoplay: (this.playOnReady)?1:0,
       loop: (this.player_.options()['loop'])?1:0,
       list: this.playlistId
     };
-    
+
     if (typeof params.list == 'undefined') {
       delete params.list;
     }
-    
+
     // If we are not on a server, don't specify the origin (it will crash)
     if (window.location.protocol != 'file:'){
       params.origin = window.location.protocol + '//' + window.location.host;
     }
-    
+
     this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
-    
+
     if (this.player_.options()['ytcontrols']){
       // Disable the video.js controls if we use the YouTube controls
       this.player_.controls(false);
@@ -107,13 +112,12 @@ videojs.Youtube = videojs.MediaTechController.extend({
         if (this.videoId == null) {
           // Set the black background if their is no video initially
           this.iframeblocker.style.backgroundColor = 'black';
-          this.iframeblocker.style.display = 'block';
         } else {
           this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
         }
       }
     }
-    
+
     if (videojs.Youtube.apiReady){
       this.loadYoutube();
     } else {
@@ -129,8 +133,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
         videojs.Youtube.apiLoading = true;
       }
     }
-    
-    this.triggerReady();
   }
 });
 
@@ -168,14 +170,14 @@ videojs.Youtube.prototype.parseSrc = function(src){
 videojs.Youtube.prototype.src = function(src){
   if (src) {
     this.parseSrc(src);
-    
+
     if (this.videoId == null) {
       // Set the black background if the URL isn't valid
       this.iframeblocker.style.backgroundColor = 'black';
       this.iframeblocker.style.display = 'block';
     } else {
       this.ytplayer.loadVideoById(this.videoId);
-      
+
       // Update the poster
       this.player_el_.getElementsByClassName('vjs-poster')[0].style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
       this.iframeblocker.style.backgroundColor = '';
@@ -183,7 +185,7 @@ videojs.Youtube.prototype.src = function(src){
       this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
     }
   }
-  
+
   return this.srcVal;
 };
 
@@ -196,7 +198,6 @@ videojs.Youtube.prototype.play = function(){
     } else {
       // Display the spinner until the YouTube video is ready to play
       this.player_.trigger('waiting');
-      
       this.playOnReady = true;
     }
   }
@@ -208,7 +209,7 @@ videojs.Youtube.prototype.currentTime = function(){ return (this.ytplayer)?this.
 videojs.Youtube.prototype.setCurrentTime = function(seconds){ this.ytplayer.seekTo(seconds, true); this.player_.trigger('timeupdate'); };
 videojs.Youtube.prototype.duration = function(){ return (this.ytplayer)?this.ytplayer.getDuration():0; };
 
-videojs.Youtube.prototype.volume = function() { 
+videojs.Youtube.prototype.volume = function() {
   if (this.ytplayer && isNaN(this.volumeVal)) {
     this.volumeVal = this.ytplayer.getVolume() / 100.0;
   }
@@ -218,20 +219,20 @@ videojs.Youtube.prototype.volume = function() {
 
 videojs.Youtube.prototype.setVolume = function(percentAsDecimal){
   if (percentAsDecimal && percentAsDecimal != this.volumeVal) {
-    this.ytplayer.setVolume(percentAsDecimal * 100.0); 
+    this.ytplayer.setVolume(percentAsDecimal * 100.0);
     this.volumeVal = percentAsDecimal;
     this.player_.trigger('volumechange');
   }
 };
 
 videojs.Youtube.prototype.muted = function() { return this.mutedVal; };
-videojs.Youtube.prototype.setMuted = function(muted) { 
+videojs.Youtube.prototype.setMuted = function(muted) {
   if (muted) {
-    this.ytplayer.mute(); 
-  } else { 
-    this.ytplayer.unMute(); 
-  } 
-  
+    this.ytplayer.mute();
+  } else {
+    this.ytplayer.unMute();
+  }
+
   this.mutedVal = muted;
   this.player_.trigger('volumechange');
 };
@@ -245,7 +246,7 @@ videojs.Youtube.prototype.buffered = function(){
     var duration = this.ytplayer.getDuration();
     var secondsBuffered = (loadedBytes / totalBytes) * duration;
     var secondsOffset = (this.ytplayer.getVideoStartBytes() / totalBytes) * duration;
-    
+
     return videojs.createTimeRange(secondsOffset, secondsOffset + secondsBuffered);
   } else {
     return videojs.createTimeRange(0, 0);
@@ -292,13 +293,12 @@ videojs.Youtube.makeQueryString = function(args){
       array.push(encodeURIComponent(key) + '=' + encodeURIComponent(args[key]));
     }
   }
-  
+
   return array.join('&');
 };
 
 // Called when YouTube API is ready to be used
 window.onYouTubeIframeAPIReady = function(){
-
   var yt;
   while ((yt = videojs.Youtube.loadingQueue.shift())){
     yt.loadYoutube();
@@ -309,10 +309,14 @@ window.onYouTubeIframeAPIReady = function(){
 
 videojs.Youtube.prototype.onReady = function(){
   this.isReady_ = true;
-  this.player_.trigger('apiready');
-  
+  this.triggerReady();
+
+  // Let the player take care of itself as soon as the YouTube is ready
+  // The loading spinner while waiting for the tech would be impossible otherwise
+  this.iframeblocker.style.display = '';
+
   // Play ASAP if they clicked play before it's ready
-  if (this.playOnReady) {      
+  if (this.playOnReady) {
     this.play();
   }
 };
@@ -330,14 +334,14 @@ videojs.Youtube.prototype.onStateChange = function(state){
           this.player_el_.getElementsByClassName('vjs-poster')[0].style.display = 'block';
           this.player_.bigPlayButton.show();
         }
-        
+
         this.player_.trigger('ended');
         break;
 
       case YT.PlayerState.PLAYING:
         // Make sure the big play is not there
         this.player_.bigPlayButton.hide();
-        
+
         this.player_.trigger('timeupdate');
         this.player_.trigger('durationchange');
         this.player_.trigger('playing');
@@ -408,13 +412,13 @@ videojs.Youtube.prototype.onError = function(error){
 };
 
 // Stretch the YouTube poster
-// Keep the iframeblocker in front of the player when the user is inactive 
+// Keep the iframeblocker in front of the player when the user is inactive
 // (ONLY way because the iframe is so selfish with events)
 (function() {
   var style = document.createElement('style');
   style.innerHTML = ' \
   .vjs-youtube .vjs-poster { background-size: cover; }\
-  .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%; }\
+  .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:2; }\
   .vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } \
   ';
   document.head.appendChild(style);

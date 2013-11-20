@@ -15,14 +15,9 @@
   <!--<script src="../src/media.youtube.js"></script>-->
   <script>
   videojs('vid3', { "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }).ready(function() {
-    // Detect when the YouTube API is ready
-    this.on('apiready', function() {
-      console.log('YouTube API is ready!');
-    });
-    
     // Cue a video using ended event
     this.one('ended', function() {
-      this.src('http://www.youtube.com/watch?v=6h-sZkglI8Y');
+      this.src('http://www.youtube.com/watch?v=jofNR_WkoCE');
     });
   });
   </script>
