@@ -104,6 +104,20 @@ videojs.Youtube = videojs.MediaTechController.extend({
       this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     }
 
+    if (this.playOnReady && !this.player_.options()['ytcontrols']) {
+      // Wait for the DOM to load and display the loading spinner ASAP
+      var self = this;
+      var displaySpinner = function() {
+        if (self.player_.loadingSpinner) {
+          self.player_.loadingSpinner.el().style.display = 'block';
+        } else {
+          setTimeout(displaySpinner, 50);
+        }
+      };
+
+      setTimeout(displaySpinner, 50);
+    }
+
     if (this.player_.options()['ytcontrols']){
       // Disable the video.js controls if we use the YouTube controls
       this.player_.controls(false);
@@ -194,11 +208,12 @@ videojs.Youtube.prototype.load = function(){};
 
 videojs.Youtube.prototype.play = function(){
   if (this.videoId != null) {
+    // Display the spinner until the video is playing by YouTube
+    this.player_.trigger('waiting');
+    
     if (this.isReady_){
       this.ytplayer.playVideo();
     } else {
-      // Display the spinner until the YouTube video is ready to play
-      this.player_.trigger('waiting');
       this.playOnReady = true;
     }
   }
