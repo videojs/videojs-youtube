@@ -157,27 +157,29 @@ videojs.Youtube.prototype.dispose = function(){
 
 videojs.Youtube.prototype.parseSrc = function(src){
   this.srcVal = src;
+  
+  if (src) {
+    // Regex to parse the video ID
+    var regId = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var match = src.match(regId);
     
-  // Regex to parse the video ID
-  var regId = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  var match = src.match(regId);
-  
-  if (match && match[2].length == 11){
-    this.videoId = match[2];
-  } else {
-    this.videoId = null;
-  }
-  
-  // Regex to parse the playlist ID
-  var regPlaylist = /[?&]list=([^#\&\?]+)/;
-  match = src.match(regPlaylist);
-  
-  if (match != null && match.length > 1) {
-    this.playlistId = match[1];
-  } else {
-    // Make sure their is no playlist
-    if (this.playlistId) {
-      delete this.playlistId;
+    if (match && match[2].length == 11){
+      this.videoId = match[2];
+    } else {
+      this.videoId = null;
+    }
+    
+    // Regex to parse the playlist ID
+    var regPlaylist = /[?&]list=([^#\&\?]+)/;
+    match = src.match(regPlaylist);
+    
+    if (match != null && match.length > 1) {
+      this.playlistId = match[1];
+    } else {
+      // Make sure their is no playlist
+      if (this.playlistId) {
+        delete this.playlistId;
+      }
     }
   }
 };
@@ -221,9 +223,9 @@ videojs.Youtube.prototype.play = function(){
 
 videojs.Youtube.prototype.pause = function(){ this.ytplayer.pauseVideo(); };
 videojs.Youtube.prototype.paused = function(){ return (this.ytplayer)?(this.lastState !== YT.PlayerState.PLAYING && this.lastState !== YT.PlayerState.BUFFERING):true; };
-videojs.Youtube.prototype.currentTime = function(){ return (this.ytplayer)?this.ytplayer.getCurrentTime():0; };
+videojs.Youtube.prototype.currentTime = function(){ return (this.ytplayer && this.ytplayer.getCurrentTime)?this.ytplayer.getCurrentTime():0; };
 videojs.Youtube.prototype.setCurrentTime = function(seconds){ this.ytplayer.seekTo(seconds, true); this.player_.trigger('timeupdate'); };
-videojs.Youtube.prototype.duration = function(){ return (this.ytplayer)?this.ytplayer.getDuration():0; };
+videojs.Youtube.prototype.duration = function(){ return (this.ytplayer && this.ytplayer.duration)?this.ytplayer.getDuration():0; };
 
 videojs.Youtube.prototype.volume = function() {
   if (this.ytplayer && isNaN(this.volumeVal)) {
