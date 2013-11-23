@@ -27,7 +27,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.player_el_.className += ' vjs-youtube';
 
     // Mobile devices are using their own native players
-    if (!!vjs.USER_AGENT.match(/iPhone/i) || !!vjs.USER_AGENT.match(/iPad/i) || !!vjs.USER_AGENT.match(/iPod/i) || !!navigator.userAgent.match(/Android.*AppleWebKit/i)) {
+    if (!!navigator.userAgent.match(/iPhone/i) || !!navigator.userAgent.match(/iPad/i) || !!navigator.userAgent.match(/iPod/i) || !!navigator.userAgent.match(/Android.*AppleWebKit/i)) {
       player.options()['ytcontrols'] = true;
     }
 
