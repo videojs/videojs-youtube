@@ -24,10 +24,10 @@ videojs.Youtube = videojs.MediaTechController.extend({
     // Save those for internal usage
     this.player_ = player;
     this.player_el_ = document.getElementById(player.id());
-    this.player_el_.className = this.player_el_.className + ' vjs-youtube';
+    this.player_el_.className += ' vjs-youtube';
 
-    // Make sure nothing get in the way of the native player for iOS
-    if (videojs.IS_IOS) {
+    // Mobile devices are using their own native players
+    if (videojs.IS_IOS || /mobile|android/i.test (navigator.userAgent)) {
       player.options()['ytcontrols'] = true;
     }
 
@@ -67,8 +67,10 @@ videojs.Youtube = videojs.MediaTechController.extend({
       this.iframeblocker.attachEvent('onclick', toggleThis);
     }
 
-    // Before the tech is ready, we have to take care of the play action
-    this.iframeblocker.style.display = 'block';
+    if (!this.player_.options()['ytcontrols']) {
+      // Before the tech is ready, we have to take care of the play action
+      this.iframeblocker.style.display = 'block';
+    }
 
     this.player_el_.insertBefore(this.iframeblocker, this.player_el_.firstChild);
     this.player_el_.insertBefore(this.el_, this.iframeblocker);
@@ -210,8 +212,11 @@ videojs.Youtube.prototype.load = function(){};
 
 videojs.Youtube.prototype.play = function(){
   if (this.videoId != null) {
-    // Display the spinner until the video is playing by YouTube
-    this.player_.trigger('waiting');
+    // Make sure to not display the spinner for mobile
+    if (!this.player_.options()['ytcontrols']) {
+      // Display the spinner until the video is playing by YouTube
+      this.player_.trigger('waiting');
+    }
     
     if (this.isReady_){
       this.ytplayer.playVideo();
@@ -372,7 +377,11 @@ videojs.Youtube.prototype.onStateChange = function(state){
 
       case YT.PlayerState.BUFFERING:
         this.player_.trigger('timeupdate');
-        this.player_.trigger('waiting');
+        
+        // Make sure to not display the spinner for mobile
+        if (!this.player_.options()['ytcontrols']) {
+          this.player_.trigger('waiting');
+        }
         break;
 
       case YT.PlayerState.CUED:
