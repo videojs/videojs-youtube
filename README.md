@@ -23,11 +23,14 @@ Here is 3 examples:
 	  <link href="video-js.min.css" rel="stylesheet" />
 	</head>
 	<body>
-  	<video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" autoplay="autoplay" loop="loop" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }'></video>
+  	<video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" autoplay="autoplay" loop="loop" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }'>
+    </video>
   	<br />
-  	<video id="vid2" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ", "ytcontrols": true }'></video>
+  	<video id="vid2" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ", "ytcontrols": true }'>
+    </video>
   	<br />
-  	<video id="vid3" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360"></video>
+  	<video id="vid3" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
+    </video>
 	  
 	  <script src="video.min.js"></script>
 	  <script src="vjs.youtube.js"></script>
@@ -44,6 +47,9 @@ Here is 3 examples:
 
 ## Additional Options
 ytcontrols: Display the YouTube controls instead of Video.js.
+
+## Safari Glitch
+If your video tag is empty (no space or new line before the closing tag), it will create a glitch with Safari. Instead of writing `<video ...></video>`, you should write `<video ...> </video>`.
 
 ##Special Thank You
 Thanks to John Hurliman for the original code on the old Video.js
