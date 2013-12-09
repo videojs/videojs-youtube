@@ -31,6 +31,37 @@ videojs.Youtube = videojs.MediaTechController.extend({
       player.options()['ytcontrols'] = true;
     }
 
+    // Create the Quality button
+    this.qualityButton = document.createElement('div');
+    this.qualityButton.setAttribute('class', 'vjs-quality-button vjs-menu-button vjs-control');
+    this.qualityButton.setAttribute('tabindex', 0);
+    
+    var qualityContent = document.createElement('div');
+    this.qualityButton.appendChild(qualityContent);
+    
+    this.qualityTitle = document.createElement('span');
+    qualityContent.appendChild(this.qualityTitle);
+    
+    var qualityMenu = document.createElement('div');
+    qualityMenu.setAttribute('class', 'vjs-menu');
+    this.qualityButton.appendChild(qualityMenu);
+    
+    this.qualityMenuContent = document.createElement('ul');
+    this.qualityMenuContent.setAttribute('class', 'vjs-menu-content');
+    qualityMenu.appendChild(this.qualityMenuContent);
+
+    var self = this;
+    var addQuality = function() {
+      var controlBar = self.player_el_.getElementsByClassName('vjs-control-bar')[0];
+      if (controlBar) {
+        controlBar.appendChild(self.qualityButton);
+      } else {
+        setTimeout(addQuality, 50);
+      }
+    };
+    
+    setTimeout(addQuality, 50);
+
     this.id_ = this.player_.id() + '_youtube_api';
 
     this.el_ = videojs.Component.prototype.createEl('iframe', {
@@ -348,6 +379,44 @@ videojs.Youtube.prototype.onReady = function(){
   }
 };
 
+videojs.Youtube.prototype.updateQualities = function(){
+  var qualities = this.ytplayer.getAvailableQualityLevels();
+  
+  if (qualities.length == 0) {
+    this.qualityButton.style.display = 'none';
+  } else {
+    this.qualityButton.style.display = '';
+    
+    while (this.qualityMenuContent.hasChildNodes()) {
+      this.qualityMenuContent.removeChild(this.qualityMenuContent.lastChild);
+    }
+
+    for (var i = 0; i < qualities.length; ++i) {
+      var el = document.createElement('li');
+      el.setAttribute('class', 'vjs-menu-item');
+      el.innerHTML = videojs.Youtube.parseQualityName(qualities[i]);
+      el.setAttribute('data-val', qualities[i]);
+      if (qualities[i] == this.quality) el.classList.add('vjs-selected');
+      
+      var self = this;
+      
+      el.addEventListener('click', function() {
+        var quality = this.getAttribute('data-val');
+        self.ytplayer.setPlaybackQuality(quality);
+        
+        self.qualityTitle.innerHTML = videojs.Youtube.parseQualityName(quality);
+        
+        var selected = self.qualityMenuContent.querySelector('.vjs-selected');
+        if (selected) selected.classList.remove('vjs-selected');
+        
+        this.classList.add('vjs-selected');
+      });
+      
+      this.qualityMenuContent.appendChild(el);
+    }
+  }
+};
+
 videojs.Youtube.prototype.onStateChange = function(state){
   if (state != this.lastState){
     switch(state){
@@ -368,6 +437,8 @@ videojs.Youtube.prototype.onStateChange = function(state){
       case YT.PlayerState.PLAYING:
         // Make sure the big play is not there
         this.player_.bigPlayButton.hide();
+
+        this.updateQualities();
 
         this.player_.trigger('timeupdate');
         this.player_.trigger('durationchange');
@@ -396,7 +467,34 @@ videojs.Youtube.prototype.onStateChange = function(state){
   }
 };
 
+videojs.Youtube.parseQualityName = function(name) {
+  switch (name) {
+    case 'tiny':
+      return '144p';
+
+    case 'small':
+      return '240p';
+
+    case 'medium':
+      return '360p';
+
+    case 'large':
+      return '480p';
+
+    case 'hd720':
+      return '720p';
+
+    case 'hd1080':
+      return '1080p';
+  }
+  
+  return name;
+};
+
 videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
+  this.quality = quality;
+  this.qualityTitle.innerHTML = videojs.Youtube.parseQualityName(quality);
+  
   switch(quality){
     case 'medium':
       this.player_.videoWidth = 480;
@@ -427,6 +525,11 @@ videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
       this.player_.videoWidth = 320;
       this.player_.videoHeight = 240;
       break;
+      
+    case 'tiny':
+      this.player_.videoWidth = 144;
+      this.player_.videoHeight = 108;
+      break;
 
     default:
       this.player_.videoWidth = 0;
@@ -451,6 +554,7 @@ videojs.Youtube.prototype.onError = function(error){
   .vjs-youtube .vjs-poster { background-size: cover; }\
   .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:2; }\
   .vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } \
+  .vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }\
   ';
   document.head.appendChild(style);
 })();
