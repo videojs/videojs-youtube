@@ -338,6 +338,10 @@ videojs.Youtube.prototype.onReady = function(){
   // The loading spinner while waiting for the tech would be impossible otherwise
   this.iframeblocker.style.display = '';
 
+  if (this.player_.options()['muted']) {
+    this.setMuted(true);
+  }
+
   // Play ASAP if they clicked play before it's ready
   if (this.playOnReady) {
     this.play();
