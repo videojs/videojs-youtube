@@ -1,7 +1,7 @@
 ## Now fully support VideoJS 4.3.0!
 
 # Video.js - YouTube Source Support
-Allows you to use YouTube URL as source with [Video.js](https://github.com/zencoder/video-js/). It also let the user change the video quality just like YouTube would.
+Allows you to use a YouTube video within [Video.js](https://github.com/videojs/video.js/) and control it the same way as a regular video (the same methods and events are availables within the tech). It also add the video quality and let you change it as if you were on YouTube.
 
 ## How does it work?
 Including the script vjs.youtube.js will add the YouTube as a tech. You just have to add it to your techOrder option. Then, you add the option src with your YouTube URL.
@@ -13,9 +13,12 @@ It supports:
 - Playlist URLs: http://www.youtube.com/playlist?list=PLA60DCEB33156E51F OR http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F
 
 Here is 3 examples:
-1. using autoplay/loop/muted
-2. using YouTube controls
-3. using JavaScript events
+<ol>
+  <li>using autoplay/loop/muted</li>
+  <li>using YouTube controls</li>
+  <li>using JavaScript events</li>
+</ol>
+
 
 ```html
 <!DOCTYPE html>
