@@ -60,6 +60,7 @@ Here is 3 examples:
 
 ## Additional Options
 ytcontrols: Display the YouTube controls instead of Video.js.
+quality: Set the default video quality (1080p, 720p, 480p, 360p, 240p, 144p)
 
 ## Safari Glitch
 If your video tag is empty (no space or new line before the closing tag), it will create a glitch with Safari. Instead of writing `<video ...></video>`, you should write `<video ...> </video>`.

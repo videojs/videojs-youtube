@@ -21,6 +21,8 @@ videojs.Youtube = videojs.MediaTechController.extend({
       }
     }
 
+    this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
+
     // Save those for internal usage
     this.player_ = player;
     this.player_el_ = document.getElementById(player.id());
@@ -59,7 +61,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
         setTimeout(addQuality, 50);
       }
     };
-    
+
     setTimeout(addQuality, 50);
 
     this.id_ = this.player_.id() + '_youtube_api';
@@ -122,7 +124,8 @@ videojs.Youtube = videojs.MediaTechController.extend({
       rel: 0,
       autoplay: (this.playOnReady)?1:0,
       loop: (this.player_.options()['loop'])?1:0,
-      list: this.playlistId
+      list: this.playlistId,
+      vq: this.userQuality
     };
 
     if (typeof params.list == 'undefined') {
@@ -214,6 +217,14 @@ videojs.Youtube.prototype.parseSrc = function(src){
         delete this.playlistId;
       }
     }
+
+    // Parse video quality option
+    var regVideoQuality = /[?&]vq=([^#\&\?]+)/;
+    match = src.match(regVideoQuality);
+
+    if (match != null && match.length > 1) {
+      this.userQuality = match[1];
+    }
   }
 };
 
@@ -226,7 +237,10 @@ videojs.Youtube.prototype.src = function(src){
       this.iframeblocker.style.backgroundColor = 'black';
       this.iframeblocker.style.display = 'block';
     } else {
-      this.ytplayer.loadVideoById(this.videoId);
+      this.ytplayer.loadVideoById({
+        videoId: this.videoId,
+        suggestedQuality: this.userQuality
+      });
 
       // Update the poster
       this.player_el_.getElementsByClassName('vjs-poster')[0].style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
@@ -465,6 +479,30 @@ videojs.Youtube.prototype.onStateChange = function(state){
 
     this.lastState = state;
   }
+};
+
+videojs.Youtube.convertQualityName = function(name) {
+  switch (name) {
+    case '144p':
+      return 'tiny';
+
+    case '240p':
+      return 'small';
+
+    case '360p':
+      return 'medium';
+
+    case '480p':
+      return 'large';
+
+    case '720p':
+      return 'hd720';
+
+    case '1080p':
+      return 'hd1080';
+  }
+
+  return name;
 };
 
 videojs.Youtube.parseQualityName = function(name) {
