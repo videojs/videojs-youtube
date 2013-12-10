@@ -13,6 +13,10 @@ videojs.Youtube = videojs.MediaTechController.extend({
   /** @constructor */
   init: function(player, options, ready){
     videojs.MediaTechController.call(this, player, options, ready);
+    
+    // No event is triggering this for YouTube
+    this.features['progressEvents'] = false;
+    this.features['timeupdateEvents'] = false;
 
     // Copy the JavaScript options if they exists
     if (typeof options['source'] != 'undefined') {
@@ -52,18 +56,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.qualityMenuContent.setAttribute('class', 'vjs-menu-content');
     qualityMenu.appendChild(this.qualityMenuContent);
 
-    var self = this;
-    var addQuality = function() {
-      var controlBar = self.player_el_.getElementsByClassName('vjs-control-bar')[0];
-      if (controlBar) {
-        controlBar.appendChild(self.qualityButton);
-      } else {
-        setTimeout(addQuality, 50);
-      }
-    };
-
-    setTimeout(addQuality, 50);
-
     this.id_ = this.player_.id() + '_youtube_api';
 
     this.el_ = videojs.Component.prototype.createEl('iframe', {
@@ -94,11 +86,15 @@ videojs.Youtube = videojs.MediaTechController.extend({
       }
     };
 
-    if (this.iframeblocker.addEventListener) {
-      this.iframeblocker.addEventListener('click', toggleThis);
-    } else {
-      this.iframeblocker.attachEvent('onclick', toggleThis);
-    }
+    this.iframeblocker.addEventListener('click', toggleThis);
+    this.iframeblocker.addEventListener('mousemove', function(e) {
+      if (!self.player_.userActive()) {
+        self.player_.userActive(true);
+      }
+      
+      e.stopPropagation();
+      e.preventDefault();
+    });
 
     if (!this.player_.options()['ytcontrols']) {
       // Before the tech is ready, we have to take care of the play action
@@ -140,19 +136,16 @@ videojs.Youtube = videojs.MediaTechController.extend({
       this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     }
 
-    if (this.playOnReady && !this.player_.options()['ytcontrols']) {
-      // Wait for the DOM to load and display the loading spinner ASAP
-      var self = this;
-      var displaySpinner = function() {
-        if (self.player_.loadingSpinner) {
-          self.player_.loadingSpinner.el().style.display = 'block';
-        } else {
-          setTimeout(displaySpinner, 50);
-        }
-      };
+    var self = this;
+    player.ready(function(){
+      var controlBar = self.player_el_.getElementsByClassName('vjs-control-bar')[0];
+      controlBar.appendChild(self.qualityButton);
 
-      setTimeout(displaySpinner, 50);
-    }
+      if (self.playOnReady && !self.player_.options()['ytcontrols']) {
+        self.player_.loadingSpinner.show();
+        self.player_.bigPlayButton.hide();
+      }
+    });
 
     if (this.player_.options()['ytcontrols']){
       // Disable the video.js controls if we use the YouTube controls
@@ -184,12 +177,18 @@ videojs.Youtube = videojs.MediaTechController.extend({
         videojs.Youtube.apiLoading = true;
       }
     }
+    
+    this.on('dispose', function() {
+      // Get rid of the created DOM elements
+      self.el_.parentNode.removeChild(self.el_);
+      self.iframeblocker.parentNode.removeChild(self.iframeblocker);
+      self.qualityButton.parentNode.removeChild(self.qualityButton);
+      
+      self.player_.loadingSpinner.hide();
+      self.player_.bigPlayButton.hide();
+    });
   }
 });
-
-videojs.Youtube.prototype.dispose = function(){
-  videojs.MediaTechController.prototype.dispose.call(this);
-};
 
 videojs.Youtube.prototype.parseSrc = function(src){
   this.srcVal = src;
@@ -382,6 +381,7 @@ videojs.Youtube.prototype.onReady = function(){
   // Let the player take care of itself as soon as the YouTube is ready
   // The loading spinner while waiting for the tech would be impossible otherwise
   this.iframeblocker.style.display = '';
+  this.player_.loadingSpinner.hide();
 
   if (this.player_.options()['muted']) {
     this.setMuted(true);
@@ -389,6 +389,7 @@ videojs.Youtube.prototype.onReady = function(){
 
   // Play ASAP if they clicked play before it's ready
   if (this.playOnReady) {
+    this.playOnReady = false;
     this.play();
   }
 };
