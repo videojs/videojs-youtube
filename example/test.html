@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>JS Bin</title>
+  
+  <link href="http://vjs.zencdn.net/4.3/video-js.css" rel="stylesheet">
+  <script src="../lib/video.dev.js"></script>
+</head>
+<body>
+  <video id="player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
+  </video>
+
+
+<script>
+  var playlistIndex = 0;
+  var playlist = [
+    {
+      "title": "Not a YouTube Video",
+      "src": {
+        "type": "video/mp4",
+        "src": "http://d37sadnysgawf8.cloudfront.net/Blake_Turner_Studio.mp4"
+      }
+    },
+    {
+      "title": "YouTube Video",
+      "src": {
+        "type": "video/youtube",
+        "src": "http://www.youtube.com/watch?v=sJgDYdA8dio"
+      }
+    }
+];
+
+  var onEnded = function() {
+    if(playlistIndex == playlist.length - 1) {
+      playlistIndex = 0;
+    } else {
+      playlistIndex++;
+    }
+
+    this.src(playlist[playlistIndex].src);
+    this.play();
+  };
+
+  var options = { "techOrder": ["html5", "youtube"] };
+  var player = videojs('player', options, function(){
+    this.src(playlist[playlistIndex].src);
+    //this.play();
+    this.on('ended', onEnded.bind(this));
+});
+
+</script>
+
+<script src="../src/media.youtube.js"></script>
+
+</body>
+</html>

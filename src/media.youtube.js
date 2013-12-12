@@ -180,12 +180,12 @@ videojs.Youtube = videojs.MediaTechController.extend({
     
     this.on('dispose', function() {
       // Get rid of the created DOM elements
-      self.el_.parentNode.removeChild(self.el_);
-      self.iframeblocker.parentNode.removeChild(self.iframeblocker);
-      self.qualityButton.parentNode.removeChild(self.qualityButton);
+      this.el_.parentNode.removeChild(this.el_);
+      this.iframeblocker.parentNode.removeChild(this.iframeblocker);
+      this.qualityButton.parentNode.removeChild(this.qualityButton);
       
-      self.player_.loadingSpinner.hide();
-      self.player_.bigPlayButton.hide();
+      this.player_.loadingSpinner.hide();
+      this.player_.bigPlayButton.hide();
     });
   }
 });
