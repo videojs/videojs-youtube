@@ -589,7 +589,7 @@ videojs.Youtube.prototype.onError = function(error){
 // (ONLY way because the iframe is so selfish with events)
 (function() {
   var style = document.createElement('style');
-  style.innerText = ' \
+  style.text = ' \
   .vjs-youtube .vjs-poster { background-size: cover; }\
   .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:2; }\
   .vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } \
