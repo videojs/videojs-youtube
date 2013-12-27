@@ -1,0 +1,27 @@
+{
+  "name": "videojs-youtube",
+  "version": "1.0.1",
+  "homepage": "https://github.com/eXon/videojs-youtube",
+  "authors": [
+    "Benoit Tremblay <trembl.ben@gmail.com>"
+  ],
+  "description": "Support YouTube source for Video.js",
+  "main": "vjs.youtube.js",
+  "keywords": [
+    "video.js",
+    "vjs",
+    "youtube"
+  ],
+  "dependencies": {
+    "video.js": "4.3.0"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ]
+}
