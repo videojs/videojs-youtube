@@ -3,6 +3,9 @@
 # Video.js - YouTube Source Support
 Allows you to use a YouTube video within [Video.js](https://github.com/videojs/video.js/) and control it the same way as a regular video (the same methods and events are availables within the tech). It also add the video quality and let you change it as if you were on YouTube.
 
+## Install
+All you need is vjs.youtube.js. You can install it through bower: `bower install videojs-youtube` or by simply downloading the last version on GitHub.
+
 ## How does it work?
 Including the script vjs.youtube.js will add the YouTube as a tech. You just have to add it to your techOrder option. Then, you add the option src with your YouTube URL.
 
