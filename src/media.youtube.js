@@ -236,10 +236,17 @@ videojs.Youtube.prototype.src = function(src){
       this.iframeblocker.style.backgroundColor = 'black';
       this.iframeblocker.style.display = 'block';
     } else {
-      this.ytplayer.loadVideoById({
-        videoId: this.videoId,
-        suggestedQuality: this.userQuality
-      });
+      if (this.player_.options()['autoplay']) {
+        this.ytplayer.loadVideoById({
+          videoId: this.videoId,
+          suggestedQuality: this.userQuality
+        });
+      } else {
+        this.ytplayer.cueVideoById({
+          videoId: this.videoId,
+          suggestedQuality: this.userQuality
+        });
+      }
 
       // Update the poster
       this.player_el_.getElementsByClassName('vjs-poster')[0].style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
