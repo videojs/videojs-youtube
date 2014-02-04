@@ -252,6 +252,10 @@ videojs.Youtube.prototype.src = function(src){
   return this.srcVal;
 };
 
+videojs.Youtube.prototype.currentSrc = function(){
+  return 'http://www.youtube.com/embed/' + this.videoId;
+};
+
 videojs.Youtube.prototype.load = function(){};
 
 videojs.Youtube.prototype.play = function(){
