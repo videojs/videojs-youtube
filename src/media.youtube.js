@@ -33,9 +33,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.player_el_.className += ' vjs-youtube';
 
     // Mobile devices are using their own native players
-    if (!!navigator.userAgent.match(/iPhone/i) || !!navigator.userAgent.match(/iPad/i) || !!navigator.userAgent.match(/iPod/i) || !!navigator.userAgent.match(/Android.*AppleWebKit/i)) {
+    /*if (!!navigator.userAgent.match(/iPhone/i) || !!navigator.userAgent.match(/iPad/i) || !!navigator.userAgent.match(/iPod/i) || !!navigator.userAgent.match(/Android.*AppleWebKit/i)) {
       player.options()['ytcontrols'] = true;
-    }
+    }*/
 
     // Create the Quality button
     this.qualityButton = document.createElement('div');
@@ -94,6 +94,13 @@ videojs.Youtube = videojs.MediaTechController.extend({
       
       e.stopPropagation();
       e.preventDefault();
+    });
+    this.iframeblocker.addEventListener('tap', function(){
+      if (self.player_.userActive() === true) {
+        self.player_.userActive(false);
+      } else {
+        self.player_.userActive(true);
+      }
     });
 
     if (!this.player_.options()['ytcontrols']) {
