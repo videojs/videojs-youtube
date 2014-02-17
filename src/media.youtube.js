@@ -142,7 +142,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
       controlBar.appendChild(self.qualityButton);
 
       if (self.playOnReady && !self.player_.options()['ytcontrols']) {
-        self.player_.loadingSpinner.show();
+        if (typeof self.player_.loadingSpinner != 'undefined') {
+            self.player_.loadingSpinner.show();
+        }
         self.player_.bigPlayButton.hide();
       }
     });
@@ -184,7 +186,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
       this.iframeblocker.parentNode.removeChild(this.iframeblocker);
       this.qualityButton.parentNode.removeChild(this.qualityButton);
       
-      this.player_.loadingSpinner.hide();
+      if (typeof this.player_.loadingSpinner != 'undefined') {
+          this.player_.loadingSpinner.hide();
+      }
       this.player_.bigPlayButton.hide();
     });
   }
@@ -385,7 +389,9 @@ videojs.Youtube.prototype.onReady = function(){
   // Let the player take care of itself as soon as the YouTube is ready
   // The loading spinner while waiting for the tech would be impossible otherwise
   this.iframeblocker.style.display = '';
-  this.player_.loadingSpinner.hide();
+  if (typeof this.player_.loadingSpinner != 'undefined') {
+      this.player_.loadingSpinner.hide();
+  }
 
   if (this.player_.options()['muted']) {
     this.setMuted(true);
