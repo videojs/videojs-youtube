@@ -615,6 +615,7 @@ videojs.Youtube.prototype.onError = function(error){
 (function() {
   var styleText = ' \
   .vjs-youtube .vjs-poster { background-size: cover; }\
+  .vjs-poster, .vjs-loading-spinner, .vjs-big-play-button, .vjs-text-track-display{ pointer-events: none !important; }\
   .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:2; }\
   .vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } \
   .vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }\
