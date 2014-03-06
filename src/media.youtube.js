@@ -33,9 +33,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.player_el_.className += ' vjs-youtube';
 
     // Mobile devices are using their own native players
-    if (!!navigator.userAgent.match(/iPhone/i) || !!navigator.userAgent.match(/iPad/i) || !!navigator.userAgent.match(/iPod/i) || !!navigator.userAgent.match(/Android.*AppleWebKit/i)) {
+    /*if (!!navigator.userAgent.match(/iPhone/i) || !!navigator.userAgent.match(/iPad/i) || !!navigator.userAgent.match(/iPod/i) || !!navigator.userAgent.match(/Android.*AppleWebKit/i)) {
       player.options()['ytcontrols'] = true;
-    }
+    }*/
 
     // Create the Quality button
     this.qualityButton = document.createElement('div');
@@ -95,6 +95,13 @@ videojs.Youtube = videojs.MediaTechController.extend({
       e.stopPropagation();
       e.preventDefault();
     });
+    this.iframeblocker.addEventListener('tap', function(){
+      if (self.player_.userActive() === true) {
+        self.player_.userActive(false);
+      } else {
+        self.player_.userActive(true);
+      }
+    });
 
     if (!this.player_.options()['ytcontrols']) {
       // Before the tech is ready, we have to take care of the play action
@@ -107,6 +114,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.parseSrc(player.options()['src']);
 
     this.playOnReady = this.player_.options()['autoplay'] || false;
+    this.forceSSL = this.player_.options()['forceSSL'] || false;
 
     var params = {
       enablejsapi: 1,
@@ -130,8 +138,12 @@ videojs.Youtube = videojs.MediaTechController.extend({
 
     // If we are not on a server, don't specify the origin (it will crash)
     if (window.location.protocol != 'file:'){
-      params.origin = window.location.protocol + '//' + window.location.host;
-      this.el_.src = window.location.protocol + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+      if(this.forceSSL) {
+        this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+      } else {
+        params.origin = window.location.protocol + '//' + window.location.host;
+        this.el_.src = window.location.protocol + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+      }
     } else {
       this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     }
@@ -142,7 +154,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
       controlBar.appendChild(self.qualityButton);
 
       if (self.playOnReady && !self.player_.options()['ytcontrols']) {
-        self.player_.loadingSpinner.show();
+        if (typeof self.player_.loadingSpinner != 'undefined') {
+            self.player_.loadingSpinner.show();
+        }
         self.player_.bigPlayButton.hide();
       }
     });
@@ -184,7 +198,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
       this.iframeblocker.parentNode.removeChild(this.iframeblocker);
       this.qualityButton.parentNode.removeChild(this.qualityButton);
       
-      this.player_.loadingSpinner.hide();
+      if (typeof this.player_.loadingSpinner != 'undefined') {
+          this.player_.loadingSpinner.hide();
+      }
       this.player_.bigPlayButton.hide();
     });
   }
@@ -388,7 +404,9 @@ videojs.Youtube.prototype.onReady = function(){
   // Let the player take care of itself as soon as the YouTube is ready
   // The loading spinner while waiting for the tech would be impossible otherwise
   this.iframeblocker.style.display = '';
-  this.player_.loadingSpinner.hide();
+  if (typeof this.player_.loadingSpinner != 'undefined') {
+      this.player_.loadingSpinner.hide();
+  }
 
   if (this.player_.options()['muted']) {
     this.setMuted(true);
@@ -416,9 +434,7 @@ videojs.Youtube.prototype.updateQualities = function(){
     for (var i = 0; i < qualities.length; ++i) {
       var el = document.createElement('li');
       el.setAttribute('class', 'vjs-menu-item');
-
-      setInnerText(el, videojs.Youtube.parseQualityName(qualities[i]));
-
+      el.innerText = videojs.Youtube.parseQualityName(qualities[i]);
       el.setAttribute('data-val', qualities[i]);
       if (qualities[i] == this.quality) el.classList.add('vjs-selected');
       
@@ -428,7 +444,7 @@ videojs.Youtube.prototype.updateQualities = function(){
         var quality = this.getAttribute('data-val');
         self.ytplayer.setPlaybackQuality(quality);
         
-        setInnerText(self.qualityTitle, videojs.Youtube.parseQualityName(quality));
+        self.qualityTitle.innerText = videojs.Youtube.parseQualityName(quality);
         
         var selected = self.qualityMenuContent.querySelector('.vjs-selected');
         if (selected) selected.classList.remove('vjs-selected');
@@ -541,7 +557,7 @@ videojs.Youtube.parseQualityName = function(name) {
 
 videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
   this.quality = quality;
-  setInnerText(this.qualityTitle, videojs.Youtube.parseQualityName(quality));
+  this.qualityTitle.innerText = videojs.Youtube.parseQualityName(quality);
   
   switch(quality){
     case 'medium':
@@ -593,19 +609,23 @@ videojs.Youtube.prototype.onError = function(error){
   this.player_.trigger('error');
 };
 
-//Cross browser solution to add text content to an element
-function setInnerText(element, text) {
-  var textProperty = ('innerText' in element)? 'innerText' : 'textContent';
-  element[textProperty] = text;
-}
-
 // Stretch the YouTube poster
 // Keep the iframeblocker in front of the player when the user is inactive
 // (ONLY way because the iframe is so selfish with events)
 (function() {
-  var style = document.createElement("style");
+  var styleText = ' \
+  .vjs-youtube .vjs-poster { background-size: cover; }\
+  .vjs-poster, .vjs-loading-spinner, .vjs-big-play-button, .vjs-text-track-display{ pointer-events: none !important; }\
+  .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:2; }\
+  .vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } \
+  .vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }\
+  ';
+  var style = document.createElement('style');
   style.type = 'text/css';
-  var css = " .vjs-youtube .vjs-poster { background-size: cover; }.iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;z-index:2; }.vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } .vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }";
-  setInnerText(style, css);
-  document.getElementsByTagName("head")[0].appendChild(style);
+  if(style.styleSheet) { // IE
+    style.styleSheet.cssText = styleText;
+  } else { // sane browsers
+    style.innerText = styleText;
+  }
+  document.getElementsByTagName('head')[0].appendChild(style);
 })();
