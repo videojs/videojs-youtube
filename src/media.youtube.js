@@ -123,6 +123,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       disablekb: 1,
       wmode: 'transparent',
       controls: (this.player_.options()['ytcontrols'])?1:0,
+      playsinline: (this.player_.options()['playsInline'])?1:0,
       showinfo: 0,
       modestbranding: 1,
       rel: 0,
