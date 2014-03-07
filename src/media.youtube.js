@@ -123,6 +123,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       disablekb: 1,
       wmode: 'transparent',
       controls: (this.player_.options()['ytcontrols'])?1:0,
+      playsinline: (this.player_.options()['playsInline'])?1:0,
       showinfo: 0,
       modestbranding: 1,
       rel: 0,
@@ -132,8 +133,11 @@ videojs.Youtube = videojs.MediaTechController.extend({
       vq: this.userQuality
     };
 
-    if (typeof params.list == 'undefined') {
-      delete params.list;
+    // Delete unset properties
+    for ( var prop in params ) {
+        if ( params.hasOwnProperty( prop ) && typeof params[ prop ] === 'undefined' ) {
+            delete params[ prop ];
+        }
     }
 
     // If we are not on a server, don't specify the origin (it will crash)
@@ -185,7 +189,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       // Load the YouTube API if it is the first YouTube video
       if(!videojs.Youtube.apiLoading){
         var tag = document.createElement('script');
-        tag.src = '//www.youtube.com/iframe_api';
+        tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         videojs.Youtube.apiLoading = true;
