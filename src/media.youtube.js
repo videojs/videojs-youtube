@@ -133,8 +133,11 @@ videojs.Youtube = videojs.MediaTechController.extend({
       vq: this.userQuality
     };
 
-    if (typeof params.list == 'undefined') {
-      delete params.list;
+    // Delete unset properties
+    for ( var prop in params ) {
+        if ( params.hasOwnProperty( prop ) && typeof params[ prop ] === 'undefined' ) {
+            delete params[ prop ];
+        }
     }
 
     // If we are not on a server, don't specify the origin (it will crash)
