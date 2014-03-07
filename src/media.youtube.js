@@ -185,7 +185,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       // Load the YouTube API if it is the first YouTube video
       if(!videojs.Youtube.apiLoading){
         var tag = document.createElement('script');
-        tag.src = '//www.youtube.com/iframe_api';
+        tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         videojs.Youtube.apiLoading = true;
