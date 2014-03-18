@@ -161,7 +161,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
         if (typeof self.player_.loadingSpinner != 'undefined') {
             self.player_.loadingSpinner.show();
         }
-        self.player_.bigPlayButton.hide();
+        if (typeof self.player_.bigPlayButton != 'undefined') {
+            self.player_.bigPlayButton.hide();
+        }
       }
     });
 
@@ -205,7 +207,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
       if (typeof this.player_.loadingSpinner != 'undefined') {
           this.player_.loadingSpinner.hide();
       }
-      this.player_.bigPlayButton.hide();
+      if (typeof this.player_.bigPlayButton != 'undefined') {
+          this.player_.bigPlayButton.hide();
+      }
     });
   }
 });
@@ -472,7 +476,9 @@ videojs.Youtube.prototype.onStateChange = function(state){
         // Replace YouTube play button by our own
         if (!this.player_.options()['ytcontrols']) {
           this.player_el_.getElementsByClassName('vjs-poster')[0].style.display = 'block';
-          this.player_.bigPlayButton.show();
+          if (typeof this.player_.bigPlayButton != 'undefined') {
+              this.player_.bigPlayButton.show();
+          }
         }
 
         this.player_.trigger('ended');
@@ -480,7 +486,9 @@ videojs.Youtube.prototype.onStateChange = function(state){
 
       case YT.PlayerState.PLAYING:
         // Make sure the big play is not there
-        this.player_.bigPlayButton.hide();
+        if (typeof this.player_.bigPlayButton != 'undefined') {
+            this.player_.bigPlayButton.hide();
+        }
 
         this.updateQualities();
 
