@@ -623,6 +623,8 @@ videojs.Youtube.prototype.onError = function(error){
 
 //Cross browser solution to add text content to an element
 function setInnerText(element, text) {
+  if(element === undefined) { return false; }
+
   var textProperty = ('innerText' in element)? 'innerText' : 'textContent';
   element[textProperty] = text;
 };
