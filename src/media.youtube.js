@@ -152,7 +152,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
       this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     }
 
-    var self = this;
     player.ready(function(){
       var controlBar = self.player_el_.getElementsByClassName('vjs-control-bar')[0];
       controlBar.appendChild(self.qualityButton);
