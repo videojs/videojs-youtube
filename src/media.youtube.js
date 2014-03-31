@@ -429,6 +429,7 @@ videojs.Youtube.prototype.onReady = function(){
 
 videojs.Youtube.prototype.updateQualities = function(){
   var qualities = this.ytplayer.getAvailableQualityLevels();
+  var self = this;
   
   if (qualities.length == 0) {
     this.qualityButton.style.display = 'none';
@@ -445,14 +446,12 @@ videojs.Youtube.prototype.updateQualities = function(){
       setInnerText(el, videojs.Youtube.parseQualityName(qualities[i]));
       el.setAttribute('data-val', qualities[i]);
       if (qualities[i] == this.quality) el.classList.add('vjs-selected');
-      
-      var self = this;
-      
+
       el.addEventListener('click', function() {
         var quality = this.getAttribute('data-val');
         self.ytplayer.setPlaybackQuality(quality);
         
-        self.qualityTitle.innerText = videojs.Youtube.parseQualityName(quality);
+        setInnerText( self.qualityTitle, videojs.Youtube.parseQualityName(quality) );
         
         var selected = self.qualityMenuContent.querySelector('.vjs-selected');
         if (selected) selected.classList.remove('vjs-selected');
@@ -569,7 +568,7 @@ videojs.Youtube.parseQualityName = function(name) {
 
 videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
   this.quality = quality;
-  setInnerText(self.qualityTitle, videojs.Youtube.parseQualityName(quality));
+  setInnerText(this.qualityTitle, videojs.Youtube.parseQualityName(quality));
   
   switch(quality){
     case 'medium':
