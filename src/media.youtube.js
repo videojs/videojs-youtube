@@ -32,11 +32,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.player_el_ = document.getElementById(player.id());
     this.player_el_.className += ' vjs-youtube';
 
-    // Mobile devices are using their own native players
-    /*if (!!navigator.userAgent.match(/iPhone/i) || !!navigator.userAgent.match(/iPad/i) || !!navigator.userAgent.match(/iPod/i) || !!navigator.userAgent.match(/Android.*AppleWebKit/i)) {
-      player.options()['ytcontrols'] = true;
-    }*/
-
     // Create the Quality button
     this.qualityButton = document.createElement('div');
     this.qualityButton.setAttribute('class', 'vjs-quality-button vjs-menu-button vjs-control');
@@ -76,17 +71,32 @@ videojs.Youtube = videojs.MediaTechController.extend({
       className: 'iframeblocker'
     });
 
-    // Make sure to not block the play or pause
     var self = this;
-    var toggleThis = function() {
-      if (self.paused()) {
-        self.play();
-      } else {
-        self.pause();
-      }
-    };
+    this.toggleOnClick = !!this.player_.options()['toggleOnClick'];
+    if ( this.toggleOnClick ) {
+      var togglePlayback = function() {
+        if (self.paused()) {
+          self.play();
+        } else {
+          self.pause();
+        }
+      };
 
-    this.iframeblocker.addEventListener('click', toggleThis);
+      // Enable toggling playback on click
+      this.iframeblocker.addEventListener('click', togglePlayback);
+    } else {
+        var toggleActivity = function(){
+          if (self.player_.userActive() === true) {
+            self.player_.userActive(false);
+          } else {
+            self.player_.userActive(true);
+          }
+        };
+
+        // Preserve setting user activity status on click (togglePlayback will do this via play() or pause())
+        this.iframeblocker.addEventListener('click', toggleActivity);
+    }
+
     this.iframeblocker.addEventListener('mousemove', function(e) {
       if (!self.player_.userActive()) {
         self.player_.userActive(true);
