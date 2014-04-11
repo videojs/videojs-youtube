@@ -68,6 +68,8 @@ This plugin exposes the following additional [player options](https://github.com
 - `quality` (String): Set the default video quality. Should be one of `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`.
 - `playsInline` (Boolean): Sets the [`playsinline`](https://developers.google.com/youtube/player_parameters?playerVersion=HTML5#playsinline) YouTube player parameter to enable inline playback on iOS
 - `toggleOnClick` (Boolean): Enable default YouTube behaviour of toggling video playback on clicking video
+- `forceHTML5` (Boolean): Forces loading the YouTube HTML5 player
+- `forceSSL` (Boolean): Forces loading the YouTube API over https
 
 ## Safari Glitch
 If your video tag is empty (no space or new line before the closing tag), it will create a glitch with Safari. Instead of writing `<video ...></video>`, you should write `<video ...> </video>`.
