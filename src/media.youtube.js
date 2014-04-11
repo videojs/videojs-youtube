@@ -147,7 +147,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     // Delete unset properties
     for ( var prop in params ) {
         if ( params.hasOwnProperty( prop ) &&
-          ( typeof params[ prop ] === 'undefined' || typeof params[ prop ] === 'null' )
+          ( typeof params[ prop ] === 'undefined' || params[ prop ] === null )
          ) {
           delete params[ prop ];
         }
