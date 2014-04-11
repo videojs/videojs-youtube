@@ -67,6 +67,7 @@ This plugin exposes the following additional [player options](https://github.com
 - `ytcontrols` (Boolean): Display the YouTube player controls instead of the Video.js player controls.
 - `quality` (String): Set the default video quality. Should be one of `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`.
 - `playsInline` (Boolean): Sets the [`playsinline`](https://developers.google.com/youtube/player_parameters?playerVersion=HTML5#playsinline) YouTube player parameter to enable inline playback on iOS
+- `toggleOnClick` (Boolean): Enable default YouTube behaviour of toggling video playback on clicking video
 
 ## Safari Glitch
 If your video tag is empty (no space or new line before the closing tag), it will create a glitch with Safari. Instead of writing `<video ...></video>`, you should write `<video ...> </video>`.
