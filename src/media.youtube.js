@@ -123,6 +123,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       disablekb: 1,
       wmode: 'transparent',
       controls: (this.player_.options()['ytcontrols'])?1:0,
+      html5: (this.player_.options()['forceHTML5'])?1:null,
       playsinline: (this.player_.options()['playsInline'])?1:0,
       showinfo: 0,
       modestbranding: 1,
@@ -135,7 +136,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
 
     // Delete unset properties
     for ( var prop in params ) {
-        if ( params.hasOwnProperty( prop ) && typeof params[ prop ] === 'undefined' ) {
+        if ( params.hasOwnProperty( prop ) &&
+            ( typeof params[ prop ] === 'undefined' || typeof params[ prop ] === 'null' )
+        ) {
             delete params[ prop ];
         }
     }
