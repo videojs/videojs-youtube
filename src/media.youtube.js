@@ -152,7 +152,6 @@ videojs.Youtube = videojs.MediaTechController.extend({
       this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     }
 
-    var self = this;
     player.ready(function(){
       var controlBar = self.player_el_.getElementsByClassName('vjs-control-bar')[0];
       controlBar.appendChild(self.qualityButton);
@@ -191,6 +190,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
       // Load the YouTube API if it is the first YouTube video
       if(!videojs.Youtube.apiLoading){
         var tag = document.createElement('script');
+        tag.onerror = function(e) { self.onError(e) };
         tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -429,6 +429,7 @@ videojs.Youtube.prototype.onReady = function(){
 
 videojs.Youtube.prototype.updateQualities = function(){
   var qualities = this.ytplayer.getAvailableQualityLevels();
+  var self = this;
   
   if (qualities.length == 0) {
     this.qualityButton.style.display = 'none';
@@ -445,14 +446,12 @@ videojs.Youtube.prototype.updateQualities = function(){
       setInnerText(el, videojs.Youtube.parseQualityName(qualities[i]));
       el.setAttribute('data-val', qualities[i]);
       if (qualities[i] == this.quality) el.classList.add('vjs-selected');
-      
-      var self = this;
-      
+
       el.addEventListener('click', function() {
         var quality = this.getAttribute('data-val');
         self.ytplayer.setPlaybackQuality(quality);
         
-        self.qualityTitle.innerText = videojs.Youtube.parseQualityName(quality);
+        setInnerText( self.qualityTitle, videojs.Youtube.parseQualityName(quality) );
         
         var selected = self.qualityMenuContent.querySelector('.vjs-selected');
         if (selected) selected.classList.remove('vjs-selected');
@@ -569,7 +568,7 @@ videojs.Youtube.parseQualityName = function(name) {
 
 videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
   this.quality = quality;
-  setInnerText(self.qualityTitle, videojs.Youtube.parseQualityName(quality));
+  setInnerText(this.qualityTitle, videojs.Youtube.parseQualityName(quality));
   
   switch(quality){
     case 'medium':
