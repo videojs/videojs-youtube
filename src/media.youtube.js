@@ -458,7 +458,7 @@ videojs.Youtube.prototype.updateQualities = function(){
       el.setAttribute('class', 'vjs-menu-item');
       setInnerText(el, videojs.Youtube.parseQualityName(qualities[i]));
       el.setAttribute('data-val', qualities[i]);
-      if (qualities[i] == this.quality) el.classList.add('vjs-selected');
+      if (qualities[i] == this.quality) videojs.Youtube.addClass(el, 'vjs-selected');
 
       el.addEventListener('click', function() {
         var quality = this.getAttribute('data-val');
@@ -467,9 +467,9 @@ videojs.Youtube.prototype.updateQualities = function(){
         setInnerText( self.qualityTitle, videojs.Youtube.parseQualityName(quality) );
         
         var selected = self.qualityMenuContent.querySelector('.vjs-selected');
-        if (selected) selected.classList.remove('vjs-selected');
+        if (selected) videojs.Youtube.removeClass(selected, 'vjs-selected');
         
-        this.classList.add('vjs-selected');
+        videojs.Youtube.addClass(this, 'vjs-selected');
       });
       
       this.qualityMenuContent.appendChild(el);
@@ -631,6 +631,39 @@ videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
 videojs.Youtube.prototype.onError = function(error){
   this.player_.error = error;
   this.player_.trigger('error');
+};
+
+/**
+ * Add a CSS class name to an element
+ * @param {Element} element    Element to add class name to
+ * @param {String} classToAdd Classname to add
+ */
+videojs.Youtube.addClass = function(element, classToAdd){
+  if ((' '+element.className+' ').indexOf(' '+classToAdd+' ') == -1) {
+    element.className = element.className === '' ? classToAdd : element.className + ' ' + classToAdd;
+  }
+};
+
+/**
+ * Remove a CSS class name from an element
+ * @param {Element} element    Element to remove from class name
+ * @param {String} classToRemove Classname to remove
+ */
+videojs.Youtube.removeClass = function(element, classToRemove){
+  var classNames, i;
+
+  if (element.className.indexOf(classToRemove) == -1) { return; }
+
+  classNames = element.className.split(' ');
+
+  // no arr.indexOf in ie8, and we don't want to add a big shim
+  for (i = classNames.length - 1; i >= 0; i--) {
+    if (classNames[i] === classToRemove) {
+      classNames.splice(i,1);
+    }
+  }
+
+  element.className = classNames.join(' ');
 };
 
 //Cross browser solution to add text content to an element
