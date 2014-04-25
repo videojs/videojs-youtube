@@ -1,4 +1,4 @@
-## Now fully support VideoJS 4.3.0!
+## Now fully support VideoJS 4.5.1!
 
 # Video.js - YouTube Source Support
 Allows you to use a YouTube video within [Video.js](https://github.com/videojs/video.js/) and control it the same way as a regular video (the same methods and events are availables within the tech). It also add the video quality and let you change it as if you were on YouTube.
