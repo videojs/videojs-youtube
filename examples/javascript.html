@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="https://vjs.zencdn.net/4.5.1/video-js.css" />
+</head>
+<body>
+  <video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
+  </video>
+  
+  <script src="https://vjs.zencdn.net/4.5.1/video.js"></script>
+  <script src="../src/youtube.js"></script>
+  <script>
+  videojs('vid1', { "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }).ready(function() {
+    // Cue a video using ended event
+	// Most video.js events are supported
+    this.one('ended', function() {
+      this.src('http://www.youtube.com/watch?v=jofNR_WkoCE');
+	  this.play();
+    });
+  });
+  </script>
+</body>
+</html>
