@@ -1,8 +1,12 @@
 {
   "name": "videojs-youtube",
   "description": "Support YouTube source for Video.js",
-  "version": "1.1.2",
+  "version": "1.1.0",
   "author": "Benoit Tremblay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eXon/videojs-youtube.git"
+  },
   "devDependencies": {
     "grunt": "~0.4",
     "grunt-cli": "~0.1.0",
