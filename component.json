@@ -1,0 +1,7 @@
+{
+  "name": "videojs-youtube",
+  "description": "Support YouTube source for Video.js",
+  "version": "1.1.0",
+  "scripts": ["dist/vjs.youtube.js"],
+  "main": "dist/vjs.youtube.js"
+}
