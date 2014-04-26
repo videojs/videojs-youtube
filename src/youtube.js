@@ -632,6 +632,13 @@ videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
 videojs.Youtube.prototype.onError = function(error){
   this.player_.error = error;
   this.player_.trigger('error');
+  
+  if (error == 100 || error == 101 || error == 150) {
+    this.player_.bigPlayButton.hide();
+    this.player_.loadingSpinner.hide();
+    this.player_.posterImage.hide();
+    this.iframeblocker.style.display = '';
+  }
 };
 
 /**
