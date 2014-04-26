@@ -1,7 +1,7 @@
 {
   "name": "videojs-youtube",
   "description": "Support YouTube source for Video.js",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": "Benoit Tremblay",
   "repository": {
     "type": "git",
