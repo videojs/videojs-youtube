@@ -15,7 +15,7 @@ module.exports = function(grunt) {
       commit:  true,
       npm: true,
       message: 'Release %version%',
-      prefix:  'v'
+      tagName: 'v<%= version %>'
     }
   });
   
