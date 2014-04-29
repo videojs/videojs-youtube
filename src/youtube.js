@@ -320,6 +320,7 @@ videojs.Youtube.prototype.paused = function(){ return (this.ytplayer)?(this.last
 videojs.Youtube.prototype.currentTime = function(){ return (this.ytplayer && this.ytplayer.getCurrentTime)?this.ytplayer.getCurrentTime():0; };
 videojs.Youtube.prototype.setCurrentTime = function(seconds){ this.ytplayer.seekTo(seconds, true); this.player_.trigger('timeupdate'); };
 videojs.Youtube.prototype.duration = function(){ return (this.ytplayer && this.ytplayer.getDuration)?this.ytplayer.getDuration():0; };
+videojs.Youtube.prototype.currentSrc = function(){ return this.srcVal; };
 
 videojs.Youtube.prototype.volume = function() {
   if (this.ytplayer && isNaN(this.volumeVal)) {
