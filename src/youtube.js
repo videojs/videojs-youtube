@@ -124,7 +124,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     this.parseSrc(player.options()['src']);
 
     this.playOnReady = this.player_.options()['autoplay'] || false;
-    this.forceSSL = this.player_.options()['forceSSL'] || true;
+    this.forceSSL = (typeof this.player_.options()['forceSSL'] === 'undefined' || this.player_.options()['forceSSL'] === true ? true : false);
 
     var params = {
       enablejsapi: 1,
@@ -154,7 +154,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
     }
 
     // If we are not on a server, don't specify the origin (it will crash)
-    if(this.forceSSL || window.location.protocol != 'file:') {
+    if(this.forceSSL || window.location.protocol === 'file:') {
       this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     } else {
       params.origin = window.location.protocol + '//' + window.location.host;
