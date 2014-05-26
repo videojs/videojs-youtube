@@ -4,6 +4,8 @@ dist
 node_modules
 npm-debug.log
 
+mongoose*.exe
+
 *.orig
 
 *.log
