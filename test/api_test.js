@@ -71,10 +71,11 @@ describe('Test basic API commands for YouTube tech', function() {
   it('should know duration', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
     
+    browser.driver.executeScript('videojs("vid1").play();');
     browser.driver.sleep(1000);
     
     browser.driver.executeScript('return videojs("vid1").duration()').then(function(duration) {
-      duration.should.equal(228);
+      duration.should.equal(227);
     });
   });
   
