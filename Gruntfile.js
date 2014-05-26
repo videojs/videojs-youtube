@@ -10,17 +10,41 @@ module.exports = function(grunt) {
         }
       }
     },
-    release: {
-      file: 'package.json',
-      commit:  true,
-      npm: true,
-      message: 'Release %version%',
-      tagName: 'v<%= version %>'
+    protractor: {
+      options: {
+        keepAlive: false,
+        noColor: false
+      },
+      local: {
+        options: {
+          configFile: 'test/local.config.js'
+        }
+      },
+      saucelabs: {
+        options: {
+          configFile: 'test/saucelabs.config.js',
+          args: {
+            sauceUser: process.env.SAUCE_USERNAME,
+            sauceKey: process.env.SAUCE_ACCESS_KEY
+          }
+        }
+      }
+    },
+    connect: {
+      server: {
+        options: {
+          hostname: 'localhost',
+          port: 8080
+        }
+      }
     }
   });
   
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-release');
+  grunt.loadNpmTasks('grunt-protractor-runner');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   
   grunt.registerTask('default', ['uglify']);
+  grunt.registerTask('test', ['connect:server', 'protractor:local']);
+  grunt.registerTask('travis', ['connect:server', 'protractor:saucelabs']);
 };
