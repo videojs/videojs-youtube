@@ -1,4 +1,7 @@
-# Video.js - YouTube Source Support [![Build Status](https://travis-ci.org/eXon/videojs-youtube.svg?branch=master)](https://travis-ci.org/eXon/videojs-youtube)
+# Video.js - YouTube Source Support
+[![Build Status](https://travis-ci.org/eXon/videojs-youtube.svg?branch=master)](https://travis-ci.org/eXon/videojs-youtube)
+[![Selenium Test Status](https://saucelabs.com/browser-matrix/videojs-youtube.svg)](https://saucelabs.com/u/videojs-youtube)
+<br /><br />
 Allows you to use a YouTube video within [Video.js](https://github.com/videojs/video.js/) and control it the same way as a regular video (the same methods and events are availables within the tech). It also add the video quality and let you change it as if you were on YouTube.
 
 ## Install
