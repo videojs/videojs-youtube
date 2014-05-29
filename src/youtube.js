@@ -154,11 +154,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
         }
     }
     
-    if(this.forceSSL) {
-      this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
-    } else {
-      this.el_.src = window.location.protocol + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
-    }
+    this.el_.src = ((this.forceSSL)? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
 
     player.ready(function(){
       var controlBar = self.player_el_.getElementsByClassName('vjs-control-bar')[0];
