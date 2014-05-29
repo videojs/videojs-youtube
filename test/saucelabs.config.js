@@ -36,7 +36,7 @@ exports.config = {
         build: process.env.TRAVIS_BUILD_NUMBER,
         'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
     }, {
-        name 'IE8 on XP',
+        name: 'IE8 on XP',
         browserName: 'internet explorer',
         platform: 'XP',
         version: '8',
