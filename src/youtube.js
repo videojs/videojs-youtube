@@ -213,8 +213,14 @@ videojs.Youtube = videojs.MediaTechController.extend({
     }
     
     this.on('dispose', function() {
+      this.ytplayer.destroy();
+
+      // If still connected to the DOM, remove it.
+      if (this.el_.parentNode) {
+        this.el_.parentNode.removeChild(this.el_);
+      }
+
       // Get rid of the created DOM elements
-      this.el_.parentNode.removeChild(this.el_);
       this.iframeblocker.parentNode.removeChild(this.iframeblocker);
       this.qualityButton.parentNode.removeChild(this.qualityButton);
       
