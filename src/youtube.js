@@ -152,9 +152,9 @@ videojs.Youtube = videojs.MediaTechController.extend({
           delete params[ prop ];
         }
     }
-
-    // If we are not on a server, don't specify the origin (it will crash)
-    if(this.forceSSL || window.location.protocol != 'file:') {
+    
+    if(this.forceSSL) {
+      params.origin = 'https://' + window.location.host;
       this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     } else {
       params.origin = window.location.protocol + '//' + window.location.host;
