@@ -4,7 +4,7 @@ var should = require('should'),
 describe('Test basic API commands for YouTube tech', function() {
   it('should play and pause', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
-    browser.driver.sleep(5000);
+    browser.driver.sleep(2000);
 
     browser.driver.executeScript('videojs("vid1").play()');
     browser.driver.sleep(2000);
@@ -23,7 +23,7 @@ describe('Test basic API commands for YouTube tech', function() {
   
   it('should change the source with regular URL', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
-    browser.driver.sleep(5000);
+    browser.driver.sleep(2000);
     
     browser.driver.executeScript('videojs("vid1").src("https://www.youtube.com/watch?v=y6Sxv-sUYtM");');
     browser.driver.sleep(2000);
@@ -35,7 +35,7 @@ describe('Test basic API commands for YouTube tech', function() {
   
   it('should change the source with Youtu.be URL', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
-    browser.driver.sleep(5000);
+    browser.driver.sleep(2000);
     
     browser.driver.executeScript('videojs("vid1").src("https://www.youtu.be/watch?v=y6Sxv-sUYtM");');
     browser.driver.sleep(2000);
@@ -47,7 +47,7 @@ describe('Test basic API commands for YouTube tech', function() {
   
   it('should change the source with Embeded URL', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
-    browser.driver.sleep(5000);
+    browser.driver.sleep(2000);
     
     browser.driver.executeScript('videojs("vid1").src("https://www.youtube.com/embed/y6Sxv-sUYtM");');
     browser.driver.sleep(2000);
@@ -59,7 +59,7 @@ describe('Test basic API commands for YouTube tech', function() {
   
   it('should change the source with playlist URL', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
-    browser.driver.sleep(5000);
+    browser.driver.sleep(2000);
     
     browser.driver.executeScript('videojs("vid1").src("http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F");');
     browser.driver.sleep(2000);
@@ -72,7 +72,7 @@ describe('Test basic API commands for YouTube tech', function() {
   // YouTube doesn't let you seek at the exact time that you want
   /*it('should seek at a specific time', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
-    browser.driver.sleep(5000);
+    browser.driver.sleep(2000);
     
     browser.driver.executeScript('videojs("vid1").currentTime(10);');
     browser.driver.sleep(2000);
@@ -84,7 +84,7 @@ describe('Test basic API commands for YouTube tech', function() {
   
   it('should know duration', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
-    browser.driver.sleep(5000);
+    browser.driver.sleep(2000);
     
     browser.driver.executeScript('videojs("vid1").play()');
     browser.driver.sleep(2000);
@@ -96,7 +96,7 @@ describe('Test basic API commands for YouTube tech', function() {
   
   it('should set the volume, mute and unmute', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
-    browser.driver.sleep(5000);
+    browser.driver.sleep(2000);
 
     browser.driver.executeScript('videojs("vid1").play();videojs("vid1").volume(0.5);');
     browser.driver.sleep(2000);
