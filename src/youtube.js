@@ -141,7 +141,8 @@ videojs.Youtube = videojs.MediaTechController.extend({
       autoplay: (this.playOnReady)?1:0,
       loop: (this.player_.options()['loop'])?1:0,
       list: this.playlistId,
-      vq: this.userQuality
+      vq: this.userQuality,
+      origin: window.location.protocol + '//' + window.location.host
     };
 
     // Delete unset properties
@@ -154,10 +155,8 @@ videojs.Youtube = videojs.MediaTechController.extend({
     }
     
     if(this.forceSSL) {
-      params.origin = 'https://' + window.location.host;
       this.el_.src = 'https://www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     } else {
-      params.origin = window.location.protocol + '//' + window.location.host;
       this.el_.src = window.location.protocol + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
     }
 
@@ -409,7 +408,7 @@ videojs.Youtube.makeQueryString = function(args){
   var array = [];
   for (var key in args){
     if (args.hasOwnProperty(key)){
-      array.push(encodeURIComponent(key) + '=' + encodeURIComponent(args[key]));
+      array.push(key + '=' + args[key]);
     }
   }
 
