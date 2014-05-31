@@ -1,6 +1,6 @@
 {
   "name": "videojs-youtube",
-  "description": "Support YouTube source for Video.js",
-  "version": "1.1.0",
+  "description": "YouTube playback technology for Video.js",
+  "version": "1.2.0",
   "main": ["dist/vjs.youtube.js"]
 }
