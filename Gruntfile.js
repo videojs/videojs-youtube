@@ -10,6 +10,13 @@ module.exports = function(grunt) {
         }
       }
     },
+    mocha_phantomjs: {
+      all: {
+        options: {
+          urls: ['http://localhost:8080/test/unit/runner.html']
+        }
+      }
+    },
     protractor: {
       options: {
         keepAlive: false,
@@ -17,12 +24,12 @@ module.exports = function(grunt) {
       },
       local: {
         options: {
-          configFile: 'test/local.config.js'
+          configFile: 'test/functional/local.config.js'
         }
       },
       saucelabs: {
         options: {
-          configFile: 'test/saucelabs.config.js',
+          configFile: 'test/functional/saucelabs.config.js',
           args: {
             sauceUser: process.env.SAUCE_USERNAME,
             sauceKey: process.env.SAUCE_ACCESS_KEY
@@ -43,16 +50,17 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-protractor-runner');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-mocha-phantomjs');
   
   grunt.registerTask('default', ['uglify']);
   
   grunt.registerTask('test', function() {
     if (process.env.TRAVIS_PULL_REQUEST === 'false') {
-      grunt.task.run(['connect:server', 'protractor:saucelabs']);
+      grunt.task.run(['connect:server', 'mocha_phantomjs', 'protractor:saucelabs']);
     } else if (process.env.TRAVIS) {
-      // TODO: Run tests with PhantomJS for pull request (we don't have access to saucelabs)
+      grunt.task.run(['connect:server', 'mocha_phantomjs']);
     } else {
-      grunt.task.run(['connect:server', 'protractor:local']);
+      grunt.task.run(['connect:server', 'mocha_phantomjs', 'protractor:local']);
     }
   });
 };
