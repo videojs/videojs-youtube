@@ -45,6 +45,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   
   grunt.registerTask('default', ['uglify']);
-  grunt.registerTask('test', ['connect:server', 'protractor:local']);
-  grunt.registerTask('travis', ['connect:server', 'protractor:saucelabs']);
+  
+  grunt.registerTask('test', function() {
+    if (process.env.TRAVIS_PULL_REQUEST === 'false') {
+      grunt.task.run(['connect:server', 'protractor:saucelabs']);
+    } else if (process.env.TRAVIS) {
+      // TODO: Run tests with PhantomJS for pull request (we don't have access to saucelabs)
+    } else {
+      grunt.task.run(['connect:server', 'protractor:local']);
+    }
+  });
 };
