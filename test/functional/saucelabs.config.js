@@ -12,7 +12,7 @@ exports.config = {
     }, {
       name: 'FireFox on Mac',
       browserName: 'firefox',
-      platform: 'OS X 10.8',
+      platform: 'OS X 10.6',
       version: '19',
       build: process.env.TRAVIS_BUILD_NUMBER,
       'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER
