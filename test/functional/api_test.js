@@ -97,7 +97,10 @@ describe('Test basic API commands for YouTube tech', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
     browser.driver.sleep(5000);
 
-    browser.driver.executeScript('videojs("vid1").play();videojs("vid1").volume(0.5);');
+    browser.driver.executeScript('videojs("vid1").play()');
+    browser.driver.sleep(5000);
+    
+    browser.driver.executeScript('videojs("vid1").volume(0.5)');
     browser.driver.sleep(5000);
     
     browser.driver.executeScript('return videojs("vid1").volume()').then(function(volume) {

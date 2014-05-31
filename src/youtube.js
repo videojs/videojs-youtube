@@ -125,6 +125,7 @@ videojs.Youtube = videojs.MediaTechController.extend({
 
     this.playOnReady = this.player_.options()['autoplay'] || false;
     this.forceSSL = this.player_.options()['forceSSL'] || true;
+    this.forceHTML5 = this.player_.options()['forceHTML5'] || true;
 
     var params = {
       enablejsapi: 1,
