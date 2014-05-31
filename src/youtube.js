@@ -99,7 +99,6 @@
       }
 
       addEventListener(this.iframeblocker, 'mousemove', function(e) {
-        console.log('MOUSE MOVE');
         if (!self.player_.userActive()) {
           self.player_.userActive(true);
         }
@@ -171,6 +170,8 @@
               self.player_.bigPlayButton.hide();
           }
         }
+        
+        player.trigger('loadstart');
       });
 
       if (this.player_.options()['ytcontrols']){
@@ -697,7 +698,7 @@
     if (!element.addEventListener) {
       element.attachEvent(event, cb);
     } else {
-      element.addEventListener(event, cb, false);
+      element.addEventListener(event, cb, true);
     }
   }
 
