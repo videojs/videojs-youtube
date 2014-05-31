@@ -99,6 +99,7 @@
       }
 
       addEventListener(this.iframeblocker, 'mousemove', function(e) {
+        console.log('MOUSE MOVE');
         if (!self.player_.userActive()) {
           self.player_.userActive(true);
         }
@@ -469,7 +470,7 @@
           var quality = this.getAttribute('data-val');
           self.ytplayer.setPlaybackQuality(quality);
           
-          setInnerText( self.qualityTitle, videojs.Youtube.parseQualityName(quality) );
+          setInnerText(self.qualityTitle, videojs.Youtube.parseQualityName(quality) );
           
           var selected = self.qualityMenuContent.querySelector('.vjs-selected');
           if (selected) videojs.Youtube.removeClass(selected, 'vjs-selected');
@@ -679,6 +680,19 @@
   };
 
   // Cross-browsers support (IE8 wink wink)
+  function setInnerText(element, text) {
+    if (typeof element === 'undefined') { return false; }
+    
+    var textProperty = ('innerText' in element) ? 'innerText' : 'textContent';
+    
+    try {
+      element[textProperty] = text;
+    } catch (anException) {
+      //IE<9 FIX
+      element.setAttribute('innerText', text);
+    }
+  }
+  
   function addEventListener(element, event, cb) {
     if (!element.addEventListener) {
       element.attachEvent(event, cb);
