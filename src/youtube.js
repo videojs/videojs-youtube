@@ -679,18 +679,6 @@
   };
 
   // Cross-browsers support (IE8 wink wink)
-  function setInnerText(element, text) {
-    if (typeof element === 'undefined') { return false; }
-
-    var textProperty = ('innerText' in element) ? 'innerText' : 'textContent';
-    try {
-      element[textProperty] = text;
-    } catch (anException) {
-      //IE<9 FIX
-      element.setAttribute('innerText', text);
-    }
-  };
-
   function addEventListener(element, event, cb) {
     if (!element.addEventListener) {
       element.attachEvent(event, cb);
@@ -703,14 +691,19 @@
 // Keep the iframeblocker in front of the player when the user is inactive
 // (ONLY way because the iframe is so selfish with events)
   var style = document.createElement('style');
-  style.type = 'text/css';
-  var css = ' \
-  .vjs-youtube .vjs-poster { background-size: cover; }\
+  var def = ' \
+  .vjs-youtube .vjs-poster { background-size: 100%!important; }\
   .vjs-poster, .vjs-loading-spinner, .vjs-big-play-button, .vjs-text-track-display{ pointer-events: none !important; }\
   .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:2; }\
   .vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } \
   .vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }\
-  ';
-  setInnerText(style, css);  
+  '; 
+  style.setAttribute('type', 'text/css');
   document.getElementsByTagName('head')[0].appendChild(style);
+  
+  if (style.styleSheet) {
+    style.styleSheet.cssText = def;
+  } else {
+    style.appendChild(document.createTextNode(def));
+  }
 })();
