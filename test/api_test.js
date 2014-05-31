@@ -70,7 +70,7 @@ describe('Test basic API commands for YouTube tech', function() {
     });
   });
   
-  // YouTube doesn't let you seek at the exact time that you want
+  // YouTube doesn't seek it until it is ready and we can't know the loading delay
   /*it('should seek at a specific time', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
     browser.driver.sleep(2000);
@@ -90,7 +90,7 @@ describe('Test basic API commands for YouTube tech', function() {
     browser.driver.sleep(2000);
     
     browser.driver.executeScript('return videojs("vid1").duration()').then(function(duration) {
-      duration.should.equal(227);
+      duration.should.be.within(227, 228);
     });
   });
   
