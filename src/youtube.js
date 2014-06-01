@@ -44,6 +44,10 @@
       this.qualityTitle = document.createElement('span');
       qualityContent.appendChild(this.qualityTitle);
       
+      if (player.options()['quality'] !== 'undefined') {
+        setInnerText(this.qualityTitle, player.options()['quality']);
+      }
+      
       var qualityMenu = document.createElement('div');
       qualityMenu.setAttribute('class', 'vjs-menu');
       this.qualityButton.appendChild(qualityMenu);
@@ -266,6 +270,7 @@
 
       if (match != null && match.length > 1) {
         this.userQuality = match[1];
+        setInnerText(this.qualityTitle, videojs.Youtube.parseQualityName(this.userQuality));
       }
     }
   };
@@ -273,6 +278,8 @@
   videojs.Youtube.prototype.src = function(src){
     if (src) {
       this.parseSrc(src);
+      
+      delete this.defaultQuality;
 
       if (this.videoId == null) {
         // Set the black background if the URL isn't valid
@@ -451,6 +458,10 @@
     var qualities = this.ytplayer.getAvailableQualityLevels();
     var self = this;
     
+    if (qualities.indexOf(this.userQuality) < 0) {
+      setInnerText(self.qualityTitle, videojs.Youtube.parseQualityName(this.defaultQuality));
+    }
+    
     if (qualities.length == 0) {
       this.qualityButton.style.display = 'none';
     } else {
@@ -471,6 +482,7 @@
           var quality = this.getAttribute('data-val');
           self.ytplayer.setPlaybackQuality(quality);
           
+          self.userQuality = quality;
           setInnerText(self.qualityTitle, videojs.Youtube.parseQualityName(quality) );
           
           var selected = self.qualityMenuContent.querySelector('.vjs-selected');
@@ -587,6 +599,14 @@
   };
 
   videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
+    if (typeof this.defaultQuality === 'undefined') {
+      this.defaultQuality = quality;
+      
+      if (typeof this.userQuality !== 'undefined') {
+        return;
+      }
+    }
+  
     this.quality = quality;
     setInnerText(this.qualityTitle, videojs.Youtube.parseQualityName(quality));
     
