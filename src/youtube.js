@@ -70,61 +70,7 @@
         allowFullScreen: 'true'
       });
 
-      // This makes sure the mousemove is not lost within the iframe
-      // Only way to make sure the control bar shows when we come back in the video player
-      this.iframeblocker = videojs.Component.prototype.createEl('div', {
-        className: 'iframeblocker'
-      });
-
-      var self = this;
-      this.toggleOnClick = !!this.player_.options()['toggleOnClick'];
-      if ( this.toggleOnClick ) {
-        var togglePlayback = function() {
-          if (self.paused()) {
-            self.play();
-          } else {
-            self.pause();
-          }
-        };
-
-        // Enable toggling playback on click
-        addEventListener(this.iframeblocker, 'click', togglePlayback);
-      } else {
-          var toggleActivity = function(){
-            if (self.player_.userActive() === true) {
-              self.player_.userActive(false);
-            } else {
-              self.player_.userActive(true);
-            }
-          };
-
-          // Preserve setting user activity status on click (togglePlayback will do this via play() or pause())
-          addEventListener(this.iframeblocker, 'click', toggleActivity);
-      }
-
-      addEventListener(this.iframeblocker, 'mousemove', function(e) {
-        if (!self.player_.userActive()) {
-          self.player_.userActive(true);
-        }
-        
-        e.stopPropagation();
-        e.preventDefault();
-      });
-      addEventListener(this.iframeblocker, 'tap', function(){
-        if (self.player_.userActive() === true) {
-          self.player_.userActive(false);
-        } else {
-          self.player_.userActive(true);
-        }
-      });
-
-      if (!this.player_.options()['ytcontrols']) {
-        // Before the tech is ready, we have to take care of the play action
-        //this.iframeblocker.style.display = 'block';
-      }
-
-      this.player_el_.insertBefore(this.iframeblocker, this.player_el_.firstChild);
-      this.player_el_.insertBefore(this.el_, this.iframeblocker);
+      this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
 
       this.parseSrc(player.options()['src']);
 
@@ -160,8 +106,43 @@
           }
       }
       
-      this.el_.src = ((this.forceSSL)? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+      if (this.videoId == null) {
+        this.el_.src = 'about:blank';
+      } else {
+        this.el_.src = ((this.forceSSL)? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+        
+        if (this.player_.options()['ytcontrols']){
+          // Disable the video.js controls if we use the YouTube controls
+          this.player_.controls(false);
+        } else {
+          // Don't use player.poster(), it will fail here because the tech is still null in constructor
+          setTimeout(function() {
+          var posterEl = self.player_el_.querySelectorAll('.vjs-poster')[0];
+            posterEl.style.backgroundImage = 'url(https://img.youtube.com/vi/' + self.videoId + '/0.jpg)';
+            posterEl.style.display = '';
+            }, 100);
+        }
 
+        if (videojs.Youtube.apiReady){
+          this.loadYoutube();
+        } else {
+          // Add to the queue because the YouTube API is not ready
+          videojs.Youtube.loadingQueue.push(this);
+
+          // Load the YouTube API if it is the first YouTube video
+          if(!videojs.Youtube.apiLoading){
+            var tag = document.createElement('script');
+            tag.onerror = function(e) { self.onError(e) };
+            tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            videojs.Youtube.apiLoading = true;
+          }
+        }
+      }
+
+      var self = this;
+      
       player.ready(function(){
         var controlBar = self.player_el_.querySelectorAll('.vjs-control-bar')[0];
         controlBar.appendChild(self.qualityButton);
@@ -177,43 +158,6 @@
         
         player.trigger('loadstart');
       });
-
-      if (this.player_.options()['ytcontrols']){
-        // Disable the video.js controls if we use the YouTube controls
-        this.player_.controls(false);
-      } else {
-        // Show the YouTube poster if their is no custom poster
-        if (!this.player_.poster()) {
-          if (this.videoId == null) {
-            // Set the black background if their is no video initially
-            this.iframeblocker.style.backgroundColor = 'black';
-          } else {
-        // Don't use player.poster(), it will fail here because the tech is still null in constructor
-        setTimeout(function() {
-        var posterEl = self.player_el_.querySelectorAll('.vjs-poster')[0];
-          posterEl.style.backgroundImage = 'url(https://img.youtube.com/vi/' + self.videoId + '/0.jpg)';
-          posterEl.style.display = '';
-          }, 100);
-          }
-        }
-      }
-
-      if (videojs.Youtube.apiReady){
-        this.loadYoutube();
-      } else {
-        // Add to the queue because the YouTube API is not ready
-        videojs.Youtube.loadingQueue.push(this);
-
-        // Load the YouTube API if it is the first YouTube video
-        if(!videojs.Youtube.apiLoading){
-          var tag = document.createElement('script');
-          tag.onerror = function(e) { self.onError(e) };
-          tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
-          var firstScriptTag = document.getElementsByTagName('script')[0];
-          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-          videojs.Youtube.apiLoading = true;
-        }
-      }
       
       this.on('dispose', function() {
         this.ytplayer.destroy();
@@ -224,7 +168,6 @@
         }
 
         // Get rid of the created DOM elements
-        this.iframeblocker.parentNode.removeChild(this.iframeblocker);
         this.qualityButton.parentNode.removeChild(this.qualityButton);
         
         if (typeof this.player_.loadingSpinner != 'undefined') {
@@ -282,9 +225,7 @@
       delete this.defaultQuality;
 
       if (this.videoId == null) {
-        // Set the black background if the URL isn't valid
-        this.iframeblocker.style.backgroundColor = 'black';
-        this.iframeblocker.style.display = 'block';
+        // Invalid URL
       } else {
         if (this.player_.options()['autoplay']) {
           this.ytplayer.loadVideoById({
@@ -300,8 +241,6 @@
 
         // Update the poster
         this.player_el_.querySelectorAll('.vjs-poster')[0].style.backgroundImage = 'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
-        this.iframeblocker.style.backgroundColor = '';
-        this.iframeblocker.style.display = '';
         this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
       }
     }
@@ -438,7 +377,6 @@
 
     // Let the player take care of itself as soon as the YouTube is ready
     // The loading spinner while waiting for the tech would be impossible otherwise
-    this.iframeblocker.style.display = '';
     if (typeof this.player_.loadingSpinner != 'undefined') {
         this.player_.loadingSpinner.hide();
     }
@@ -663,7 +601,6 @@
       this.player_.bigPlayButton.hide();
       this.player_.loadingSpinner.hide();
       this.player_.posterImage.hide();
-      this.iframeblocker.style.display = '';
     }
   };
 
@@ -723,14 +660,11 @@
   }
 
 // Stretch the YouTube poster
-// Keep the iframeblocker in front of the player when the user is inactive
-// (ONLY way because the iframe is so selfish with events)
   var style = document.createElement('style');
   var def = ' \
   .vjs-youtube .vjs-poster { background-size: 100%!important; }\
   .vjs-poster, .vjs-loading-spinner, .vjs-big-play-button, .vjs-text-track-display{ pointer-events: none !important; }\
-  .iframeblocker { display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:2; }\
-  .vjs-youtube.vjs-user-inactive .iframeblocker { display:block; } \
+  .vjs-youtube.vjs-user-inactive .vjs-tech { pointer-events: none; }\
   .vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }\
   '; 
   style.setAttribute('type', 'text/css');
