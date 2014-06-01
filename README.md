@@ -1,5 +1,4 @@
-# Video.js - YouTube Playback Technology
-[![Build Status](https://travis-ci.org/eXon/videojs-youtube.svg?branch=master)](https://travis-ci.org/eXon/videojs-youtube)
+# YouTube Playback Technology<br />for [Video.js](https://github.com/videojs/video.js) [![Build Status](https://travis-ci.org/eXon/videojs-youtube.svg?branch=master)](https://travis-ci.org/eXon/videojs-youtube)
 [![Selenium Test Status](https://saucelabs.com/browser-matrix/videojs-youtube.svg)](https://saucelabs.com/u/videojs-youtube)
 <br /><br />
 YouTube playback technology for the [Video.js player](https://github.com/videojs/video.js/).
