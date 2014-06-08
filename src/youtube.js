@@ -77,6 +77,9 @@
         
         // IE10 and under doesn't support pointer-events: none on non-SVG element
         if (ieVersion < 11) this.addIframeBlocker();
+      } else if (!/(iPad|iPhone|iPod|android)/g.test(navigator.userAgent)) {
+        // the pointer-events: none block the mobile player
+        this.el_.className += ' onDesktop';
       }
 
       this.parseSrc(player.options()['src']);
@@ -704,7 +707,7 @@
   .vjs-youtube .vjs-poster { background-size: 100%!important; }\
   .vjs-poster, .vjs-loading-spinner, .vjs-big-play-button, .vjs-text-track-display{ pointer-events: none !important; }\
   .vjs-youtube.vjs-user-active .iframeblocker { display: none; }\
-  .vjs-youtube.vjs-user-inactive .vjs-tech { pointer-events: none; }\
+  .vjs-youtube.vjs-user-inactive .vjs-tech.onDesktop { pointer-events: none; }\
   .vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }\
   '; 
   style.setAttribute('type', 'text/css');
