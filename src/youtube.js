@@ -71,6 +71,13 @@
       });
 
       this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
+      
+      if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
+        var ieVersion = new Number(RegExp.$1);
+        
+        // IE10 and under doesn't support pointer-events: none on non-SVG element
+        if (ieVersion < 11) this.addIframeBlocker();
+      }
 
       this.parseSrc(player.options()['src']);
 
@@ -179,6 +186,31 @@
       });
     }
   });
+  
+  videojs.Youtube.prototype.addIframeBlocker = function(){
+    var iframeblocker = videojs.Component.prototype.createEl('div');
+    
+    iframeblocker.className = 'iframeblocker';
+    
+    iframeblocker.style.position = 'absolute';
+    iframeblocker.style.left = 0;
+    iframeblocker.style.right = 0;
+    iframeblocker.style.top = 0;
+    iframeblocker.style.bottom = 0;
+    iframeblocker.style.zIndex = 9999;
+    
+    var self = this;
+    addEventListener(iframeblocker, 'mousemove', function(e) {
+      if (!self.player_.userActive()) {
+        self.player_.userActive(true);
+      }
+      
+      e.stopPropagation();
+      e.preventDefault();
+    });
+    
+    this.player_el_.insertBefore(iframeblocker, this.el_.nextSibling);
+  };
 
   videojs.Youtube.prototype.parseSrc = function(src){
     this.srcVal = src;
@@ -664,6 +696,7 @@
   var def = ' \
   .vjs-youtube .vjs-poster { background-size: 100%!important; }\
   .vjs-poster, .vjs-loading-spinner, .vjs-big-play-button, .vjs-text-track-display{ pointer-events: none !important; }\
+  .vjs-youtube.vjs-user-active .iframeblocker { display: none; }\
   .vjs-youtube.vjs-user-inactive .vjs-tech { pointer-events: none; }\
   .vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }\
   '; 
