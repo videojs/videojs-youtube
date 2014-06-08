@@ -76,7 +76,7 @@
         var ieVersion = new Number(RegExp.$1);
         
         // IE10 and under doesn't support pointer-events: none on non-SVG element
-        if (ieVersion < 11) this.addIframeBlocker();
+        if (ieVersion < 11) this.addIframeBlocker(ieVersion);
       } else if (!/(iPad|iPhone|iPod|android)/g.test(navigator.userAgent)) {
         // the pointer-events: none block the mobile player
         this.el_.className += ' onDesktop';
@@ -195,7 +195,7 @@
     }
   });
   
-  videojs.Youtube.prototype.addIframeBlocker = function(){
+  videojs.Youtube.prototype.addIframeBlocker = function(ieVersion){
     this.iframeblocker = videojs.Component.prototype.createEl('div');
     
     this.iframeblocker.className = 'iframeblocker';
@@ -206,6 +206,13 @@
     this.iframeblocker.style.top = 0;
     this.iframeblocker.style.bottom = 0;
     this.iframeblocker.style.zIndex = 9999;
+    
+    // Odd quirk for IE8 (doesn't support rgba)
+    if (ieVersion < 9) {
+      this.iframeblocker.style.opacity = 0.01;
+    } else {
+      this.iframeblocker.style.background = 'rgba(255, 255, 255, 0.01)';
+    }
     
     var self = this;
     addEventListener(this.iframeblocker, 'mousemove', function(e) {
