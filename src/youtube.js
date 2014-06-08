@@ -169,6 +169,9 @@
       this.on('dispose', function() {
         this.ytplayer.destroy();
 
+        // Remove the poster
+        this.player_el_.querySelectorAll('.vjs-poster')[0].style.backgroundImage = 'none';
+        
         // If still connected to the DOM, remove it.
         if (this.el_.parentNode) {
           this.el_.parentNode.removeChild(this.el_);
@@ -183,24 +186,26 @@
         if (typeof this.player_.bigPlayButton != 'undefined') {
             this.player_.bigPlayButton.hide();
         }
+        
+        if (this.iframeblocker) this.player_el_.removeChild(this.iframeblocker);
       });
     }
   });
   
   videojs.Youtube.prototype.addIframeBlocker = function(){
-    var iframeblocker = videojs.Component.prototype.createEl('div');
+    this.iframeblocker = videojs.Component.prototype.createEl('div');
     
-    iframeblocker.className = 'iframeblocker';
+    this.iframeblocker.className = 'iframeblocker';
     
-    iframeblocker.style.position = 'absolute';
-    iframeblocker.style.left = 0;
-    iframeblocker.style.right = 0;
-    iframeblocker.style.top = 0;
-    iframeblocker.style.bottom = 0;
-    iframeblocker.style.zIndex = 9999;
+    this.iframeblocker.style.position = 'absolute';
+    this.iframeblocker.style.left = 0;
+    this.iframeblocker.style.right = 0;
+    this.iframeblocker.style.top = 0;
+    this.iframeblocker.style.bottom = 0;
+    this.iframeblocker.style.zIndex = 9999;
     
     var self = this;
-    addEventListener(iframeblocker, 'mousemove', function(e) {
+    addEventListener(this.iframeblocker, 'mousemove', function(e) {
       if (!self.player_.userActive()) {
         self.player_.userActive(true);
       }
@@ -209,7 +214,7 @@
       e.preventDefault();
     });
     
-    this.player_el_.insertBefore(iframeblocker, this.el_.nextSibling);
+    this.player_el_.insertBefore(this.iframeblocker, this.el_.nextSibling);
   };
 
   videojs.Youtube.prototype.parseSrc = function(src){
