@@ -406,6 +406,8 @@
   videojs.Youtube.prototype.onReady = function(){
     this.isReady_ = true;
     this.triggerReady();
+    
+    this.player_.trigger('loadedmetadata');
 
     // Let the player take care of itself as soon as the YouTube is ready
     // The loading spinner while waiting for the tech would be impossible otherwise
