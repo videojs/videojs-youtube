@@ -4,7 +4,7 @@
 YouTube playback technology for the [Video.js player](https://github.com/videojs/video.js/).
 
 ## Install
-You can use bower (`bower videojs-youtube`), npm (`npm install videojs-youtube`) or the source and build it using `grunt`. Then, the only file you need is dist/vjs.youtube.js.
+You can use bower (`bower install videojs-youtube`), npm (`npm install videojs-youtube`) or the source and build it using `grunt`. Then, the only file you need is dist/vjs.youtube.js.
 
 ## Example
 ```html
