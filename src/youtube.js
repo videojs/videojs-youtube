@@ -45,7 +45,7 @@
       qualityContent.appendChild(this.qualityTitle);
       
       if (player.options()['quality'] !== 'undefined') {
-        setInnerText(this.qualityTitle, player.options()['quality']);
+        setInnerText(this.qualityTitle, player.options()['quality'] || 'auto');
       }
       
       var qualityMenu = document.createElement('div');
@@ -558,7 +558,7 @@
         return 'hd1080';
     }
 
-    return name;
+    return 'auto';
   };
 
   videojs.Youtube.parseQualityName = function(name) {
@@ -582,7 +582,7 @@
         return '1080p';
     }
     
-    return name;
+    return 'auto';
   };
 
   videojs.Youtube.prototype.onPlaybackQualityChange = function(quality){
