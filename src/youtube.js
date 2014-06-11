@@ -72,6 +72,17 @@
 
       this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
       
+	  if (this.player_.options()["blockClick"]){
+		  this.iframeClickBlock = document.createElement("div");
+		  this.iframeClickBlock.style.position = "absolute";
+		  this.iframeClickBlock.style.width = "100%";
+		  this.iframeClickBlock.style.height = "100%";
+		  this.iframeClickBlock.onclick = function(event){
+			  event.stopPropagation();
+		  };	  
+		  this.player_el_.insertBefore(this.iframeClickBlock, this.player_el_.firstChild.nextSibling);
+	  }
+	  
       if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
         var ieVersion = new Number(RegExp.$1);
         
