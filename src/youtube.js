@@ -334,8 +334,9 @@ videojs.Youtube.prototype.setVolume = function(percentAsDecimal){
   if (percentAsDecimal && percentAsDecimal != this.volumeVal) {
     this.ytplayer.setVolume(percentAsDecimal * 100.0);
     this.volumeVal = percentAsDecimal;
-    this.player_.trigger('volumechange');
   }
+
+  this.player_.trigger('volumechange');
 };
 
 videojs.Youtube.prototype.muted = function() { return this.mutedVal; };
