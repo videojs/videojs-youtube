@@ -85,8 +85,8 @@
       this.parseSrc(player.options()['src']);
 
       this.playOnReady = this.player_.options()['autoplay'] || false;
-      this.forceSSL = this.player_.options()['forceSSL'] || true;
-      this.forceHTML5 = this.player_.options()['forceHTML5'] || true;
+      this.forceSSL = (typeof this.player_.options()['forceSSL'] === 'undefined' || this.player_.options()['forceSSL'] === true ? true : false);
+      this.forceHTML5 = (typeof this.player_.options()['forceHTML5'] === 'undefined' || this.player_.options()['forceHTML5'] === true ? true : false);
 
       var params = {
         enablejsapi: 1,
