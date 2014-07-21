@@ -643,9 +643,8 @@
   };
 
   videojs.Youtube.prototype.onError = function(error){
-    this.player_.error = error;
-    this.player_.trigger('error');
-    
+    this.player_.error(error);
+
     if (error == 100 || error == 101 || error == 150) {
       this.player_.bigPlayButton.hide();
       this.player_.loadingSpinner.hide();
