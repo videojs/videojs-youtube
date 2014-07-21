@@ -107,6 +107,11 @@
         origin: window.location.protocol + '//' + window.location.host
       };
 
+      // When running with no Web server, we can't specify the origin or it will break the YouTube API messages
+      if (window.location.protocol === 'file:') {
+        delete params.origin;
+      }
+
       // Delete unset properties
       for ( var prop in params ) {
           if ( params.hasOwnProperty( prop ) &&
