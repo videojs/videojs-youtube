@@ -80,6 +80,7 @@
       } else if (!/(iPad|iPhone|iPod|android)/g.test(navigator.userAgent)) {
         // the pointer-events: none block the mobile player
         this.el_.className += ' onDesktop';
+        this.addIframeBlocker();
       }
 
       this.parseSrc(player.options()['src']);
@@ -129,7 +130,7 @@
         if (this.player_.options()['ytcontrols']){
           // Disable the video.js controls if we use the YouTube controls
           this.player_.controls(false);
-        } else if (typeof this.player_.poster() == 'undefined') {
+        } else if (typeof this.player_.poster() === 'undefined') {
           // Don't use player.poster(), it will fail here because the tech is still null in constructor
           setTimeout(function() {
           var posterEl = self.player_el_.querySelectorAll('.vjs-poster')[0];
@@ -137,6 +138,13 @@
             posterEl.style.display = '';
             }, 100);
         }
+
+        function onWaiting(e) {
+          // Make sure to hide the play button while the spinner is there
+          self.player_.bigPlayButton.hide();
+        }
+
+        this.player_.on('waiting', onWaiting);
 
         if (videojs.Youtube.apiReady){
           this.loadYoutube();
@@ -163,10 +171,10 @@
         controlBar.appendChild(self.qualityButton);
 
         if (self.playOnReady && !self.player_.options()['ytcontrols']) {
-          if (typeof self.player_.loadingSpinner != 'undefined') {
+          if (typeof self.player_.loadingSpinner !== 'undefined') {
               self.player_.loadingSpinner.show();
           }
-          if (typeof self.player_.bigPlayButton != 'undefined') {
+          if (typeof self.player_.bigPlayButton !== 'undefined') {
               self.player_.bigPlayButton.hide();
           }
         }
@@ -176,6 +184,10 @@
       
       this.on('dispose', function() {
         this.ytplayer.destroy();
+
+        if (!this.player_.options()['ytcontrols']) {
+          this.player_.off(onWaiting);
+        }
 
         // Remove the poster
         this.player_el_.querySelectorAll('.vjs-poster')[0].style.backgroundImage = 'none';
@@ -213,7 +225,7 @@
     this.iframeblocker.style.zIndex = 9999;
     
     // Odd quirk for IE8 (doesn't support rgba)
-    if (ieVersion < 9) {
+    if (ieVersion && ieVersion < 9) {
       this.iframeblocker.style.opacity = 0.01;
     } else {
       this.iframeblocker.style.background = 'rgba(255, 255, 255, 0.01)';
@@ -227,6 +239,14 @@
       
       e.stopPropagation();
       e.preventDefault();
+    });
+
+    addEventListener(this.iframeblocker, 'click', function(e) {
+      if (self.paused()) {
+        self.play();
+      } else {
+        self.pause();
+      }
     });
     
     this.player_el_.insertBefore(this.iframeblocker, this.el_.nextSibling);
@@ -304,6 +324,8 @@
 
   videojs.Youtube.prototype.play = function(){
     if (this.videoId != null) {
+      this.updateQualities();
+
       // Make sure to not display the spinner for mobile
       if (!this.player_.options()['ytcontrols']) {
         // Display the spinner until the video is playing by YouTube
@@ -447,6 +469,8 @@
   };
 
   videojs.Youtube.prototype.updateQualities = function(){
+    if (typeof this.ytplayer === 'undefined' || typeof this.ytplayer.getAvailableQualityLevels === 'undefined') return;
+    
     var qualities = this.ytplayer.getAvailableQualityLevels();
     var self = this;
     
@@ -508,12 +532,7 @@
           break;
 
         case YT.PlayerState.PLAYING:
-          // Make sure the big play is not there
-          if (typeof this.player_.bigPlayButton != 'undefined') {
-              this.player_.bigPlayButton.hide();
-          }
-
-          this.updateQualities();
+          this.play();
 
           this.player_.trigger('timeupdate');
           this.player_.trigger('durationchange');
@@ -522,6 +541,7 @@
           break;
 
         case YT.PlayerState.PAUSED:
+          this.pause();
           this.player_.trigger('pause');
           break;
 
