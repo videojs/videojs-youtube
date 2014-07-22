@@ -332,7 +332,7 @@
       
       if (this.isReady_){
         // Sync the player volume with YouTube
-        this.ytplayer.setVolume(this.player_.volume());
+        this.ytplayer.setVolume(this.player_.volume() * 100);
 
         if (this.volumeVal > 0) {
           this.ytplayer.unMute();
