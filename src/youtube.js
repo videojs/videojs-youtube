@@ -20,7 +20,7 @@
       this.features['timeupdateEvents'] = false;
 
       // Copy the JavaScript options if they exists
-      if (typeof options['source'] != 'undefined') {
+      if (typeof options['source'] !== 'undefined') {
         for (var key in options['source']) {
           player.options()[key] = options['source'][key];
         }
@@ -87,80 +87,7 @@
       this.forceSSL = (typeof this.player_.options()['forceSSL'] === 'undefined' || this.player_.options()['forceSSL'] === true ? true : false);
       this.forceHTML5 = (typeof this.player_.options()['forceHTML5'] === 'undefined' || this.player_.options()['forceHTML5'] === true ? true : false);
 
-      var params = {
-        enablejsapi: 1,
-        iv_load_policy: 3,
-        playerapiid: this.id(),
-        disablekb: 1,
-        wmode: 'transparent',
-        controls: (this.player_.options()['ytcontrols'])?1:0,
-        html5: (this.player_.options()['forceHTML5'])?1:null,
-        playsinline: (this.player_.options()['playsInline'])?1:0,
-        showinfo: 0,
-        modestbranding: 1,
-        rel: 0,
-        autoplay: (this.playOnReady)?1:0,
-        loop: (this.player_.options()['loop'])?1:0,
-        list: this.playlistId,
-        vq: this.userQuality,
-        origin: window.location.protocol + '//' + window.location.host
-      };
-
-      // When running with no Web server, we can't specify the origin or it will break the YouTube API messages
-      if (window.location.protocol === 'file:') {
-        delete params.origin;
-      }
-
-      // Delete unset properties
-      for ( var prop in params ) {
-          if ( params.hasOwnProperty( prop ) &&
-            ( typeof params[ prop ] === 'undefined' || params[ prop ] === null )
-           ) {
-            delete params[ prop ];
-          }
-      }
-      
-      if (this.videoId == null) {
-        this.el_.src = 'about:blank';
-      } else {
-        this.el_.src = ((this.forceSSL || window.location.protocol === 'file:')? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
-        
-        if (this.player_.options()['ytcontrols']){
-          // Disable the video.js controls if we use the YouTube controls
-          this.player_.controls(false);
-        } else if (typeof this.player_.poster() === 'undefined') {
-          // Don't use player.poster(), it will fail here because the tech is still null in constructor
-          setTimeout(function() {
-          var posterEl = self.player_el_.querySelectorAll('.vjs-poster')[0];
-            posterEl.style.backgroundImage = 'url(https://img.youtube.com/vi/' + self.videoId + '/0.jpg)';
-            posterEl.style.display = '';
-            }, 100);
-        }
-
-        function onWaiting(e) {
-          // Make sure to hide the play button while the spinner is there
-          self.player_.bigPlayButton.hide();
-        }
-
-        this.player_.on('waiting', onWaiting);
-
-        if (videojs.Youtube.apiReady){
-          this.loadYoutube();
-        } else {
-          // Add to the queue because the YouTube API is not ready
-          videojs.Youtube.loadingQueue.push(this);
-
-          // Load the YouTube API if it is the first YouTube video
-          if(!videojs.Youtube.apiLoading){
-            var tag = document.createElement('script');
-            tag.onerror = function(e) { self.onError(e) };
-            tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
-            var firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-            videojs.Youtube.apiLoading = true;
-          }
-        }
-      }
+      this.updateIframeSrc();
 
       var self = this;
       
@@ -209,6 +136,89 @@
       });
     }
   });
+
+  videojs.Youtube.prototype.updateIframeSrc = function() {
+    var params = {
+      enablejsapi: 1,
+      iv_load_policy: 3,
+      playerapiid: this.id(),
+      disablekb: 1,
+      wmode: 'transparent',
+      controls: (this.player_.options()['ytcontrols'])?1:0,
+      html5: (this.player_.options()['forceHTML5'])?1:null,
+      playsinline: (this.player_.options()['playsInline'])?1:0,
+      showinfo: 0,
+      modestbranding: 1,
+      rel: 0,
+      autoplay: (this.playOnReady)?1:0,
+      loop: (this.player_.options()['loop'])?1:0,
+      list: this.playlistId,
+      vq: this.userQuality,
+      origin: window.location.protocol + '//' + window.location.host
+    };
+
+    // When running with no Web server, we can't specify the origin or it will break the YouTube API messages
+    if (window.location.protocol === 'file:') {
+      delete params.origin;
+    }
+
+    // Delete unset properties
+    for ( var prop in params ) {
+      if ( params.hasOwnProperty( prop ) &&
+        ( typeof params[ prop ] === 'undefined' || params[ prop ] === null )
+        ) {
+        delete params[ prop ];
+      }
+    }
+
+    if (this.videoId == null) {
+      this.el_.src = 'about:blank';
+
+      var self = this;
+      setTimeout(function() {
+        self.triggerReady();
+      }, 500);
+    } else {
+      this.el_.src = ((this.forceSSL || window.location.protocol === 'file:')? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+
+      if (this.player_.options()['ytcontrols']){
+        // Disable the video.js controls if we use the YouTube controls
+        this.player_.controls(false);
+      } else if (typeof this.player_.poster() === 'undefined') {
+        // Don't use player.poster(), it will fail here because the tech is still null in constructor
+        setTimeout(function() {
+          var posterEl = self.player_el_.querySelectorAll('.vjs-poster')[0];
+          posterEl.style.backgroundImage = 'url(https://img.youtube.com/vi/' + self.videoId + '/0.jpg)';
+          posterEl.style.display = '';
+        }, 100);
+      }
+
+      var self = this;
+      function onWaiting(e) {
+        // Make sure to hide the play button while the spinner is there
+        self.player_.bigPlayButton.hide();
+      }
+
+      this.player_.on('waiting', onWaiting);
+
+      if (videojs.Youtube.apiReady){
+        this.loadYoutube();
+      } else {
+        // Add to the queue because the YouTube API is not ready
+        videojs.Youtube.loadingQueue.push(this);
+
+        // Load the YouTube API if it is the first YouTube video
+        if(!videojs.Youtube.apiLoading){
+          var tag = document.createElement('script');
+          tag.onerror = function(e) { self.onError(e) };
+          tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
+          var firstScriptTag = document.getElementsByTagName('script')[0];
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+          videojs.Youtube.apiLoading = true;
+        }
+      }
+    }
+  };
   
   videojs.Youtube.prototype.addIframeBlocker = function(ieVersion){
     this.iframeblocker = videojs.Component.prototype.createEl('div');
@@ -289,8 +299,13 @@
   };
 
   videojs.Youtube.prototype.src = function(src){
-    if (src) {
+    if (typeof src !== 'undefined') {
       this.parseSrc(src);
+
+      if (this.el_.src === 'about:blank') {
+        this.updateIframeSrc();
+        return;
+      }
       
       delete this.defaultQuality;
 
