@@ -331,6 +331,15 @@
       }
       
       if (this.isReady_){
+        // Sync the player volume with YouTube
+        this.ytplayer.setVolume(this.player_.volume());
+
+        if (this.volumeVal > 0) {
+          this.ytplayer.unMute();
+        } else {
+          this.ytplayer.mute();
+        }
+
         this.ytplayer.playVideo();
       } else {
         this.playOnReady = true;
@@ -348,6 +357,7 @@
   videojs.Youtube.prototype.volume = function() {
     if (this.ytplayer && isNaN(this.volumeVal)) {
       this.volumeVal = this.ytplayer.getVolume() / 100.0;
+      this.player_.volume(this.volumeVal);
     }
 
     return this.volumeVal;
@@ -365,11 +375,14 @@
   videojs.Youtube.prototype.setMuted = function(muted) {
     if (muted) {
       this.ytplayer.mute();
+      this.player_.volume(0);
     } else {
       this.ytplayer.unMute();
+      this.player_.volume(this.volumeVal);
     }
 
     this.mutedVal = muted;
+
     this.player_.trigger('volumechange');
   };
 
