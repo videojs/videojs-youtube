@@ -123,7 +123,7 @@
       if (this.videoId == null) {
         this.el_.src = 'about:blank';
       } else {
-        this.el_.src = ((this.forceSSL)? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+        this.el_.src = ((this.forceSSL || window.location.protocol === 'file:')? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
         
         if (this.player_.options()['ytcontrols']){
           // Disable the video.js controls if we use the YouTube controls
