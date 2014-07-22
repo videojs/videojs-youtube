@@ -74,9 +74,7 @@
       
       if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
         var ieVersion = new Number(RegExp.$1);
-        
-        // IE10 and under doesn't support pointer-events: none on non-SVG element
-        if (ieVersion < 11) this.addIframeBlocker(ieVersion);
+        this.addIframeBlocker(ieVersion);
       } else if (!/(iPad|iPhone|iPod|android)/g.test(navigator.userAgent)) {
         // the pointer-events: none block the mobile player
         this.el_.className += ' onDesktop';
