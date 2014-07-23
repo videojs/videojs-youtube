@@ -40,6 +40,8 @@
         }
       }
 
+      this.onWaiting = this.onWaiting.bind(this);
+
       this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
 
       // Save those for internal usage
