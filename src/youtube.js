@@ -107,7 +107,9 @@
       });
       
       this.on('dispose', function() {
-        this.ytplayer.destroy();
+        if(this.ytplayer) {
+          this.ytplayer.destroy();
+        }
 
         if (!this.player_.options()['ytcontrols']) {
           this.player_.off(onWaiting);
