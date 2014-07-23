@@ -20,7 +20,7 @@
       this.features['timeupdateEvents'] = false;
 
       // Copy the JavaScript options if they exists
-      if (typeof options['source'] != 'undefined') {
+      if (typeof options['source'] !== 'undefined') {
         for (var key in options['source']) {
           player.options()[key] = options['source'][key];
         }
@@ -64,22 +64,20 @@
         scrolling: 'no',
         marginWidth: 0,
         marginHeight: 0,
-        frameBorder: 0,
-        webkitAllowFullScreen: 'true',
-        mozallowfullscreen: 'true',
-        allowFullScreen: 'true'
+        frameBorder: 0
       });
+
+      this.el_.setAttribute('allowFullScreen', '');
 
       this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
       
       if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
         var ieVersion = new Number(RegExp.$1);
-        
-        // IE10 and under doesn't support pointer-events: none on non-SVG element
-        if (ieVersion < 11) this.addIframeBlocker(ieVersion);
+        this.addIframeBlocker(ieVersion);
       } else if (!/(iPad|iPhone|iPod|android)/g.test(navigator.userAgent)) {
         // the pointer-events: none block the mobile player
         this.el_.className += ' onDesktop';
+        this.addIframeBlocker();
       }
 
       this.parseSrc(player.options()['src']);
@@ -88,68 +86,7 @@
       this.forceSSL = (typeof this.player_.options()['forceSSL'] === 'undefined' || this.player_.options()['forceSSL'] === true ? true : false);
       this.forceHTML5 = (typeof this.player_.options()['forceHTML5'] === 'undefined' || this.player_.options()['forceHTML5'] === true ? true : false);
 
-      var params = {
-        enablejsapi: 1,
-        iv_load_policy: 3,
-        playerapiid: this.id(),
-        disablekb: 1,
-        wmode: 'transparent',
-        controls: (this.player_.options()['ytcontrols'])?1:0,
-        html5: (this.player_.options()['forceHTML5'])?1:null,
-        playsinline: (this.player_.options()['playsInline'])?1:0,
-        showinfo: 0,
-        modestbranding: 1,
-        rel: 0,
-        autoplay: (this.playOnReady)?1:0,
-        loop: (this.player_.options()['loop'])?1:0,
-        list: this.playlistId,
-        vq: this.userQuality,
-        origin: window.location.protocol + '//' + window.location.host
-      };
-
-      // Delete unset properties
-      for ( var prop in params ) {
-          if ( params.hasOwnProperty( prop ) &&
-            ( typeof params[ prop ] === 'undefined' || params[ prop ] === null )
-           ) {
-            delete params[ prop ];
-          }
-      }
-      
-      if (this.videoId == null) {
-        this.el_.src = 'about:blank';
-      } else {
-        this.el_.src = ((this.forceSSL)? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
-        
-        if (this.player_.options()['ytcontrols']){
-          // Disable the video.js controls if we use the YouTube controls
-          this.player_.controls(false);
-        } else if (typeof this.player_.poster() == 'undefined') {
-          // Don't use player.poster(), it will fail here because the tech is still null in constructor
-          setTimeout(function() {
-          var posterEl = self.player_el_.querySelectorAll('.vjs-poster')[0];
-            posterEl.style.backgroundImage = 'url(https://img.youtube.com/vi/' + self.videoId + '/0.jpg)';
-            posterEl.style.display = '';
-            }, 100);
-        }
-
-        if (videojs.Youtube.apiReady){
-          this.loadYoutube();
-        } else {
-          // Add to the queue because the YouTube API is not ready
-          videojs.Youtube.loadingQueue.push(this);
-
-          // Load the YouTube API if it is the first YouTube video
-          if(!videojs.Youtube.apiLoading){
-            var tag = document.createElement('script');
-            tag.onerror = function(e) { self.onError(e) };
-            tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
-            var firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-            videojs.Youtube.apiLoading = true;
-          }
-        }
-      }
+      this.updateIframeSrc();
 
       var self = this;
       
@@ -158,10 +95,10 @@
         controlBar.appendChild(self.qualityButton);
 
         if (self.playOnReady && !self.player_.options()['ytcontrols']) {
-          if (typeof self.player_.loadingSpinner != 'undefined') {
+          if (typeof self.player_.loadingSpinner !== 'undefined') {
               self.player_.loadingSpinner.show();
           }
-          if (typeof self.player_.bigPlayButton != 'undefined') {
+          if (typeof self.player_.bigPlayButton !== 'undefined') {
               self.player_.bigPlayButton.hide();
           }
         }
@@ -171,6 +108,10 @@
       
       this.on('dispose', function() {
         this.ytplayer.destroy();
+
+        if (!this.player_.options()['ytcontrols']) {
+          this.player_.off(onWaiting);
+        }
 
         // Remove the poster
         this.player_el_.querySelectorAll('.vjs-poster')[0].style.backgroundImage = 'none';
@@ -194,6 +135,89 @@
       });
     }
   });
+
+  videojs.Youtube.prototype.updateIframeSrc = function() {
+    var params = {
+      enablejsapi: 1,
+      iv_load_policy: 3,
+      playerapiid: this.id(),
+      disablekb: 1,
+      wmode: 'transparent',
+      controls: (this.player_.options()['ytcontrols'])?1:0,
+      html5: (this.player_.options()['forceHTML5'])?1:null,
+      playsinline: (this.player_.options()['playsInline'])?1:0,
+      showinfo: 0,
+      modestbranding: 1,
+      rel: 0,
+      autoplay: (this.playOnReady)?1:0,
+      loop: (this.player_.options()['loop'])?1:0,
+      list: this.playlistId,
+      vq: this.userQuality,
+      origin: window.location.protocol + '//' + window.location.host
+    };
+
+    // When running with no Web server, we can't specify the origin or it will break the YouTube API messages
+    if (window.location.protocol === 'file:') {
+      delete params.origin;
+    }
+
+    // Delete unset properties
+    for ( var prop in params ) {
+      if ( params.hasOwnProperty( prop ) &&
+        ( typeof params[ prop ] === 'undefined' || params[ prop ] === null )
+        ) {
+        delete params[ prop ];
+      }
+    }
+
+    if (this.videoId == null) {
+      this.el_.src = 'about:blank';
+
+      var self = this;
+      setTimeout(function() {
+        self.triggerReady();
+      }, 500);
+    } else {
+      this.el_.src = ((this.forceSSL || window.location.protocol === 'file:')? 'https:' : window.location.protocol) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+
+      if (this.player_.options()['ytcontrols']){
+        // Disable the video.js controls if we use the YouTube controls
+        this.player_.controls(false);
+      } else if (typeof this.player_.poster() === 'undefined') {
+        // Don't use player.poster(), it will fail here because the tech is still null in constructor
+        setTimeout(function() {
+          var posterEl = self.player_el_.querySelectorAll('.vjs-poster')[0];
+          posterEl.style.backgroundImage = 'url(https://img.youtube.com/vi/' + self.videoId + '/0.jpg)';
+          posterEl.style.display = '';
+        }, 100);
+      }
+
+      var self = this;
+      function onWaiting(e) {
+        // Make sure to hide the play button while the spinner is there
+        self.player_.bigPlayButton.hide();
+      }
+
+      this.player_.on('waiting', onWaiting);
+
+      if (videojs.Youtube.apiReady){
+        this.loadYoutube();
+      } else {
+        // Add to the queue because the YouTube API is not ready
+        videojs.Youtube.loadingQueue.push(this);
+
+        // Load the YouTube API if it is the first YouTube video
+        if(!videojs.Youtube.apiLoading){
+          var tag = document.createElement('script');
+          tag.onerror = function(e) { self.onError(e) };
+          tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ? '//www.youtube.com/iframe_api' : 'https://www.youtube.com/iframe_api';
+          var firstScriptTag = document.getElementsByTagName('script')[0];
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+          videojs.Youtube.apiLoading = true;
+        }
+      }
+    }
+  };
   
   videojs.Youtube.prototype.addIframeBlocker = function(ieVersion){
     this.iframeblocker = videojs.Component.prototype.createEl('div');
@@ -208,7 +232,7 @@
     this.iframeblocker.style.zIndex = 9999;
     
     // Odd quirk for IE8 (doesn't support rgba)
-    if (ieVersion < 9) {
+    if (ieVersion && ieVersion < 9) {
       this.iframeblocker.style.opacity = 0.01;
     } else {
       this.iframeblocker.style.background = 'rgba(255, 255, 255, 0.01)';
@@ -222,6 +246,14 @@
       
       e.stopPropagation();
       e.preventDefault();
+    });
+
+    addEventListener(this.iframeblocker, 'click', function(e) {
+      if (self.paused()) {
+        self.play();
+      } else {
+        self.pause();
+      }
     });
     
     this.player_el_.insertBefore(this.iframeblocker, this.el_.nextSibling);
@@ -266,8 +298,13 @@
   };
 
   videojs.Youtube.prototype.src = function(src){
-    if (src) {
+    if (typeof src !== 'undefined') {
       this.parseSrc(src);
+
+      if (this.el_.src === 'about:blank') {
+        this.updateIframeSrc();
+        return;
+      }
       
       delete this.defaultQuality;
 
@@ -299,6 +336,8 @@
 
   videojs.Youtube.prototype.play = function(){
     if (this.videoId != null) {
+      this.updateQualities();
+
       // Make sure to not display the spinner for mobile
       if (!this.player_.options()['ytcontrols']) {
         // Display the spinner until the video is playing by YouTube
@@ -306,6 +345,15 @@
       }
       
       if (this.isReady_){
+        // Sync the player volume with YouTube
+        this.ytplayer.setVolume(this.player_.volume() * 100);
+
+        if (this.volumeVal > 0) {
+          this.ytplayer.unMute();
+        } else {
+          this.ytplayer.mute();
+        }
+
         this.ytplayer.playVideo();
       } else {
         this.playOnReady = true;
@@ -323,6 +371,7 @@
   videojs.Youtube.prototype.volume = function() {
     if (this.ytplayer && isNaN(this.volumeVal)) {
       this.volumeVal = this.ytplayer.getVolume() / 100.0;
+      this.player_.volume(this.volumeVal);
     }
 
     return this.volumeVal;
@@ -340,11 +389,14 @@
   videojs.Youtube.prototype.setMuted = function(muted) {
     if (muted) {
       this.ytplayer.mute();
+      this.player_.volume(0);
     } else {
       this.ytplayer.unMute();
+      this.player_.volume(this.volumeVal);
     }
 
     this.mutedVal = muted;
+
     this.player_.trigger('volumechange');
   };
 
@@ -442,6 +494,8 @@
   };
 
   videojs.Youtube.prototype.updateQualities = function(){
+    if (typeof this.ytplayer === 'undefined' || typeof this.ytplayer.getAvailableQualityLevels === 'undefined') return;
+    
     var qualities = this.ytplayer.getAvailableQualityLevels();
     var self = this;
     
@@ -503,12 +557,7 @@
           break;
 
         case YT.PlayerState.PLAYING:
-          // Make sure the big play is not there
-          if (typeof this.player_.bigPlayButton != 'undefined') {
-              this.player_.bigPlayButton.hide();
-          }
-
-          this.updateQualities();
+          this.play();
 
           this.player_.trigger('timeupdate');
           this.player_.trigger('durationchange');
@@ -517,6 +566,7 @@
           break;
 
         case YT.PlayerState.PAUSED:
+          this.pause();
           this.player_.trigger('pause');
           break;
 
@@ -711,8 +761,9 @@
   var style = document.createElement('style');
   var def = ' \
   .vjs-youtube .vjs-poster { background-size: 100%!important; }\
-  .vjs-youtube .vjs-poster, .vjs-youtube .vjs-loading-spinner, \
-    .vjs-youtube .vjs-big-play-button, .vjs-youtube .vjs-text-track-display{\
+  .vjs-youtube .vjs-poster, \
+  .vjs-youtube .vjs-loading-spinner, \
+  .vjs-youtube .vjs-text-track-display{\
       pointer-events: none !important;\
    }\
   .vjs-youtube.vjs-user-active .iframeblocker { display: none; }\
