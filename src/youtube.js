@@ -134,7 +134,7 @@
         }
 
         if(!this.player_.options()['ytcontrols']) {
-          this.player_.off(this.onWaiting);
+          this.player_.off('waiting', this.onWaiting);
         }
 
         // Remove the poster
