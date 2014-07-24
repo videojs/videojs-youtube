@@ -557,8 +557,6 @@
           break;
 
         case YT.PlayerState.PLAYING:
-          this.play();
-
           this.player_.trigger('timeupdate');
           this.player_.trigger('durationchange');
           this.player_.trigger('playing');
@@ -566,7 +564,6 @@
           break;
 
         case YT.PlayerState.PAUSED:
-          this.pause();
           this.player_.trigger('pause');
           break;
 
