@@ -2,7 +2,8 @@ language: node_js
 node_js:
 - 0.1
 before_install:
-- npm install -g grunt-cli
+- npm install -g grunt-cli bower
+- bower install
 before_script:
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then curl https://gist.githubusercontent.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash; fi
 env:
