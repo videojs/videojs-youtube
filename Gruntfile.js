@@ -1,4 +1,6 @@
+/* jshint node: true */
 module.exports = function(grunt) {
+
   grunt.initConfig({
     uglify: {
       vjsyoutube: {

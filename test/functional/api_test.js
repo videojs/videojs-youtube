@@ -1,5 +1,8 @@
-var should = require('should'),
-    url = require('url');
+/* global browser, describe, it */
+/* jshint node: true */
+
+var should = require('should'); // jshint ignore:line
+var url = require('url');
 
     
 describe('Test basic API commands for YouTube tech', function() {
@@ -64,7 +67,8 @@ describe('Test basic API commands for YouTube tech', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
     browser.driver.sleep(5000);
     
-    browser.driver.executeScript('videojs("vid1").src("http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F");');
+    browser.driver.executeScript(
+      'videojs("vid1").src("http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F");');
     browser.driver.sleep(5000);
     
     browser.driver.executeScript('return videojs("vid1").src()').then(function(src) {
@@ -111,21 +115,21 @@ describe('Test basic API commands for YouTube tech', function() {
     });
     
     browser.driver.executeScript('return videojs("vid1").muted()').then(function(muted) {
-      muted.should.be.false;
+      muted.should.be.false; // jshint ignore:line
     });
     
     browser.driver.executeScript('videojs("vid1").play();videojs("vid1").muted(true);');
     browser.driver.sleep(5000);
     
     browser.driver.executeScript('return videojs("vid1").muted()').then(function(muted) {
-      muted.should.be.true;
+      muted.should.be.true; // jshint ignore:line
     });
     
     browser.driver.executeScript('videojs("vid1").play();videojs("vid1").muted(false);');
     browser.driver.sleep(5000);
     
     browser.driver.executeScript('return videojs("vid1").muted()').then(function(muted) {
-      muted.should.be.false;
+      muted.should.be.false; // jshint ignore:line
     });
   });
 });
