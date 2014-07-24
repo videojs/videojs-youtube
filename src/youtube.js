@@ -46,8 +46,8 @@
 
       // Save those for internal usage
       this.player_ = player;
-      this.player_el_ = document.getElementById(player.id());
-      this.player_el_.className += ' vjs-youtube';
+      this.playerEl_ = document.getElementById(player.id());
+      this.playerEl_.className += ' vjs-youtube';
 
       // Create the Quality button
       this.qualityButton = document.createElement('div');
@@ -85,7 +85,7 @@
 
       this.el_.setAttribute('allowFullScreen', '');
 
-      this.player_el_.insertBefore(this.el_, this.player_el_.firstChild);
+      this.playerEl_.insertBefore(this.el_, this.playerEl_.firstChild);
 
       if(/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
         var ieVersion = Number(RegExp.$1);
@@ -113,7 +113,7 @@
       var self = this;
 
       player.ready(function() {
-        var controlBar = self.player_el_.querySelectorAll('.vjs-control-bar')[0];
+        var controlBar = self.playerEl_.querySelectorAll('.vjs-control-bar')[0];
         controlBar.appendChild(self.qualityButton);
 
         if(self.playOnReady && !self.player_.options()['ytcontrols']) {
@@ -138,7 +138,7 @@
         }
 
         // Remove the poster
-        this.player_el_.querySelectorAll('.vjs-poster')[0].style.backgroundImage = 'none';
+        this.playerEl_.querySelectorAll('.vjs-poster')[0].style.backgroundImage = 'none';
 
         // If still connected to the DOM, remove it.
         if(this.el_.parentNode) {
@@ -156,7 +156,7 @@
         }
 
         if(this.iframeblocker) {
-          this.player_el_.removeChild(this.iframeblocker);
+          this.playerEl_.removeChild(this.iframeblocker);
         }
       });
     }
@@ -165,7 +165,9 @@
   videojs.Youtube.prototype.updateIframeSrc = function() {
     var params = {
       enablejsapi: 1,
+      /*jshint -W106 */
       iv_load_policy: 3,
+      /*jshint +W106 */
       playerapiid: this.id(),
       disablekb: 1,
       wmode: 'transparent',
@@ -215,7 +217,7 @@
       } else if(typeof this.player_.poster() === 'undefined') {
         // Don't use player.poster(), it will fail here because the tech is still null in constructor
         setTimeout(function() {
-          var posterEl = self.player_el_.querySelectorAll('.vjs-poster')[0];
+          var posterEl = self.playerEl_.querySelectorAll('.vjs-poster')[0];
           posterEl.style.backgroundImage = 'url(https://img.youtube.com/vi/' + self.videoId + '/0.jpg)';
           posterEl.style.display = '';
         }, 100);
@@ -288,7 +290,7 @@
       }
     });
 
-    this.player_el_.insertBefore(this.iframeblocker, this.el_.nextSibling);
+    this.playerEl_.insertBefore(this.iframeblocker, this.el_.nextSibling);
   };
 
   videojs.Youtube.prototype.parseSrc = function(src) {
@@ -354,7 +356,7 @@
         }
 
         // Update the poster
-        this.player_el_.querySelectorAll('.vjs-poster')[0].style.backgroundImage =
+        this.playerEl_.querySelectorAll('.vjs-poster')[0].style.backgroundImage =
           'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
         this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
       }
@@ -624,7 +626,7 @@
         case YT.PlayerState.ENDED:
           // Replace YouTube play button by our own
           if(!this.player_.options()['ytcontrols']) {
-            this.player_el_.querySelectorAll('.vjs-poster')[0].style.display = 'block';
+            this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = 'block';
             if(typeof this.player_.bigPlayButton !== 'undefined') {
               this.player_.bigPlayButton.show();
             }

@@ -1,5 +1,5 @@
 {
-  "amelcase" : true,
+  "camelcase" : true,
   "indent"    : 2,
   "maxlen"    : 120,
   "trailing"  : true,
@@ -15,6 +15,27 @@
   "devel"     : true,
   "node"      : false,
   "sub"       : true,
-  "quotmark"  : "single"
+  "quotmark"  : "single",
+  "predef": [
+    // standard
+    "document",
+    "window",
+    "console",
+    "alert",
+    "setTimeout",
+    "toString",
+    "isNaN",
+
+    // mocha
+    "describe",
+    "it",
+    "before",
+    "beforeEach",
+    "after",
+    "afterEach",
+
+    // video.js
+    "videojs"
+  ]
 }
 
