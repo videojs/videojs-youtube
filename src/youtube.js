@@ -110,7 +110,7 @@
         this.ytplayer.destroy();
 
         if (!this.player_.options()['ytcontrols']) {
-          this.player_.off(onWaiting);
+          this.player_.off('waiting');
         }
 
         // Remove the poster
