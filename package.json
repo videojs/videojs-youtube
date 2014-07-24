@@ -1,7 +1,7 @@
 {
   "name": "videojs-youtube",
   "description": "YouTube playback technology for Video.js",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "author": "Benoit Tremblay",
   "repository": {
     "type": "git",
