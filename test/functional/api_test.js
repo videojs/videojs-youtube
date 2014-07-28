@@ -132,4 +132,28 @@ describe('Test basic API commands for YouTube tech', function() {
       muted.should.be.false; // jshint ignore:line
     });
   });
+
+  it('should switch technologies', function() {
+    browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
+    browser.driver.sleep(5000);
+    browser.driver.executeScript('videojs("vid1").play()');
+
+    browser.driver.executeScript('videojs("vid1").src({ src: "http://vjs.zencdn.net/v/oceans.mp4", ' +
+      'type: "video/mp4" });');
+    browser.driver.sleep(1000);
+
+    browser.driver.executeScript('videojs("vid1").play()');
+    browser.driver.sleep(5000);
+
+    browser.driver.executeScript('videojs("vid1").src({src:"https://www.youtu.be/watch?v=y6Sxv-sUYtM", ' +
+      'type: "video/youtube" });');
+    browser.driver.sleep(5000);
+
+    browser.driver.executeScript('videojs("vid1").play()');
+    browser.driver.sleep(5000);
+
+    browser.driver.executeScript('return videojs("vid1").src()').then(function(src) {
+      src.should.equal('https://www.youtu.be/watch?v=y6Sxv-sUYtM');
+    });
+  });
 });
