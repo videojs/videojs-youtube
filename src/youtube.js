@@ -40,8 +40,6 @@
         }
       }
 
-      this.onWaiting = this.onWaiting.bind(this);
-
       this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
 
       // Save those for internal usage
@@ -223,7 +221,9 @@
         }, 100);
       }
 
-      this.player_.on('waiting', this.onWaiting);
+      this.player_.on('waiting', function() {
+        self.onWaiting();
+      });
 
       if(videojs.Youtube.apiReady) {
         this.loadYoutube();
