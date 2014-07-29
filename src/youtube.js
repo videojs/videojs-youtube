@@ -40,8 +40,6 @@
         }
       }
 
-      this.onWaiting = this.onWaiting.bind(this);
-
       this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
 
       // Save those for internal usage
@@ -134,7 +132,7 @@
         }
 
         if(!this.player_.options()['ytcontrols']) {
-          this.player_.off('waiting', this.onWaiting);
+          this.player_.off('waiting', this.bindedWaiting);
         }
 
         // Remove the poster
@@ -223,7 +221,11 @@
         }, 100);
       }
 
-      this.player_.on('waiting', this.onWaiting);
+      this.bindedWaiting = function() {
+        self.onWaiting();
+      };
+
+      this.player_.on('waiting', this.bindedWaiting);
 
       if(videojs.Youtube.apiReady) {
         this.loadYoutube();
