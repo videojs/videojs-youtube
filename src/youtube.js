@@ -550,8 +550,8 @@
     // this allows for the duration of the video (timeremaining) to be displayed if styled
     // to show the control bar initially. This gives the user the ability to see how long the video 
     // is before clicking play
-    this.player_.trigger('timeupdate');
     this.player_.trigger('durationchange');
+    this.player_.trigger('timeupdate');
 
     // Let the player take care of itself as soon as the YouTube is ready
     // The loading spinner while waiting for the tech would be impossible otherwise
