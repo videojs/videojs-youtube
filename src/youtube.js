@@ -373,7 +373,6 @@
 
   videojs.Youtube.prototype.play = function() {
     if(this.videoId !== null) {
-      this.updateQualities();
 
       // Make sure to not display the spinner for mobile
       if(!this.player_.options()['ytcontrols']) {
@@ -572,10 +571,6 @@
 
   videojs.Youtube.prototype.updateQualities = function() {
 
-    if(typeof this.ytplayer === 'undefined' || typeof this.ytplayer.getAvailableQualityLevels === 'undefined') {
-      return;
-    }
-
     function setupEventListener(el) {
       addEventListener(el, 'click', function() {
         var quality = this.getAttribute('data-val');
@@ -645,6 +640,7 @@
           break;
 
         case YT.PlayerState.PLAYING:
+          this.updateQualities();
           this.player_.trigger('timeupdate');
           this.player_.trigger('durationchange');
           this.player_.trigger('playing');
