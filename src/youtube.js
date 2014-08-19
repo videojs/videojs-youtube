@@ -572,7 +572,7 @@
 
   videojs.Youtube.prototype.updateQualities = function() {
 
-    if(typeof this.ytplayer === 'undefined' || typeof this.ytplayer.getAvailableQualityLevels === 'undefined') {
+    if(typeof this.ytplayer === 'undefined' || typeof this.ytplayer.getAvailableQualityLevels === 'undefined' || typeof this.ytplayer.getAvailableQualityLevels() === 'undefined') {
       return;
     }
 
