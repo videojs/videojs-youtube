@@ -144,7 +144,9 @@
         }
 
         // Get rid of the created DOM elements
-        this.qualityButton.parentNode.removeChild(this.qualityButton);
+        if (this.qualityButton.parentNode) {
+          this.qualityButton.parentNode.removeChild(this.qualityButton);
+        }
 
         if(typeof this.player_.loadingSpinner !== 'undefined') {
           this.player_.loadingSpinner.hide();
