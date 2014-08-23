@@ -25,11 +25,11 @@
   videojs.Youtube = videojs.MediaTechController.extend({
     /** @constructor */
     init: function(player, options, ready) {
-      videojs.MediaTechController.call(this, player, options, ready);
-
       // No event is triggering this for YouTube
       this.features['progressEvents'] = false;
       this.features['timeupdateEvents'] = false;
+
+      videojs.MediaTechController.call(this, player, options, ready);
 
       // Copy the JavaScript options if they exists
       if(typeof options['source'] !== 'undefined') {
