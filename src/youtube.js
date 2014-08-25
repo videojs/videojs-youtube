@@ -561,7 +561,7 @@
   QualityButton.prototype.createItems = function() {
     var items = [];
 
-    if (this.tech.ytplayer != null && this.tech.ytplayer.getAvailableQualityLevels != null) {
+    if (this.tech.ytplayer && this.tech.ytplayer.getAvailableQualityLevels) {
       var qualities = null;
       var current = null;
 
@@ -579,7 +579,7 @@
           {
             'label': videojs.Youtube.parseQualityName(focus),
             'quality': focus,
-            'selected': focus == current
+            'selected': focus === current
           }
         ));
       }
@@ -614,11 +614,19 @@
 
       options['label'] = this.label_;
       options['selected'] = this.selected_;
-      vjs.MenuItem.call(this, player, options);
+      videojs.MenuItem.call(this, player, options);
 
-      this.player_.on('ratechange', videojs.bind(this, this.update));
+      this.handlerUpdate = videojs.bind(this, this.update);
+
+      this.player_.on('ratechange', this.handlerUpdate);
     }
   });
+
+  QualityMenuItem.prototype.dispose = function() {
+    this.player_.off('ratechange', this.handlerUpdate);
+    
+    videojs.Component.prototype.dispose.call(this);
+  };
 
   QualityMenuItem.prototype.onClick = function() {
     videojs.MenuItem.prototype.onClick.call(this);
@@ -628,7 +636,7 @@
   };
 
   QualityMenuItem.prototype.update = function() {
-    this.selected(this.tech.quality == this.quality_);
+    this.selected(this.tech.quality === this.quality_);
   };
 
   videojs.Youtube.prototype.onStateChange = function(state) {
