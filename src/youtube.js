@@ -25,11 +25,16 @@
   videojs.Youtube = videojs.MediaTechController.extend({
     /** @constructor */
     init: function(player, options, ready) {
-      videojs.MediaTechController.call(this, player, options, ready);
-
       // No event is triggering this for YouTube
       this.features['progressEvents'] = false;
       this.features['timeupdateEvents'] = false;
+
+      videojs.MediaTechController.call(this, player, options, ready);
+
+      this.isIos = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
+      this.isAndroid = /(Android)/g.test( navigator.userAgent );
+      //used to prevent play events on IOS7 and Android > 4.2 until the user has clicked the player
+      this.playVideoIsAllowed = !(this.isIos || this.isAndroid);
 
       // Copy the JavaScript options if they exists
       if(typeof options['source'] !== 'undefined') {
@@ -321,7 +326,7 @@
       delete this.defaultQuality;
 
       if(this.videoId !== null) {
-        if(this.player_.options()['autoplay']) {
+        if(this.player_.options()['autoplay'] && this.playVideoIsAllowed) {
           this.ytplayer.loadVideoById({
             videoId: this.videoId,
             suggestedQuality: this.userQuality
@@ -366,7 +371,9 @@
           this.ytplayer.mute();
         }
 
-        this.ytplayer.playVideo();
+        if(this.playVideoIsAllowed) {
+          this.ytplayer.playVideo();
+        }
       } else {
         this.playOnReady = true;
       }
@@ -659,6 +666,7 @@
           break;
 
         case YT.PlayerState.PLAYING:
+          this.playVideoIsAllowed = true;
           this.qualityButton.refresh();
 
           this.player_.trigger('timeupdate');
