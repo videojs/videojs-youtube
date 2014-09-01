@@ -31,11 +31,6 @@
 
       videojs.MediaTechController.call(this, player, options, ready);
 
-      this.isIos = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
-      this.isAndroid = /(Android)/g.test( navigator.userAgent );
-      //used to prevent play events on IOS7 and Android > 4.2 until the user has clicked the player
-      this.playVideoIsAllowed = !(this.isIos || this.isAndroid);
-
       // Copy the JavaScript options if they exists
       if(typeof options['source'] !== 'undefined') {
         for(var key in options['source']) {
@@ -326,7 +321,7 @@
       delete this.defaultQuality;
 
       if(this.videoId !== null) {
-        if(this.player_.options()['autoplay'] && this.playVideoIsAllowed) {
+        if(this.player_.options()['autoplay']) {
           this.ytplayer.loadVideoById({
             videoId: this.videoId,
             suggestedQuality: this.userQuality
@@ -371,9 +366,7 @@
           this.ytplayer.mute();
         }
 
-        if(this.playVideoIsAllowed) {
-          this.ytplayer.playVideo();
-        }
+        this.ytplayer.playVideo();
       } else {
         this.playOnReady = true;
       }
@@ -557,7 +550,7 @@
       this.tech = tech;
 
       videojs.MenuButton.call(this, player, options);
-      this.el_.setAttribute('aria-label','Quality Menu');
+      this.el().setAttribute('aria-label','Quality Menu');
 
       if (this.items.length <= 1) {
         this.hide();
@@ -581,7 +574,7 @@
         focus = qualities[i];
 
         items.push(new QualityMenuItem(
-          this.player_,
+          this.player(),
           this.tech,
           {
             'label': videojs.Youtube.parseQualityName(focus),
@@ -592,24 +585,13 @@
       }
     }
 
-    return items;
-  };  
-  
-  QualityButton.prototype.refresh = function() {
-    this.menu.dispose();
-    this.menu = videojs.MenuButton.prototype.createMenu.call(this);
-    this.addChild(this.menu);
+    this.items = items;
 
-    if (this.items.length <= 1) {
-      this.hide();
-    } else {
-      this.show();
-    }    
+    return items;
   };
 
   QualityButton.prototype.buttonText = 'Quality';
   QualityButton.prototype.className = 'vjs-quality-button';
-
 
   var QualityMenuItem = videojs.MenuItem.extend({
     init: function(player, tech, options){
@@ -625,12 +607,12 @@
 
       this.handlerUpdate = videojs.bind(this, this.update);
 
-      this.player_.on('ratechange', this.handlerUpdate);
+      this.player().on('ratechange', this.handlerUpdate);
     }
   });
 
   QualityMenuItem.prototype.dispose = function() {
-    this.player_.off('ratechange', this.handlerUpdate);
+    this.player().off('ratechange', this.handlerUpdate);
     
     videojs.Component.prototype.dispose.call(this);
   };
@@ -666,8 +648,10 @@
           break;
 
         case YT.PlayerState.PLAYING:
-          this.playVideoIsAllowed = true;
-          this.qualityButton.refresh();
+          this.qualityButton.dispose();
+
+          this.qualityButton = new QualityButton(this.player_, this);
+          this.player_.controlBar.addChild(this.qualityButton);
 
           this.player_.trigger('timeupdate');
           this.player_.trigger('durationchange');
