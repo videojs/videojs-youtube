@@ -31,6 +31,11 @@
 
       videojs.MediaTechController.call(this, player, options, ready);
 
+      this.isIos = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
+      this.isAndroid = /(Android)/g.test( navigator.userAgent );
+      //used to prevent play events on IOS7 and Android > 4.2 until the user has clicked the player
+      this.playVideoIsAllowed = !(this.isIos || this.isAndroid);
+
       // Copy the JavaScript options if they exists
       if(typeof options['source'] !== 'undefined') {
         for(var key in options['source']) {
@@ -46,6 +51,29 @@
       this.player_ = player;
       this.playerEl_ = document.getElementById(player.id());
       this.playerEl_.className += ' vjs-youtube';
+
+      // Create the Quality button
+      this.qualityButton = document.createElement('div');
+      this.qualityButton.setAttribute('class', 'vjs-quality-button vjs-menu-button vjs-control');
+      this.qualityButton.setAttribute('tabindex', 0);
+
+      var qualityContent = document.createElement('div');
+      this.qualityButton.appendChild(qualityContent);
+
+      this.qualityTitle = document.createElement('span');
+      qualityContent.appendChild(this.qualityTitle);
+
+      if(player.options()['quality'] !== 'undefined') {
+        setInnerText(this.qualityTitle, player.options()['quality'] || 'auto');
+      }
+
+      var qualityMenu = document.createElement('div');
+      qualityMenu.setAttribute('class', 'vjs-menu');
+      this.qualityButton.appendChild(qualityMenu);
+
+      this.qualityMenuContent = document.createElement('ul');
+      this.qualityMenuContent.setAttribute('class', 'vjs-menu-content');
+      qualityMenu.appendChild(this.qualityMenuContent);
 
       this.id_ = this.player_.id() + '_youtube_api';
 
@@ -85,11 +113,12 @@
 
       this.updateIframeSrc();
 
-      this.qualityButton = new QualityButton(player, this);
-
       var self = this;
 
       player.ready(function() {
+        var controlBar = self.playerEl_.querySelectorAll('.vjs-control-bar')[0];
+        controlBar.appendChild(self.qualityButton);
+
         if(self.playOnReady && !self.player_.options()['ytcontrols']) {
           if(typeof self.player_.loadingSpinner !== 'undefined') {
             self.player_.loadingSpinner.show();
@@ -98,8 +127,6 @@
             self.player_.bigPlayButton.hide();
           }
         }
-
-        self.player_.controlBar.addChild(self.qualityButton);
 
         player.trigger('loadstart');
       });
@@ -121,7 +148,10 @@
           this.el_.parentNode.removeChild(this.el_);
         }
 
-        this.qualityButton.dispose();
+        // Get rid of the created DOM elements
+        if (this.qualityButton.parentNode) {
+          this.qualityButton.parentNode.removeChild(this.qualityButton);
+        }
 
         if(typeof this.player_.loadingSpinner !== 'undefined') {
           this.player_.loadingSpinner.hide();
@@ -305,6 +335,7 @@
 
       if(match !== null && match.length > 1) {
         this.userQuality = match[1];
+        setInnerText(this.qualityTitle, videojs.Youtube.parseQualityName(this.userQuality));
       }
     }
   };
@@ -321,7 +352,7 @@
       delete this.defaultQuality;
 
       if(this.videoId !== null) {
-        if(this.player_.options()['autoplay']) {
+        if(this.player_.options()['autoplay'] && this.playVideoIsAllowed) {
           this.ytplayer.loadVideoById({
             videoId: this.videoId,
             suggestedQuality: this.userQuality
@@ -366,7 +397,9 @@
           this.ytplayer.mute();
         }
 
-        this.ytplayer.playVideo();
+        if(this.playVideoIsAllowed) {
+          this.ytplayer.playVideo();
+        }
       } else {
         this.playOnReady = true;
       }
@@ -545,87 +578,55 @@
     }
   };
 
-  var QualityButton = videojs.MenuButton.extend({
-    init: function(player, tech, options) {
-      this.tech = tech;
+  videojs.Youtube.prototype.updateQualities = function() {
 
-      videojs.MenuButton.call(this, player, options);
-      this.el().setAttribute('aria-label','Quality Menu');
+    function setupEventListener(el) {
+      addEventListener(el, 'click', function() {
+        var quality = this.getAttribute('data-val');
+        self.ytplayer.setPlaybackQuality(quality);
 
-      if (this.items.length <= 1) {
-        this.hide();
+        self.userQuality = quality;
+        setInnerText(self.qualityTitle, videojs.Youtube.parseQualityName(quality));
+
+        var selected = self.qualityMenuContent.querySelector('.vjs-selected');
+        if(selected) {
+          videojs.Youtube.removeClass(selected, 'vjs-selected');
+        }
+
+        videojs.Youtube.addClass(this, 'vjs-selected');
+      });
+    }
+
+    var qualities = this.ytplayer.getAvailableQualityLevels();
+    var self = this;
+
+    if(qualities.indexOf(this.userQuality) < 0) {
+      setInnerText(self.qualityTitle, videojs.Youtube.parseQualityName(this.defaultQuality));
+    }
+
+    if(qualities.length === 0) {
+      this.qualityButton.style.display = 'none';
+    } else {
+      this.qualityButton.style.display = '';
+
+      while(this.qualityMenuContent.hasChildNodes()) {
+        this.qualityMenuContent.removeChild(this.qualityMenuContent.lastChild);
+      }
+
+      for(var i = 0; i < qualities.length; ++i) {
+        var el = document.createElement('li');
+        el.setAttribute('class', 'vjs-menu-item');
+        setInnerText(el, videojs.Youtube.parseQualityName(qualities[i]));
+        el.setAttribute('data-val', qualities[i]);
+        if(qualities[i] === this.quality) {
+          videojs.Youtube.addClass(el, 'vjs-selected');
+        }
+        setupEventListener(el);
+
+
+        this.qualityMenuContent.appendChild(el);
       }
     }
-  });
-
-  QualityButton.prototype.createItems = function() {
-    var items = [];
-
-    if (this.tech.ytplayer && this.tech.ytplayer.getAvailableQualityLevels) {
-      var qualities = null;
-      var current = null;
-
-      var focus = null;
-
-      qualities = this.tech.ytplayer.getAvailableQualityLevels();
-      current = this.tech.ytplayer.getPlaybackQuality();
-
-      for (var i = 0; i < qualities.length; i++) {
-        focus = qualities[i];
-
-        items.push(new QualityMenuItem(
-          this.player(),
-          this.tech,
-          {
-            'label': videojs.Youtube.parseQualityName(focus),
-            'quality': focus,
-            'selected': focus === current
-          }
-        ));
-      }
-    }
-
-    this.items = items;
-
-    return items;
-  };
-
-  QualityButton.prototype.buttonText = 'Quality';
-  QualityButton.prototype.className = 'vjs-quality-button';
-
-  var QualityMenuItem = videojs.MenuItem.extend({
-    init: function(player, tech, options){
-      this.tech = tech;
-      
-      this.label_ = options['label'];
-      this.selected_ = options['selected'];
-      this.quality_ = options['quality'];
-
-      options['label'] = this.label_;
-      options['selected'] = this.selected_;
-      videojs.MenuItem.call(this, player, options);
-
-      this.handlerUpdate = videojs.bind(this, this.update);
-
-      this.player().on('ratechange', this.handlerUpdate);
-    }
-  });
-
-  QualityMenuItem.prototype.dispose = function() {
-    this.player().off('ratechange', this.handlerUpdate);
-    
-    videojs.Component.prototype.dispose.call(this);
-  };
-
-  QualityMenuItem.prototype.onClick = function() {
-    videojs.MenuItem.prototype.onClick.call(this);
-
-    this.tech.ytplayer.setPlaybackQuality(this.quality_);
-    this.tech.userQuality = this.quality_;
-  };
-
-  QualityMenuItem.prototype.update = function() {
-    this.selected(this.tech.quality === this.quality_);
   };
 
   videojs.Youtube.prototype.onStateChange = function(state) {
@@ -648,11 +649,8 @@
           break;
 
         case YT.PlayerState.PLAYING:
-          this.qualityButton.dispose();
-
-          this.qualityButton = new QualityButton(this.player_, this);
-          this.player_.controlBar.addChild(this.qualityButton);
-
+          this.playVideoIsAllowed = true;
+          this.updateQualities();
           this.player_.trigger('timeupdate');
           this.player_.trigger('durationchange');
           this.player_.trigger('playing');
@@ -738,6 +736,7 @@
     }
 
     this.quality = quality;
+    setInnerText(this.qualityTitle, videojs.Youtube.parseQualityName(quality));
 
     switch(quality) {
       case 'medium':
@@ -829,6 +828,23 @@
     element.className = classNames.join(' ');
   };
 
+  // Cross-browsers support (IE8 wink wink)
+  function setInnerText(element, text) {
+    if(typeof element === 'undefined') {
+      return false;
+    }
+
+    var textProperty = ('innerText' in element) ? 'innerText' : 'textContent';
+
+    try {
+      element[textProperty] = text;
+    } catch(anException) {
+      //IE<9 FIX
+      element.setAttribute('innerText', text);
+    }
+  }
+
+
 // Stretch the YouTube poster
   var style = document.createElement('style');
   var def = ' ' +
@@ -840,7 +856,7 @@
     ' }' +
     '.vjs-youtube.vjs-user-active .iframeblocker { display: none; }' +
     '.vjs-youtube.vjs-user-inactive .vjs-tech.onDesktop { pointer-events: none; }' +
-    '.vjs-quality-button > div:first-child > span:first-child { position:relative;top:9px }';
+    '.vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }';
 
   style.setAttribute('type', 'text/css');
   document.getElementsByTagName('head')[0].appendChild(style);
