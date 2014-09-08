@@ -26,8 +26,8 @@
     /** @constructor */
     init: function(player, options, ready) {
       // No event is triggering this for YouTube
-      this.features['progressEvents'] = false;
-      this.features['timeupdateEvents'] = false;
+      this['featuresProgressEvents'] = false;
+      this['featuresTimeupdateEvents'] = false;
 
       videojs.MediaTechController.call(this, player, options, ready);
 
