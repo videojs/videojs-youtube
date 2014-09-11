@@ -428,7 +428,7 @@
     return this.srcVal;
   };
   videojs.Youtube.prototype.ended = function() {
-    return (this.ytplayer) ? (this.lastState == YT.PlayerState.ENDED) : false;
+    return (this.ytplayer) ? (this.lastState === YT.PlayerState.ENDED) : false;
   };
   
   videojs.Youtube.prototype.volume = function() {
