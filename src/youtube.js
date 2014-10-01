@@ -426,7 +426,10 @@
   videojs.Youtube.prototype.currentSrc = function() {
     return this.srcVal;
   };
-
+  videojs.Youtube.prototype.ended = function() {
+    return (this.ytplayer) ? (this.lastState === YT.PlayerState.ENDED) : false;
+  };
+  
   videojs.Youtube.prototype.volume = function() {
     if(this.ytplayer && isNaN(this.volumeVal)) {
       this.volumeVal = this.ytplayer.getVolume() / 100.0;
