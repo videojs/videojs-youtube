@@ -180,7 +180,6 @@
       html5: (this.player_.options()['forceHTML5']) ? 1 : null,
       playsinline: (this.player_.options()['playsInline']) ? 1 : 0,
       showinfo: 0,
-      modestbranding: 1,
       rel: 0,
       autoplay: (this.playOnReady) ? 1 : 0,
       loop: (this.player_.options()['loop']) ? 1 : 0,
@@ -528,7 +527,7 @@
 
   // Transform a JavaScript object into URL params
   videojs.Youtube.makeQueryString = function(args) {
-    var array = [];
+    var array = ['modestbranding=1'];
     for(var key in args) {
       if(args.hasOwnProperty(key)) {
         array.push(key + '=' + args[key]);
