@@ -485,13 +485,13 @@
 
   videojs.Youtube.prototype.supportsFullScreen = function() {
     if (typeof this.el_.webkitEnterFullScreen === 'function') {
-		
-		// Seems to be broken in Chromium/Chrome && Safari in Leopard
-		if (/Android/.test(videojs.USER_AGENT) || !/Chrome|Mac OS X 10.5/.test(videojs.USER_AGENT)) {
-			return true;
-		}
-	}
-	return false;
+        
+        // Seems to be broken in Chromium/Chrome && Safari in Leopard
+        if (/Android/.test(videojs.USER_AGENT) || !/Chrome|Mac OS X 10.5/.test(videojs.USER_AGENT)) {
+            return true;
+        }
+    }
+    return false;
   };
 
   // YouTube is supported on all platforms
@@ -573,7 +573,7 @@
 
     // Let the player take care of itself as soon as the YouTube is ready
     // The loading spinner while waiting for the tech would be impossible otherwise
-    if(typeof this.player_.loadingSpinner !== 'undefined') {
+    if (typeof this.player_.loadingSpinner !== 'undefined' && !this.isIos && !this.isAndroid) {
       this.player_.loadingSpinner.hide();
     }
 
@@ -861,9 +861,7 @@
     '.vjs-youtube .vjs-poster { background-size: 100%!important; }' +
     '.vjs-youtube .vjs-poster, ' +
     '.vjs-youtube .vjs-loading-spinner, ' +
-    '.vjs-youtube .vjs-text-track-display{' +
-    '    pointer-events: none !important;' +
-    ' }' +
+    '.vjs-youtube .vjs-big-play-button, .vjs-youtube .vjs-text-track-display{ pointer-events: none !important; }' +
     '.vjs-youtube.vjs-user-active .iframeblocker { display: none; }' +
     '.vjs-youtube.vjs-user-inactive .vjs-tech.onDesktop { pointer-events: none; }' +
     '.vjs-quality-button > div:first-child > span:first-child { position:relative;top:7px }';
