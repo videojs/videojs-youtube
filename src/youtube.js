@@ -484,7 +484,14 @@
   };
 
   videojs.Youtube.prototype.supportsFullScreen = function() {
-    return true;
+    if (typeof this.el_.webkitEnterFullScreen === 'function') {
+		
+		// Seems to be broken in Chromium/Chrome && Safari in Leopard
+		if (/Android/.test(videojs.USER_AGENT) || !/Chrome|Mac OS X 10.5/.test(videojs.USER_AGENT)) {
+			return true;
+		}
+	}
+	return false;
   };
 
   // YouTube is supported on all platforms
