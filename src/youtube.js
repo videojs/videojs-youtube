@@ -452,11 +452,12 @@
   };
   videojs.Youtube.prototype.setMuted = function(muted) {
     if(muted) {
+      this.storedVolume = this.volumeVal;
       this.ytplayer.mute();
       this.player_.volume(0);
     } else {
       this.ytplayer.unMute();
-      this.player_.volume(this.volumeVal);
+      this.player_.volume(this.storedVolume);
     }
 
     this.mutedVal = muted;
