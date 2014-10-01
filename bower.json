@@ -18,6 +18,6 @@
     "README.md"
   ],
   "dependencies": {
-    "video.js": "~4.7.3"
+    "video.js": "~4.9"
   }
 }
