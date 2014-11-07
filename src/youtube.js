@@ -93,7 +93,7 @@
       if(/MSIE (\d+\.\d+);/.test(navigator.userAgent)) {
         var ieVersion = Number(RegExp.$1);
         this.addIframeBlocker(ieVersion);
-      } else if(!/(iPad|iPhone|iPod|android)/g.test(navigator.userAgent)) {
+      } else if(!/(iPad|iPhone|iPod|Android)/g.test(navigator.userAgent)) {
         // the pointer-events: none block the mobile player
         this.el_.className += ' onDesktop';
         this.addIframeBlocker();
