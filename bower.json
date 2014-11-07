@@ -1,7 +1,7 @@
 {
   "name": "videojs-youtube",
   "description": "YouTube playback technology for Video.js",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "main": ["dist/vjs.youtube.js"],
   "ignore": [
     "examples",
@@ -12,7 +12,6 @@
     ".jshintrc",
     ".travis.yml",
     "bower.json",
-    "component.json",
     "Gruntfile.js",
     "package.json",
     "README.md"
