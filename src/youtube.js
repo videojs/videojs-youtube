@@ -258,7 +258,9 @@
 
   videojs.Youtube.prototype.onWaiting = function(/*e*/) {
     // Make sure to hide the play button while the spinner is there
-    this.player_.bigPlayButton.hide();
+    if(typeof this.player_.bigPlayButton !== 'undefined') {
+      this.player_.bigPlayButton.hide();
+    }
   };
 
   videojs.Youtube.prototype.addIframeBlocker = function(ieVersion) {
@@ -429,7 +431,7 @@
   videojs.Youtube.prototype.ended = function() {
     return (this.ytplayer) ? (this.lastState === YT.PlayerState.ENDED) : false;
   };
-  
+
   videojs.Youtube.prototype.volume = function() {
     if(this.ytplayer && isNaN(this.volumeVal)) {
       this.volumeVal = this.ytplayer.getVolume() / 100.0;
@@ -485,7 +487,7 @@
 
   videojs.Youtube.prototype.supportsFullScreen = function() {
     if (typeof this.el_.webkitEnterFullScreen === 'function') {
-        
+
         // Seems to be broken in Chromium/Chrome && Safari in Leopard
         if (/Android/.test(videojs.USER_AGENT) || !/Chrome|Mac OS X 10.5/.test(videojs.USER_AGENT)) {
             return true;
@@ -566,7 +568,7 @@
 
     // The duration is loaded so we might as well fire off the timeupdate and duration events
     // this allows for the duration of the video (timeremaining) to be displayed if styled
-    // to show the control bar initially. This gives the user the ability to see how long the video 
+    // to show the control bar initially. This gives the user the ability to see how long the video
     // is before clicking play
     this.player_.trigger('durationchange');
     this.player_.trigger('timeupdate');
