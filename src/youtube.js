@@ -218,7 +218,7 @@
       if(this.player_.options()['ytcontrols']) {
         // Disable the video.js controls if we use the YouTube controls
         this.player_.controls(false);
-      } else if(typeof this.player_.poster() === 'undefined') {
+      } else if(typeof this.player_.poster() === 'undefined' || this.player_.poster().length === 0) {
         // Don't use player.poster(), it will fail here because the tech is still null in constructor
         setTimeout(function() {
           var posterEl = self.playerEl_.querySelectorAll('.vjs-poster')[0];
@@ -226,7 +226,7 @@
           posterEl.style.display = '';
         }, 100);
       }
-
+      
       this.bindedWaiting = function() {
         self.onWaiting();
       };
