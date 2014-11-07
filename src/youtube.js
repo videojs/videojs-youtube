@@ -58,9 +58,11 @@
       this.qualityButton.setAttribute('tabindex', 0);
 
       var qualityContent = document.createElement('div');
+      qualityContent.setAttribute('class', 'vjs-control-content');
       this.qualityButton.appendChild(qualityContent);
 
       this.qualityTitle = document.createElement('span');
+      this.qualityTitle.setAttribute('class', 'vjs-control-text');
       qualityContent.appendChild(this.qualityTitle);
 
       if(player.options()['quality'] !== 'undefined') {
@@ -69,7 +71,7 @@
 
       var qualityMenu = document.createElement('div');
       qualityMenu.setAttribute('class', 'vjs-menu');
-      this.qualityButton.appendChild(qualityMenu);
+      qualityContent.appendChild(qualityMenu);
 
       this.qualityMenuContent = document.createElement('ul');
       this.qualityMenuContent.setAttribute('class', 'vjs-menu-content');
@@ -226,7 +228,7 @@
           posterEl.style.display = '';
         }, 100);
       }
-      
+
       this.bindedWaiting = function() {
         self.onWaiting();
       };
