@@ -1,7 +1,7 @@
 {
   "name": "videojs-youtube",
   "description": "YouTube playback technology for Video.js",
-  "version": "1.2.4",
+  "version": "1.2.7",
   "author": "Benoit Tremblay",
   "repository": {
     "type": "git",
@@ -10,14 +10,14 @@
   "devDependencies": {
     "grunt": "~0.4",
     "grunt-cli": "~0.1.0",
-    "grunt-contrib-jshint": "0.10.0",
-    "grunt-contrib-uglify": "~0.4.0",
-    "grunt-contrib-connect": "0.7.1",
-    "grunt-mocha-phantomjs": "0.5.0",
-    "grunt-protractor-runner": "1.0.0",
-    "protractor": "0.23.1",
-    "mocha": "1.19.0",
-    "should": "3.3.2"
+    "grunt-contrib-jshint": "~0.10",
+    "grunt-contrib-uglify": "~0.4",
+    "grunt-contrib-connect": "~0.7",
+    "grunt-mocha-phantomjs": "~0.5",
+    "grunt-protractor-runner": "~1.0",
+    "protractor": "~0.23",
+    "mocha": "~1.19",
+    "should": "~3.3"
   },
   "scripts": {
     "test": "grunt test"
