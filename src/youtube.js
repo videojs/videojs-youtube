@@ -275,7 +275,6 @@
     this.iframeblocker.style.right = 0;
     this.iframeblocker.style.top = 0;
     this.iframeblocker.style.bottom = 0;
-    this.iframeblocker.style.zIndex = 9999;
 
     // Odd quirk for IE8 (doesn't support rgba)
     if(ieVersion && ieVersion < 9) {
