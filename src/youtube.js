@@ -205,7 +205,7 @@
     }
     var self = this;
 
-    if(this.videoId === null) {
+    if(!this.videoId) {
       this.el_.src = 'about:blank';
       setTimeout(function() {
         self.triggerReady();
