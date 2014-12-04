@@ -118,8 +118,12 @@
       var self = this;
 
       player.ready(function() {
-        var controlBar = self.playerEl_.querySelectorAll('.vjs-control-bar')[0];
-        controlBar.appendChild(self.qualityButton);
+        if (self.player_.options()['controlBar']) {
+          var controlBar = self.playerEl_.querySelectorAll('.vjs-control-bar')[0];
+          if (controlBar) {
+            controlBar.appendChild(self.qualityButton);
+          }
+        }
 
         if(self.playOnReady && !self.player_.options()['ytcontrols']) {
           if(typeof self.player_.loadingSpinner !== 'undefined') {
