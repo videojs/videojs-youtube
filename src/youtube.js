@@ -224,7 +224,7 @@
       if(this.player_.options()['ytcontrols']) {
         // Disable the video.js controls if we use the YouTube controls
         this.player_.controls(false);
-      } else if(typeof this.player_.poster() === 'undefined' || this.player_.poster().length === 0) {
+      } else if(this.player_.options().poster && (typeof this.player_.poster() === 'undefined' || this.player_.poster().length === 0)) {
         // Don't use player.poster(), it will fail here because the tech is still null in constructor
         setTimeout(function() {
           var posterEl = self.playerEl_.querySelectorAll('.vjs-poster')[0];
@@ -371,9 +371,11 @@
         }
 
         // Update the poster
-        this.playerEl_.querySelectorAll('.vjs-poster')[0].style.backgroundImage =
-          'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
-        this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        if (this.player_.options().poster) {
+          this.playerEl_.querySelectorAll('.vjs-poster')[0].style.backgroundImage =
+            'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
+          this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        }
       }
       /* else Invalid URL */
     }
@@ -656,7 +658,9 @@
         case YT.PlayerState.ENDED:
           // Replace YouTube play button by our own
           if(!this.player_.options()['ytcontrols']) {
-            this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = 'block';
+            if (this.player_.options().poster) {
+              this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = 'block';
+            }
             if(typeof this.player_.bigPlayButton !== 'undefined') {
               this.player_.bigPlayButton.show();
             }
