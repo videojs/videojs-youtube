@@ -225,11 +225,9 @@
         // Disable the video.js controls if we use the YouTube controls
         this.player_.controls(false);
       } else if(typeof this.player_.poster() === 'undefined' || this.player_.poster().length === 0) {
-        // Don't use player.poster(), it will fail here because the tech is still null in constructor
+        // Wait here because the tech is still null in constructor
         setTimeout(function() {
-          var posterEl = self.playerEl_.querySelectorAll('.vjs-poster')[0];
-          posterEl.style.backgroundImage = 'url(https://img.youtube.com/vi/' + self.videoId + '/0.jpg)';
-          posterEl.style.display = '';
+          self.player_.poster('https://img.youtube.com/vi/' + self.videoId + '/0.jpg');
         }, 100);
       }
 
@@ -668,6 +666,8 @@
           break;
 
         case YT.PlayerState.PLAYING:
+          this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = '';
+
           this.playVideoIsAllowed = true;
           this.updateQualities();
           this.player_.trigger('timeupdate');
