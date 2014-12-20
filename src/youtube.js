@@ -426,6 +426,8 @@
   videojs.Youtube.prototype.setCurrentTime = function(seconds) {
     this.ytplayer.seekTo(seconds, true);
     this.player_.trigger('timeupdate');
+    this.player_.trigger('seeking');
+    this.isSeeking = true;
   };
   videojs.Youtube.prototype.duration = function() {
     return (this.ytplayer && this.ytplayer.getDuration) ? this.ytplayer.getDuration() : 0;
@@ -672,6 +674,11 @@
           this.player_.trigger('durationchange');
           this.player_.trigger('playing');
           this.player_.trigger('play');
+
+          if (this.isSeeking) {
+            this.player_.trigger('seeked');
+            this.isSeeking = false;
+          }
           break;
 
         case YT.PlayerState.PAUSED:
