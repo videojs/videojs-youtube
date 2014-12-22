@@ -35,6 +35,11 @@
       this.isAndroid = /(Android)/g.test( navigator.userAgent );
       //used to prevent play events on IOS7 and Android > 4.2 until the user has clicked the player
       this.playVideoIsAllowed = !(this.isIos || this.isAndroid);
+      
+      // autoplay is disabled for mobile
+      if (this.isIos || this.isAndroid) {
+        this.player_.options()['autoplay'] = false;
+      }
 
       // Copy the JavaScript options if they exists
       if(typeof options['source'] !== 'undefined') {
@@ -103,7 +108,7 @@
 
       this.parseSrc(player.options()['src']);
 
-      this.playOnReady = this.player_.options()['autoplay'] || false;
+      this.playOnReady = this.player_.options()['autoplay'] && this.playVideoIsAllowed;
       this.forceSSL = !!(
         typeof this.player_.options()['forceSSL'] === 'undefined' ||
           this.player_.options()['forceSSL'] === true
