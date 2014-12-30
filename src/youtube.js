@@ -25,6 +25,9 @@
   videojs.Youtube = videojs.MediaTechController.extend({
     /** @constructor */
     init: function(player, options, ready) {
+      // Save this for internal usage
+      this.player_ = player;
+      
       // No event is triggering this for YouTube
       this['featuresProgressEvents'] = false;
       this['featuresTimeupdateEvents'] = false;
@@ -52,8 +55,6 @@
 
       this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
 
-      // Save those for internal usage
-      this.player_ = player;
       this.playerEl_ = document.getElementById(player.id());
       this.playerEl_.className += ' vjs-youtube';
 
