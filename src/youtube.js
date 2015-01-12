@@ -126,7 +126,7 @@
       var self = this;
 
       player.ready(function() {
-        if (self.player_.options()['controlBar']) {
+        if (self.player_.options()['controls']) {
           var controlBar = self.playerEl_.querySelectorAll('.vjs-control-bar')[0];
           if (controlBar) {
             controlBar.appendChild(self.qualityButton);
