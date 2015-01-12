@@ -31,6 +31,8 @@
       // No event is triggering this for YouTube
       this['featuresProgressEvents'] = false;
       this['featuresTimeupdateEvents'] = false;
+      // Enable rate changes
+      this['featuresPlaybackRate'] = true;
 
       videojs.MediaTechController.call(this, player, options, ready);
 
@@ -432,6 +434,15 @@
     this.player_.trigger('timeupdate');
     this.player_.trigger('seeking');
     this.isSeeking = true;
+  };
+  videojs.Youtube.prototype.playbackRate = function() {
+    return (this.ytplayer && this.ytplayer.getPlaybackRate) ? this.ytplayer.getPlaybackRate() : 1.0;
+  };
+  videojs.Youtube.prototype.setPlaybackRate = function(suggestedRate) {
+    if (this.ytplayer && this.ytplayer.setPlaybackRate) {
+      this.ytplayer.setPlaybackRate(suggestedRate);
+      this.player_.trigger('ratechange');
+    }
   };
   videojs.Youtube.prototype.duration = function() {
     return (this.ytplayer && this.ytplayer.getDuration) ? this.ytplayer.getDuration() : 0;
