@@ -685,7 +685,7 @@
           break;
 
         case YT.PlayerState.PLAYING:
-          this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = '';
+          this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = 'none';
 
           this.playVideoIsAllowed = true;
           this.updateQualities();
