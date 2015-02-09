@@ -202,8 +202,10 @@
       origin: window.location.protocol + '//' + window.location.host
     };
 
+    var isLocalProtocol = window.location.protocol === 'file:' || window.location.protocol === 'app:';
+
     // When running with no Web server, we can't specify the origin or it will break the YouTube API messages
-    if(window.location.protocol === 'file:') {
+    if(isLocalProtocol) {
       delete params.origin;
     }
 
@@ -224,7 +226,7 @@
       }, 500);
     } else {
       this.el_.src = (
-        (this.forceSSL || window.location.protocol === 'file:') ?
+        (this.forceSSL || isLocalProtocol) ?
           'https:'
           : window.location.protocol
         ) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
@@ -257,7 +259,7 @@
           tag.onerror = function(e) {
             self.onError(e);
           };
-          tag.src = ( !this.forceSSL && window.location.protocol !== 'file:' ) ?
+          tag.src = ( !this.forceSSL && !isLocalProtocol ) ?
             '//www.youtube.com/iframe_api'
             : 'https://www.youtube.com/iframe_api';
           var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -683,7 +685,7 @@
           break;
 
         case YT.PlayerState.PLAYING:
-          this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = '';
+          this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = 'none';
 
           this.playVideoIsAllowed = true;
           this.updateQualities();
