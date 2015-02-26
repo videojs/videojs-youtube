@@ -421,7 +421,9 @@
   };
 
   videojs.Youtube.prototype.pause = function() {
-    this.ytplayer.pauseVideo();
+    if(this.ytplayer) {
+      this.ytplayer.pauseVideo();
+    }
   };
   videojs.Youtube.prototype.paused = function() {
     return (this.ytplayer) ?
