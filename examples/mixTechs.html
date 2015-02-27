@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="../bower_components/video.js/dist/video-js/video-js.css" />
+  <script src="../bower_components/video.js/dist/video-js/video.js"></script>
+  <script src='../src/youtube.js'></script>
+</head>
+<body>
+  <video id='vid1' src='' class='video-js vjs-default-skin' muted='muted' autoplay='autoplay' controls preload='auto' width='640' height='360'>
+  </video>
+  
+  <script>
+  videojs('vid1', { 
+    'techOrder': ['youtube', 'html5'], 
+    'src': 'http://www.youtube.com/watch?v=xjS6SftYQaQ'
+  }).ready(function() {
+    var player = this;
+    
+    setTimeout(function() {
+      player.src({ src: 'http://vjs.zencdn.net/v/oceans.mp4', type: 'video/mp4' });
+    }, 5000);
+    
+    setTimeout(function() {
+      player.src({ src: 'https://www.youtube.com/watch?v=b3KUyPKbR7Q', type: 'video/youtube' });
+    }, 10000);
+  });
+  </script>
+</body>
+</html>
