@@ -445,7 +445,10 @@
   videojs.Youtube.prototype.setPlaybackRate = function(suggestedRate) {
     if (this.ytplayer && this.ytplayer.setPlaybackRate) {
       this.ytplayer.setPlaybackRate(suggestedRate);
-      this.player_.trigger('ratechange');
+      var self = this;
+      setTimeout(function () {
+        this.player_.trigger('ratechange');
+      }, 100);
     }
   };
   videojs.Youtube.prototype.duration = function() {
@@ -544,10 +547,12 @@
 
   // Create the YouTube player
   videojs.Youtube.prototype.loadYoutube = function() {
+    var self = this;
     this.ytplayer = new YT.Player(this.id_, {
       events: {
         onReady: function(e) {
           e.target.vjsTech.onReady();
+          self.player_.trigger('ratechange');
         },
         onStateChange: function(e) {
           e.target.vjsTech.onStateChange(e.data);
