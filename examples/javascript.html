@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link type="text/css" rel="stylesheet" href="../bower_components/video.js/dist/video-js/video-js.css" />
-  <script src="../bower_components/video.js/dist/video-js/video.js"></script>
+  <link type="text/css" rel="stylesheet" href="../node_modules/video.js/dist/video-js/video-js.css" />
+  <script src="../node_modules/video.js/dist/video-js/video.js"></script>
   <script src="../src/youtube.js"></script>
 </head>
 <body>
   <video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
   </video>
-  
+
   <script>
   videojs('vid1', { "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }).ready(function() {
     // Cue a video using ended event

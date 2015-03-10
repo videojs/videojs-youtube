@@ -7,17 +7,20 @@
     "type": "git",
     "url": "https://github.com/eXon/videojs-youtube.git"
   },
+  "dependencies": {
+    "video.js": "^4.12.4"
+  },
   "devDependencies": {
     "grunt": "~0.4",
     "grunt-cli": "~0.1.0",
-    "grunt-contrib-jshint": "~0.10",
-    "grunt-contrib-uglify": "~0.4",
-    "grunt-contrib-connect": "~0.7",
-    "grunt-mocha-phantomjs": "~0.5",
-    "grunt-protractor-runner": "~1.0",
-    "protractor": "~0.23",
-    "mocha": "~1.19",
-    "should": "~3.3"
+    "grunt-contrib-connect": "^0.7.1",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-uglify": "^0.4.1",
+    "grunt-mocha-phantomjs": "^0.5.0",
+    "grunt-protractor-runner": "^1.0.1",
+    "mocha": "^1.19.0",
+    "protractor": "^0.23.1",
+    "should": "^3.3.2"
   },
   "scripts": {
     "test": "grunt test"
