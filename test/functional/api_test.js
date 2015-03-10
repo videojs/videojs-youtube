@@ -1,4 +1,3 @@
-/* global browser, describe, it */
 /* jshint node: true */
 
 // TODO: Write a YouTube API mock to test without loading the real video, the result is too unpredictable
