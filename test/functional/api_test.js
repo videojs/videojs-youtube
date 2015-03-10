@@ -1,14 +1,15 @@
 /* global browser, describe, it */
 /* jshint node: true */
 
-var should = require('should'); // jshint ignore:line
+// TODO: Write a YouTube API mock to test without loading the real video, the result is too unpredictable
+/*var should = require('should'); // jshint ignore:line
 var url = require('url');
 
 
 describe('Test basic API commands for YouTube tech', function() {
   // YouTube sometime hate us and sometime love us (pretty random)
   // We can't rely on this test to know if it really crash so we ignore his feeling
-  /*it('should play and pause', function() {
+  it('should play and pause', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
     browser.driver.sleep(5000);
 
@@ -25,7 +26,7 @@ describe('Test basic API commands for YouTube tech', function() {
     browser.driver.executeScript('return videojs("vid1").paused()').then(function(paused) {
       paused.should.be.true;
     });
-  });*/
+  });
 
   it('should change the source with regular URL', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
@@ -76,8 +77,7 @@ describe('Test basic API commands for YouTube tech', function() {
     });
   });
 
-  // YouTube doesn't seek it until it is ready and we can't know the loading delay
-  /*it('should seek at a specific time', function() {
+  it('should seek at a specific time', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
     browser.driver.sleep(5000);
 
@@ -86,7 +86,7 @@ describe('Test basic API commands for YouTube tech', function() {
     browser.driver.executeScript('return videojs("vid1").currentTime()').then(function(currentTime) {
       currentTime.should.equal(10);
     });
-  });*/
+  });
 
   it('should know duration', function() {
     browser.driver.get(url.resolve(browser.baseUrl, '/sandbox/index.html'));
@@ -157,3 +157,4 @@ describe('Test basic API commands for YouTube tech', function() {
     });
   });
 });
+*/
