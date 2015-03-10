@@ -3,6 +3,7 @@
   "description": "YouTube playback technology for Video.js",
   "version": "1.2.8",
   "author": "Benoit Tremblay",
+  "main": "dist/vjs.youtube.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/eXon/videojs-youtube.git"
