@@ -11,8 +11,8 @@ You can use bower (`bower install videojs-youtube`), npm (`npm install videojs-y
 <!DOCTYPE html>
 <html>
 <head>
-  <link type="text/css" rel="stylesheet" href="https://vjs.zencdn.net/4.5.1/video-js.css" />
-  <script src="https://vjs.zencdn.net/4.5.1/video.js"></script>
+  <link type="text/css" rel="stylesheet" href="https://vjs.zencdn.net/4.12/video-js.css" />
+  <script src="https://vjs.zencdn.net/4.12/video.js"></script>
   <script src="vjs.youtube.js"></script>
 </head>
 <body>
