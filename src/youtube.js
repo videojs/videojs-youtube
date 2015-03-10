@@ -464,6 +464,7 @@
   videojs.Youtube.prototype.volume = function() {
     if(this.ytplayer && isNaN(this.volumeVal)) {
       this.volumeVal = this.ytplayer.getVolume() / 100.0;
+      this.volumeVal = (isNaN(this.volumeVal)) ? 1 : this.volumeVal;
       this.player_.volume(this.volumeVal);
     }
 
