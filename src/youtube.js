@@ -112,10 +112,6 @@
       this.parseSrc(player.options()['src']);
 
       this.playOnReady = this.player_.options()['autoplay'] && this.playVideoIsAllowed;
-      this.forceSSL = !!(
-        typeof this.player_.options()['forceSSL'] === 'undefined' ||
-          this.player_.options()['forceSSL'] === true
-        );
       this.forceHTML5 = !!(
         typeof this.player_.options()['forceHTML5'] === 'undefined' ||
           this.player_.options()['forceHTML5'] === true
@@ -225,11 +221,8 @@
         self.triggerReady();
       }, 500);
     } else {
-      this.el_.src = (
-        (this.forceSSL || isLocalProtocol) ?
-          'https:'
-          : window.location.protocol
-        ) + '//www.youtube.com/embed/' + this.videoId + '?' + videojs.Youtube.makeQueryString(params);
+      this.el_.src = 'https://www.youtube.com/embed/' + 
+                     this.videoId + '?' + videojs.Youtube.makeQueryString(params);
 
       if(this.player_.options()['ytcontrols']) {
         // Disable the video.js controls if we use the YouTube controls
@@ -259,9 +252,7 @@
           tag.onerror = function(e) {
             self.onError(e);
           };
-          tag.src = ( !this.forceSSL && !isLocalProtocol ) ?
-            '//www.youtube.com/iframe_api'
-            : 'https://www.youtube.com/iframe_api';
+          tag.src = 'https://www.youtube.com/iframe_api';
           var firstScriptTag = document.getElementsByTagName('script')[0];
           firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
           videojs.Youtube.apiLoading = true;
