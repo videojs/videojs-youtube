@@ -672,15 +672,24 @@
           break;
 
         case YT.PlayerState.ENDED:
-          // Replace YouTube play button by our own
-          if(!this.player_.options()['ytcontrols']) {
-            this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = 'block';
-            if(typeof this.player_.bigPlayButton !== 'undefined') {
-              this.player_.bigPlayButton.show();
-            }
+          var stopPlaying = true;
+
+          // Stop the playlist when it is starting over
+          if (this.playlistId && !this.player_.options()['loop']) {
+            stopPlaying = this.ytplayer.getPlaylistIndex() === 0;
           }
 
-          this.player_.trigger('ended');
+          if (stopPlaying) {
+            // Replace YouTube play button by our own
+            if(!this.player_.options()['ytcontrols']) {
+              this.playerEl_.querySelectorAll('.vjs-poster')[0].style.display = 'block';
+              if(typeof this.player_.bigPlayButton !== 'undefined') {
+                this.player_.bigPlayButton.show();
+              }
+            }
+
+            this.player_.trigger('ended');
+          }
           break;
 
         case YT.PlayerState.PLAYING:
