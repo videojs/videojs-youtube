@@ -9,7 +9,7 @@
     "url": "https://github.com/eXon/videojs-youtube.git"
   },
   "dependencies": {
-    "video.js": "^4.12.4"
+    "video.js": "^4.12.5"
   },
   "devDependencies": {
     "grunt": "~0.4",
