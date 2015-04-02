@@ -57,7 +57,7 @@
 
       this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
 
-      this.playerEl_ = document.getElementById(player.id());
+      this.playerEl_ = player.el();
       this.playerEl_.className += ' vjs-youtube';
 
       // Create the Quality button
