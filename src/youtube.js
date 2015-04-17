@@ -187,6 +187,7 @@
       disablekb: 1,
       wmode: 'transparent',
       controls: (this.player_.options()['ytcontrols']) ? 1 : 0,
+      fs: (this.player_.options()['ytFullScreenControls']) ? 0 : 1,
       html5: (this.player_.options()['forceHTML5']) ? 1 : null,
       playsinline: (this.player_.options()['playsInline']) ? 1 : 0,
       showinfo: 0,
@@ -221,7 +222,7 @@
         self.triggerReady();
       }, 500);
     } else {
-      this.el_.src = 'https://www.youtube.com/embed/' + 
+      this.el_.src = 'https://www.youtube.com/embed/' +
                      (this.videoId || 'videoseries') + '?' + videojs.Youtube.makeQueryString(params);
 
       if(this.player_.options()['ytcontrols']) {
