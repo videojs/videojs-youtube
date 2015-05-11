@@ -16,8 +16,7 @@ You can use bower (`bower install videojs-youtube`), npm (`npm install videojs-y
   <script src="vjs.youtube.js"></script>
 </head>
 <body>
-  <video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }'>
-  </video>
+  <video id="vid1" src="" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360" data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }'/>
 </body>
 </html>
 ```
