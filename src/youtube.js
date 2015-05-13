@@ -179,30 +179,34 @@
     }
   });
 
+  // Tries to get the highest resolution thumbnail available for the video
   videojs.Youtube.prototype.loadThumbnailUrl = function(id, callback){
 
     var uri = 'https://img.youtube.com/vi/' + id + '/maxresdefault.jpg';
     var fallback = 'https://img.youtube.com/vi/' + id + '/0.jpg';
 
-    var image = new Image;
-    image.onload = function(){
-      if('naturalHeight' in this){
-        if(this.naturalHeight + this.naturalWidth === 0) {
-          this.onerror();
-          return;
-        }
-        } else if(this.width + this.height == 0){
+    try{
+      var image = new Image();
+      image.onload = function(){
+        if('naturalHeight' in this){
+          if(this.naturalHeight + this.naturalWidth === 0) {
+            this.onerror();
+            return;
+          }
+        } else if(this.width + this.height === 0) {
           this.onerror();
           return;
         }
 
         callback(uri);
-	  };
+      };
       image.onerror = function(){
         callback(fallback);
       };
       image.src = uri;
-  }
+    }
+    catch(e){ callback(fallback); }
+  };
 
   videojs.Youtube.prototype.updateIframeSrc = function() {
     var params = {
