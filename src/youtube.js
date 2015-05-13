@@ -55,6 +55,8 @@
         }
       }
 
+      this.player_.options()['playbackRates'] = [1];
+
       this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
 
       this.playerEl_ = player.el();
@@ -616,6 +618,9 @@
   videojs.Youtube.prototype.onReady = function() {
     this.isReady_ = true;
     this.triggerReady();
+
+    this.player_.options()['playbackRates'] = this.ytplayer.getAvailablePlaybackRates();
+    this.player_.controlBar.playbackRateMenuButton.update();
 
     this.player_.trigger('loadedmetadata');
 
