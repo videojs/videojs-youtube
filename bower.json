@@ -17,6 +17,6 @@
     "README.md"
   ],
   "dependencies": {
-    "video.js": "~4.11"
+    "video.js": "^4.11"
   }
 }
