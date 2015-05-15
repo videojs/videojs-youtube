@@ -735,12 +735,9 @@
                 this.player_.bigPlayButton.show();
               }
             }
-          }
 
-          this.player_.trigger('ended');
-
-          if (!stopPlaying) {
-            this.play();
+            this.player_.trigger('pause');
+            this.player_.trigger('ended');
           }
 
           break;
