@@ -55,7 +55,7 @@
         }
       }
 
-      this.player_.options()['playbackRates'] = [1];
+      this.player_.options()['playbackRates'] = [];
 
       this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
 
