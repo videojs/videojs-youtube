@@ -735,9 +735,14 @@
                 this.player_.bigPlayButton.show();
               }
             }
-
-            this.player_.trigger('ended');
           }
+
+          this.player_.trigger('ended');
+
+          if (!stopPlaying) {
+            this.play();
+          }
+
           break;
 
         case YT.PlayerState.PLAYING:
