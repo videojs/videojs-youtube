@@ -119,6 +119,10 @@
 
       this.updateIframeSrc();
 
+      this.thumbnailType = (
+        typeof this.player_.options()['thumbnailType'] === 'undefined' ? '0' : this.player_.options()['thumbnailType']
+        ) + '.jpg';
+
       var self = this;
 
       player.ready(function() {
@@ -230,7 +234,7 @@
       } else if(this.videoId && (typeof this.player_.poster() === 'undefined' || this.player_.poster().length === 0)) {
         // Wait here because the tech is still null in constructor
         setTimeout(function() {
-          self.player_.poster('https://img.youtube.com/vi/' + self.videoId + '/0.jpg');
+          self.player_.poster('https://img.youtube.com/vi/' + self.videoId + '/' + self.thumbnailType);
         }, 100);
       }
 
@@ -371,8 +375,8 @@
 
         // Update the poster
         this.playerEl_.querySelectorAll('.vjs-poster')[0].style.backgroundImage =
-          'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
-        this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+          'url(https://img.youtube.com/vi/' + this.videoId + '/' + this.thumbnailType + ')';
+        this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/' + this.thumbnailType);
       }
       /* else Invalid URL */
     }
@@ -609,7 +613,7 @@
     // Set the poster of the first video of the playlist if not specified
     if (!this.videoId && this.playlistId) {
       this.videoId = this.ytplayer.getPlaylist()[0];
-      this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+      this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/' + this.thumbnailType);
     }
 
     // Play ASAP if they clicked play before it's ready
