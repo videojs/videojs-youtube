@@ -55,6 +55,8 @@
         }
       }
 
+      this.player_.options()['playbackRates'] = [1];
+
       this.userQuality = videojs.Youtube.convertQualityName(player.options()['quality']);
 
       this.playerEl_ = player.el();
@@ -177,6 +179,35 @@
     }
   });
 
+  // Tries to get the highest resolution thumbnail available for the video
+  videojs.Youtube.prototype.loadThumbnailUrl = function(id, callback){
+
+    var uri = 'https://img.youtube.com/vi/' + id + '/maxresdefault.jpg';
+    var fallback = 'https://img.youtube.com/vi/' + id + '/0.jpg';
+
+    try{
+      var image = new Image();
+      image.onload = function(){
+        if('naturalHeight' in this){
+          if(this.naturalHeight + this.naturalWidth === 0) {
+            this.onerror();
+            return;
+          }
+        } else if(this.width + this.height === 0) {
+          this.onerror();
+          return;
+        }
+
+        callback(uri);
+      };
+      image.onerror = function(){
+        callback(fallback);
+      };
+      image.src = uri;
+    }
+    catch(e){ callback(fallback); }
+  };
+
   videojs.Youtube.prototype.updateIframeSrc = function() {
     var params = {
       enablejsapi: 1,
@@ -230,7 +261,9 @@
       } else if(this.videoId && (typeof this.player_.poster() === 'undefined' || this.player_.poster().length === 0)) {
         // Wait here because the tech is still null in constructor
         setTimeout(function() {
-          self.player_.poster('https://img.youtube.com/vi/' + self.videoId + '/0.jpg');
+          self.loadThumbnailUrl(self.videoId, function(url){
+            self.player_.poster(url);
+          });
         }, 100);
       }
 
@@ -369,10 +402,13 @@
           });
         }
 
-        // Update the poster
-        this.playerEl_.querySelectorAll('.vjs-poster')[0].style.backgroundImage =
-          'url(https://img.youtube.com/vi/' + this.videoId + '/0.jpg)';
-        this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        var self = this;
+        this.loadThumbnailUrl(this.videoId, function(url){
+            // Update the poster
+            self.playerEl_.querySelectorAll('.vjs-poster')[0].style.backgroundImage =
+              'url(' + url + ')';
+            self.player_.poster(url);
+        });
       }
       /* else Invalid URL */
     }
@@ -587,6 +623,9 @@
     this.isReady_ = true;
     this.triggerReady();
 
+    this.player_.options()['playbackRates'] = this.ytplayer.getAvailablePlaybackRates();
+    this.player_.controlBar.playbackRateMenuButton.update();
+
     this.player_.trigger('loadedmetadata');
 
     // The duration is loaded so we might as well fire off the timeupdate and duration events
@@ -609,7 +648,10 @@
     // Set the poster of the first video of the playlist if not specified
     if (!this.videoId && this.playlistId) {
       this.videoId = this.ytplayer.getPlaylist()[0];
-      this.player_.poster('https://img.youtube.com/vi/' + this.videoId + '/0.jpg');
+        var self = this;
+        this.loadThumbnailUrl(this.videoId, function(url){
+          self.player_.poster(url);
+        });
     }
 
     // Play ASAP if they clicked play before it's ready
