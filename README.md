@@ -38,6 +38,7 @@ It supports:
 This plugin exposes the following additional [player options](https://github.com/videojs/video.js/blob/master/docs/guides/options.md):
 
 - `ytcontrols` (Boolean): Display the YouTube player controls instead of the Video.js player controls. (default `false`)
+- `ytFullScreenControls` (Boolean): Show the fullscreen controls on the default youtube player controls. Also enables double click to fullscreen. (default `true`)
 - `quality` (String): Set the default video quality. Should be one of `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`.
 - `playsInline` (Boolean): Sets the [`playsinline`](https://developers.google.com/youtube/player_parameters?playerVersion=HTML5#playsinline) YouTube player parameter to enable inline playback on iOS
 - `forceHTML5` (Boolean): Forces loading the YouTube HTML5 player (default `true`)
