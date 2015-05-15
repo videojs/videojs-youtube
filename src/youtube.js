@@ -209,6 +209,11 @@
   };
 
   videojs.Youtube.prototype.updateIframeSrc = function() {
+    var fullscreenControls = (
+      typeof this.player_.options()['ytFullScreenControls'] !== 'undefined' &&
+      !this.player_.options()['ytFullScreenControls']
+    ) ? 0 : 1;
+
     var params = {
       enablejsapi: 1,
       /*jshint -W106 */
@@ -218,7 +223,7 @@
       disablekb: 1,
       wmode: 'transparent',
       controls: (this.player_.options()['ytcontrols']) ? 1 : 0,
-      fs: (typeof this.player_.options()['ytFullScreenControls'] !== 'undefined' && !this.player_.options()['ytFullScreenControls']) ? 0 : 1,
+      fs: fullscreenControls,
       html5: (this.player_.options()['forceHTML5']) ? 1 : null,
       playsinline: (this.player_.options()['playsInline']) ? 1 : 0,
       showinfo: 0,
