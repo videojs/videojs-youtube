@@ -34,6 +34,8 @@
       // Enable rate changes
       this['featuresPlaybackRate'] = true;
 
+      this['featuresNativeTextTracks'] = true;
+
       videojs.MediaTechController.call(this, player, options, ready);
 
       this.isIos = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
@@ -662,6 +664,51 @@
     }
   };
 
+
+  videojs.Youtube.prototype.updateCaptions = function() {
+    this.ytplayer.loadModule('captions');
+    this.ytplayer.loadModule('cc');
+
+    var options = this.ytplayer.getOptions();
+    // The name of the captions module: 'captions' for html5 or 'cc' for flash
+    var cc = options.indexOf('captions') >= 0? 'captions'
+          : (options.indexOf('cc') >= 0? 'cc' : null);
+
+    if(cc !== null && !this.tracked_){
+
+      var tracks = this.ytplayer.getOption(cc, 'tracklist');
+
+      if(tracks && tracks.length > 0){
+
+        var tt;
+        for(var i = 0; i < tracks.length; i++){
+          tt = this.addTextTrack('captions', tracks[i].displayName, tracks[i].languageCode);
+        }
+
+        var self = this;
+        this.textTracks().on('change', function(){
+          var code = null;
+          for(var i = 0; i < this.length; i++){
+            if(this[i].mode === 'showing'){
+              code = this[i].language;
+              break;
+            }
+          }
+
+          if(code !== null){
+            self.ytplayer.setOption(cc, 'track', {'languageCode': code});
+          }
+          else{
+            self.ytplayer.setOption(cc, 'track', {});
+          }
+
+        });
+
+        this.tracked_ = true;
+      }
+    }
+  };
+
   videojs.Youtube.prototype.updateQualities = function() {
 
     function setupEventListener(el) {
@@ -746,6 +793,7 @@
 
           this.playVideoIsAllowed = true;
           this.updateQualities();
+          this.updateCaptions();
           this.player_.trigger('timeupdate');
           this.player_.trigger('durationchange');
           this.player_.trigger('playing');
