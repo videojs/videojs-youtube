@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/eXon/videojs-youtube.git"
   },
-  "dependencies": {
+  "peerDependencies": {
     "video.js": "^4.12.5"
   },
   "devDependencies": {
