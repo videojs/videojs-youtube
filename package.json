@@ -11,6 +11,9 @@
   "peerDependencies": {
     "video.js": "^4.12.5"
   },
+  "dependencies": {
+    "video.js": "^4.12.5"
+  },
   "devDependencies": {
     "grunt": "~0.4",
     "grunt-cli": "~0.1.0",
