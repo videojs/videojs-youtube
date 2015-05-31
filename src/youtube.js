@@ -470,14 +470,37 @@
     return (this.ytplayer && this.ytplayer.getCurrentTime) ? this.ytplayer.getCurrentTime() : 0;
   };
   videojs.Youtube.prototype.setCurrentTime = function(seconds) {
+    if (this.lastState === YT.PlayerState.PAUSED) {
+      this.timeBeforeSeek = this.currentTime();
+    }
+
     this.ytplayer.seekTo(seconds, true);
     this.player_.trigger('timeupdate');
     this.player_.trigger('seeking');
     this.isSeeking = true;
+
+    // A seek event during pause does not return an event to trigger a seeked event,
+    // so run an interval timer to look for the currentTime to change
+    if (this.lastState === YT.PlayerState.PAUSED && this.timeBeforeSeek !== seconds) {
+      this.checkSeekedInPauseInterval = setInterval( videojs.bind(this, function() {
+        if (this.lastState !== YT.PlayerState.PAUSED || !this.isSeeking) {
+          // If something changed while we were waiting for the currentTime to change,
+          //  clear the interval timer
+          clearInterval(this.checkSeekedInPauseInterval);
+        } else if (this.currentTime() !== this.timeBeforeSeek) {
+          this.player_.trigger('timeupdate');
+          this.player_.trigger('seeked');
+          this.isSeeking = false;
+          clearInterval(this.checkSeekedInPauseInterval);
+        }
+      }), 250);
+    }
   };
+
   videojs.Youtube.prototype.playbackRate = function() {
     return (this.ytplayer && this.ytplayer.getPlaybackRate) ? this.ytplayer.getPlaybackRate() : 1.0;
   };
+
   videojs.Youtube.prototype.setPlaybackRate = function(suggestedRate) {
     if (this.ytplayer && this.ytplayer.setPlaybackRate) {
       this.ytplayer.setPlaybackRate(suggestedRate);
@@ -487,12 +510,15 @@
       }, 100);
     }
   };
+
   videojs.Youtube.prototype.duration = function() {
     return (this.ytplayer && this.ytplayer.getDuration) ? this.ytplayer.getDuration() : 0;
   };
+
   videojs.Youtube.prototype.currentSrc = function() {
     return this.srcVal;
   };
+  
   videojs.Youtube.prototype.ended = function() {
     return (this.ytplayer) ? (this.lastState === YT.PlayerState.ENDED) : false;
   };
