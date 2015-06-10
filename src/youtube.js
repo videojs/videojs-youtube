@@ -624,13 +624,30 @@
           e.target.vjsTech.onPlaybackQualityChange(e.data);
         },
         onError: function(e) {
-          e.target.vjsTech.onError(e.data);
+          var err = videojs.Youtube.errorMessages[e.data] || 'Unknown YouTube error, code ' + e.data;
+          e.target.vjsTech.onError(err);
         }
       }
     });
 
     this.ytplayer.vjsTech = this;
   };
+
+  // See https://developers.google.com/youtube/iframe_api_reference#Events
+  videojs.Youtube.errorMessages = {
+      2: 'The request contains an invalid parameter value.',
+      // For example, this error occurs if you specify a video ID that
+      //  does not have 11 characters, or if the video ID contains
+      //  invalid characters, such as exclamation points or asterisks.
+      5: 'The requested content cannot be played in an HTML5 player.',
+      // ... or another error related to the HTML5 player has occurred
+    100: 'The video requested was not found.',
+      // This error occurs when a video has been removed (for any reason)
+      //  or has been marked as private.
+    101: 'The owner of the requested video does not allow it to be played in embedded players.',
+    150: 'The owner of the requested video does not allow it to be played in embedded players.'
+  };
+
 
   // Transform a JavaScript object into URL params
   videojs.Youtube.makeQueryString = function(args) {
