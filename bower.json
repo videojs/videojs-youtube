@@ -6,7 +6,7 @@
     "Benoit Tremblay <trembl.ben@gmail.com>"
   ],
   "description": "YouTube playback technology for Video.js",
-  "main": "Youtube.min.js",
+  "main": "dist/Youtube.min.js",
   "license": "MIT",
   "keywords": [
     "video",
@@ -15,6 +15,15 @@
     "vjs",
     "YouTube",
     "tech"
+  ],
+  "ignore": [
+    ".npmignore",
+    ".gitignore",
+    ".jshintrc",
+    ".jshintignore",
+    "src",
+    "tests",
+    "karma.conf.js"
   ],
   "dependencies": {
     "video.js": "^5.0.0-rc.4"

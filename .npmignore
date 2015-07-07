@@ -1,0 +1,7 @@
+.npmignore
+.gitignore
+.jshintrc
+.jshintignore
+src
+tests
+karma.conf.js

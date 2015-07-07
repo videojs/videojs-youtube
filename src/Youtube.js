@@ -19,19 +19,22 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE. */
+(function() {
+  'use strict';
 
-var Tech = videojs.getComponent('Tech');
+  var Tech = videojs.getComponent('Tech');
 
-var Youtube = videojs.extends(Tech, {
+  var Youtube = videojs.extends(Tech, {
 
-  constructor: function(options, ready) {
-    Tech.call(this, options, ready);
-  }
+    constructor: function(options, ready) {
+      Tech.call(this, options, ready);
+    }
 
-});
+  });
 
-Youtube.isSupported = function() {
-  return true;
-};
+  Youtube.isSupported = function() {
+    return true;
+  };
 
-videojs.registerComponent('Youtube', Youtube);
+  videojs.registerComponent('Youtube', Youtube);
+})();
