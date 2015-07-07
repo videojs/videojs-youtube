@@ -1,32 +1,41 @@
 {
   "name": "videojs-youtube",
   "description": "YouTube playback technology for Video.js",
-  "version": "1.2.12",
+  "version": "2.0.0-1",
   "author": "Benoit Tremblay",
-  "main": "dist/vjs.youtube.js",
+  "main": "Youtube.min.js",
+  "keywords": [
+    "video",
+    "videojs",
+    "video.js",
+    "vjs",
+    "YouTube",
+    "tech"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eXon/videojs-youtube.git"
   },
   "peerDependencies": {
-    "video.js": "^4.12.5"
+    "video.js": "^5.0.0-rc.4"
   },
   "dependencies": {
-    "video.js": "^4.12.5"
-  },
-  "devDependencies": {
-    "grunt": "~0.4",
-    "grunt-cli": "~0.1.0",
-    "grunt-contrib-connect": "^0.7.1",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.4.1",
-    "grunt-mocha-phantomjs": "^0.5.0",
-    "grunt-protractor-runner": "^1.0.1",
-    "mocha": "^1.19.0",
-    "protractor": "^0.23.1",
-    "should": "^3.3.2"
+    "video.js": "^5.0.0-rc.4"
   },
   "scripts": {
-    "test": "grunt test"
+    "minify": "uglifyjs Youtube.js -o Youtube.min.js",
+    "lint": "jshint .",
+    "test": "TODO",
+    "validate": "npm ls"
+  },
+  "pre-commit": [
+    "minify",
+    "lint"
+  ],
+  "devDependencies": {
+    "http-server": "^0.8.0",
+    "jshint": "^2.8.0",
+    "precommit-hook": "^3.0.0",
+    "uglify-js": "^2.4.23"
   }
 }

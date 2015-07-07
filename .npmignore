@@ -1,4 +1,0 @@
-# Exclude everything but the contents of the src and dist directory.
-**/*
-!dist/**
-!src/**

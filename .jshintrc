@@ -16,26 +16,8 @@
   "node"      : false,
   "sub"       : true,
   "quotmark"  : "single",
+  "browser"   : true,
   "predef": [
-    // standard
-    "document",
-    "window",
-    "console",
-    "alert",
-    "setTimeout",
-    "toString",
-    "isNaN",
-
-    // mocha
-    "describe",
-    "it",
-    "before",
-    "beforeEach",
-    "after",
-    "afterEach",
-
-    // video.js
     "videojs"
   ]
 }
-

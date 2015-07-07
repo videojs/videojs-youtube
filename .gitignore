@@ -1,15 +1,2 @@
-.DS_Store
-.idea
-*.sublime-project
-*.sublime-workspace
-dist
-
 node_modules
-bower_components
 npm-debug.log
-
-mongoose*.exe
-
-*.orig
-
-*.log
