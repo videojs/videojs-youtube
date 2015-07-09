@@ -6,14 +6,15 @@
 <body>
   <video
     id="vid1"
-    src=""
     class="video-js vjs-default-skin"
     controls
     autoplay
     preload="auto"
     width="640" height="264"
-    data-setup='{ "techOrder": ["youtube"], "src": "http://www.youtube.com/watch?v=xjS6SftYQaQ" }'
-  ></video>
+    data-setup='{ "techOrder": ["youtube"] }'
+  >
+    <source type="video/youtube" src="xjS6SftYQaQ" />
+  </video>
 
   <script src="../node_modules/video.js/dist/video.min.js"></script>
   <script src="../src/Youtube.js"></script>

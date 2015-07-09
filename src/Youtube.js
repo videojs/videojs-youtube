@@ -28,6 +28,47 @@ THE SOFTWARE. */
 
     constructor: function(options, ready) {
       Tech.call(this, options, ready);
+    },
+
+    createEl: function() {
+      var div = document.createElement('div');
+      div.setAttribute('id', this.options_.techId);
+      div.setAttribute('style', 'width:100%;height:100%')
+
+      if (Youtube.isApiReady) {
+        this.initYTPlayer();
+      } else {
+        Youtube._apiReadyQueue.push(this);
+      }
+
+      return div;
+    },
+
+    initYTPlayer: function() {
+      this.ytPlayer = new YT.Player(this.options_.techId, {
+        events: {
+          onReady: this.onPlayerReady.bind(this),
+          onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
+          onStateChange: this.onPlayerStateChange.bind(this),
+          onError: this.onPlayerError.bind(this)
+        }
+      });
+    },
+
+    onPlayerReady: function() {
+      this.ytPlayer.loadVideoById(this.options_.source.src);
+    },
+
+    onPlayerPlaybackQualityChange: function() {
+
+    },
+
+    onPlayerStateChange: function() {
+
+    },
+
+    onPlayerError: function() {
+
     }
 
   });
@@ -35,6 +76,29 @@ THE SOFTWARE. */
   Youtube.isSupported = function() {
     return true;
   };
+
+  Youtube.canPlaySource = function(e) {
+    return (e.type === 'video/youtube');
+  };
+
+  function loadApi() {
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  };
+
+  Youtube._apiReadyQueue = [];
+
+  window.onYouTubeIframeAPIReady = function() {
+    Youtube.isApiReady = true;
+
+    for (var i = 0; i < Youtube._apiReadyQueue.length; ++i) {
+      Youtube._apiReadyQueue[i].initYTPlayer();
+    }
+  };
+
+  loadApi();
 
   videojs.registerComponent('Youtube', Youtube);
 })();
