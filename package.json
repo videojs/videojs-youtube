@@ -17,10 +17,10 @@
     "url": "https://github.com/eXon/videojs-youtube.git"
   },
   "peerDependencies": {
-    "video.js": "^5.0.0-rc.4"
+    "video.js": "^5.0.0-rc.12"
   },
   "dependencies": {
-    "video.js": "^5.0.0-rc.4"
+    "video.js": "^5.0.0-rc.12"
   },
   "scripts": {
     "build": "mkdir -p dist && cp src/Youtube.js dist/Youtube.js && uglifyjs src/Youtube.js -o dist/Youtube.min.js",

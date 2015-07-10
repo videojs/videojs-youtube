@@ -20,6 +20,7 @@
   "jasmine"   : true,
   "node"      : true,
   "predef": [
-    "videojs"
+    "videojs",
+    "YT"
   ]
 }
