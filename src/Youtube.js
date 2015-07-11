@@ -36,15 +36,22 @@ THE SOFTWARE. */
       div.setAttribute('id', this.options_.techId);
       div.setAttribute('style', 'width:100%;height:100%');
 
-      var divBlocker = document.createElement('div');
-      divBlocker.setAttribute('class', 'vjs-iframe-blocker');
-      divBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%');
-
       var divWrapper = document.createElement('div');
       divWrapper.setAttribute('style', 'width:100%;height:100%;position:relative');
-
       divWrapper.appendChild(div);
-      divWrapper.appendChild(divBlocker);
+
+      if (!_isOnMobile) {
+        var divBlocker = document.createElement('div');
+        divBlocker.setAttribute('class', 'vjs-iframe-blocker');
+        divBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%');
+
+        // In case the blocker is still there and we want to pause
+        divBlocker.onclick = function() {
+          this.pause();
+        }.bind(this);
+
+        divWrapper.appendChild(divBlocker);
+      }
 
       if (Youtube.isApiReady) {
         this.initYTPlayer();
@@ -163,7 +170,7 @@ THE SOFTWARE. */
         }.bind(this));
       }
 
-      if (this.options_.autoplay) {
+      if (this.options_.autoplay && !_isOnMobile) {
         if (this.isReady_) {
           this.play();
         } else {
@@ -333,6 +340,8 @@ THE SOFTWARE. */
   Youtube.canPlaySource = function(e) {
     return (e.type === 'video/youtube');
   };
+
+  var _isOnMobile = /(iPad|iPhone|iPod|Android)/g.test(navigator.userAgent);
 
   Youtube.parseUrl = function(url) {
     var result = {
