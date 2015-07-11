@@ -160,7 +160,7 @@ THE SOFTWARE. */
         Youtube.loadThumbnailUrl(this.url.videoId, function(poster) {
           this.setPoster(poster);
           this.trigger('posterchange');
-        }.bind(this))
+        }.bind(this));
       }
 
       if (this.options_.autoplay) {
@@ -199,7 +199,7 @@ THE SOFTWARE. */
     paused: function() {
       return (this.ytplayer) ?
         (this.lastState !== YT.PlayerState.PLAYING && this.lastState !== YT.PlayerState.BUFFERING)
-        : true
+        : true;
     },
 
     currentTime: function() {
