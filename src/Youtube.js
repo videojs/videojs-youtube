@@ -28,7 +28,7 @@ THE SOFTWARE. */
 
     constructor: function(options, ready) {
       Tech.call(this, options, ready);
-      this.setSrc(options.source);
+      this.setSrc(this.options_.source, true);
     },
 
     createEl: function() {
@@ -40,7 +40,7 @@ THE SOFTWARE. */
       divWrapper.setAttribute('style', 'width:100%;height:100%;position:relative');
       divWrapper.appendChild(div);
 
-      if (!_isOnMobile) {
+      if (!_isOnMobile && !this.options_.ytControls) {
         var divBlocker = document.createElement('div');
         divBlocker.setAttribute('class', 'vjs-iframe-blocker');
         divBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%');
@@ -63,14 +63,99 @@ THE SOFTWARE. */
     },
 
     initYTPlayer: function() {
+      var playerVars = {
+        controls: 0,
+        modestbranding: 1,
+        rel: 0,
+        showinfo: 0,
+        loop: this.options_.loop ? 1 : 0
+      };
+
+      // Set the YouTube player on the same language than video.js
+      if (typeof this.options_.language !== 'undefined') {
+        playerVars.hl = this.options_.language.substr(0, 2);
+      }
+
+      // Let the user set any YouTube parameter
+      // https://developers.google.com/youtube/player_parameters?playerVersion=HTML5#Parameters
+      // To use YouTube controls, you must use ytControls instead
+      // To use the loop or autoplay, use the video.js settings
+
+      if (typeof this.options_.autohide !== 'undefined') {
+        playerVars.autohide = this.options_.autohide;
+      }
+
+      if (typeof this.options_['cc_load_policy'] !== 'undefined') {
+        playerVars['cc_load_policy'] = this.options_['cc_load_policy'];
+      }
+
+      if (typeof this.options_.ytControls !== 'undefined') {
+        playerVars.controls = this.options_.ytControls;
+      }
+
+      if (typeof this.options_.disablekb !== 'undefined') {
+        playerVars.disablekb = this.options_.disablekb;
+      }
+
+      if (typeof this.options_.end !== 'undefined') {
+        playerVars.end = this.options_.end;
+      }
+
+      if (typeof this.options_.fs !== 'undefined') {
+        playerVars.fs = this.options_.fs;
+      }
+
+      if (typeof this.options_.end !== 'undefined') {
+        playerVars.end = this.options_.end;
+      }
+
+      if (typeof this.options_.hl !== 'undefined') {
+        playerVars.hl = this.options_.hl;
+      }
+
+      if (typeof this.options_['iv_load_policy'] !== 'undefined') {
+        playerVars['iv_load_policy'] = this.options_['iv_load_policy'];
+      }
+
+      if (typeof this.options_.list !== 'undefined') {
+        playerVars.list = this.options_.list;
+      }
+
+      if (typeof this.options_.listType !== 'undefined') {
+        playerVars.listType = this.options_.listType;
+      }
+
+      if (typeof this.options_.modestbranding !== 'undefined') {
+        playerVars.modestbranding = this.options_.modestbranding;
+      }
+
+      if (typeof this.options_.playlist !== 'undefined') {
+        playerVars.playlist = this.options_.playlist;
+      }
+
+      if (typeof this.options_.playsinline !== 'undefined') {
+        playerVars.playsinline = this.options_.playsinline;
+      }
+
+      if (typeof this.options_.rel !== 'undefined') {
+        playerVars.rel = this.options_.rel;
+      }
+
+      if (typeof this.options_.showinfo !== 'undefined') {
+        playerVars.showinfo = this.options_.showinfo;
+      }
+
+      if (typeof this.options_.start !== 'undefined') {
+        playerVars.start = this.options_.start;
+      }
+
+      if (typeof this.options_.theme !== 'undefined') {
+        playerVars.theme = this.options_.theme;
+      }
+
       this.ytPlayer = new YT.Player(this.options_.techId, {
-        playerVars: {
-          controls: 0,
-          modestbranding: 1,
-          rel: 0,
-          showinfo: 0,
-          loop: this.options_.loop ? 1 : 0
-        },
+        videoId: this.url.videoId,
+        playerVars: playerVars,
         events: {
           onReady: this.onPlayerReady.bind(this),
           onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
@@ -140,7 +225,32 @@ THE SOFTWARE. */
     },
 
     onPlayerError: function(e) {
-      this.trigger(e);
+      this.errorNumber = e.data;
+      this.trigger('error');
+
+      // Get rid of the iframe, we want to display our own error message
+      this.el_.removeChild(
+        this.el_.children[0]
+      );
+    },
+
+    error: function() {
+      switch (this.errorNumber) {
+        case 2:
+          return { code: 'Unable to find the video' };
+
+        case 5:
+          return { code: 'Error while trying to play the video' };
+
+        case 100:
+          return { code: 'Unable to find the video' };
+
+        case 101:
+        case 150:
+          return { code: 'Playback on other Websites has been disabled by the video owner.' };
+      }
+
+      return { code: 'YouTube unknown error (' + this.errorNumber + ')' };
     },
 
     src: function() {
@@ -155,13 +265,21 @@ THE SOFTWARE. */
       this.poster = poster;
     },
 
-    setSrc: function(source) {
+    setSrc: function(source, isFirst) {
       if (!source || !source.src) {
         return;
       }
 
       this.source = source;
       this.url = Youtube.parseUrl(source.src);
+
+      if (this.activeVideoId !== this.url.videoId) {
+        if (!isFirst) {
+          this.ytPlayer.loadVideoById(this.url.videoId);
+        }
+
+        this.activeVideoId = this.url.videoId;
+      }
 
       if (!this.options_.poster) {
         Youtube.loadThumbnailUrl(this.url.videoId, function(poster) {
@@ -185,12 +303,7 @@ THE SOFTWARE. */
       }
 
       if (this.isReady_) {
-        if (this.activeVideoId === this.url.videoId) {
-          this.ytPlayer.playVideo();
-        } else {
-          this.ytPlayer.loadVideoById(this.url.videoId);
-          this.activeVideoId = this.url.videoId;
-        }
+        this.ytPlayer.playVideo();
       } else {
         this.trigger('waiting');
         this.playOnReady = true;
