@@ -71,11 +71,6 @@ THE SOFTWARE. */
         loop: this.options_.loop ? 1 : 0
       };
 
-      // Set the YouTube player on the same language than video.js
-      if (typeof this.options_.language !== 'undefined') {
-        playerVars.hl = this.options_.language.substr(0, 2);
-      }
-
       // Let the user set any YouTube parameter
       // https://developers.google.com/youtube/player_parameters?playerVersion=HTML5#Parameters
       // To use YouTube controls, you must use ytControls instead
@@ -111,6 +106,9 @@ THE SOFTWARE. */
 
       if (typeof this.options_.hl !== 'undefined') {
         playerVars.hl = this.options_.hl;
+      } else if (typeof this.options_.language !== 'undefined') {
+        // Set the YouTube player on the same language than video.js
+        playerVars.hl = this.options_.language.substr(0, 2);
       }
 
       if (typeof this.options_['iv_load_policy'] !== 'undefined') {
@@ -119,6 +117,8 @@ THE SOFTWARE. */
 
       if (typeof this.options_.list !== 'undefined') {
         playerVars.list = this.options_.list;
+      } else if (typeof this.url.listId !== 'undefined') {
+        playerVars.list = this.url.listId;
       }
 
       if (typeof this.options_.listType !== 'undefined') {
@@ -152,6 +152,9 @@ THE SOFTWARE. */
       if (typeof this.options_.theme !== 'undefined') {
         playerVars.theme = this.options_.theme;
       }
+
+      this.activeVideoId = this.url.videoId;
+      this.activeList = playerVars.list;
 
       this.ytPlayer = new YT.Player(this.options_.techId, {
         videoId: this.url.videoId,
@@ -228,10 +231,9 @@ THE SOFTWARE. */
       this.errorNumber = e.data;
       this.trigger('error');
 
-      // Get rid of the iframe, we want to display our own error message
-      this.el_.removeChild(
-        this.el_.children[0]
-      );
+      this.ytPlayer.stopVideo();
+      this.ytPlayer.destroy();
+      this.ytPlayer = null;
     },
 
     error: function() {
@@ -265,21 +267,13 @@ THE SOFTWARE. */
       this.poster = poster;
     },
 
-    setSrc: function(source, isFirst) {
+    setSrc: function(source) {
       if (!source || !source.src) {
         return;
       }
 
       this.source = source;
       this.url = Youtube.parseUrl(source.src);
-
-      if (this.activeVideoId !== this.url.videoId) {
-        if (!isFirst) {
-          this.ytPlayer.loadVideoById(this.url.videoId);
-        }
-
-        this.activeVideoId = this.url.videoId;
-      }
 
       if (!this.options_.poster) {
         Youtube.loadThumbnailUrl(this.url.videoId, function(poster) {
@@ -303,7 +297,19 @@ THE SOFTWARE. */
       }
 
       if (this.isReady_) {
-        this.ytPlayer.playVideo();
+        if (this.url.listId) {
+          if (this.activeList === this.url.listId) {
+            this.ytPlayer.playVideo();
+          } else {
+            this.ytPlayer.loadPlaylist(this.url.listId);
+            this.activeList = this.url.listId;
+          }
+        } if (this.activeVideoId === this.url.videoId) {
+          this.ytPlayer.playVideo();
+        } else {
+          this.ytPlayer.loadVideoById(this.url.videoId);
+          this.activeVideoId = this.url.videoId;
+        }
       } else {
         this.trigger('waiting');
         this.playOnReady = true;
@@ -466,6 +472,13 @@ THE SOFTWARE. */
 
     if (match && match[2].length === 11) {
       result.videoId = match[2];
+    }
+
+    var regPlaylist = /[?&]list=([^#\&\?]+)/;
+    match = url.match(regPlaylist);
+
+    if(match && match[1]) {
+      result.listId = match[1];
     }
 
     return result;
