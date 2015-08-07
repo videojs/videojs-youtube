@@ -659,7 +659,9 @@
     this.triggerReady();
 
     this.player_.options()['playbackRates'] = this.ytplayer.getAvailablePlaybackRates();
-    this.player_.controlBar.playbackRateMenuButton.update();
+    if (this.player_.controlBar.playbackRateMenuButton) {
+      this.player_.controlBar.playbackRateMenuButton.update();
+    }
 
     this.player_.trigger('loadedmetadata');
 
