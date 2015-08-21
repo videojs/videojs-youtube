@@ -327,7 +327,7 @@ THE SOFTWARE. */
     },
 
     paused: function() {
-      return (this.ytplayer) ?
+      return (this.ytPlayer) ?
         (this.lastState !== YT.PlayerState.PLAYING && this.lastState !== YT.PlayerState.BUFFERING)
         : true;
     },
