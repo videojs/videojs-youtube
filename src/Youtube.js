@@ -96,6 +96,10 @@ THE SOFTWARE. */
         playerVars.end = this.options_.end;
       }
 
+      if (typeof this.options_.color !== 'undefined') {
+        playerVars.color = this.options_.color;
+      }
+
       if (typeof this.options_.fs !== 'undefined') {
         playerVars.fs = this.options_.fs;
       }
