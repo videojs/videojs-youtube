@@ -403,6 +403,10 @@ THE SOFTWARE. */
       }
 
       this.ytPlayer.setVolume(percentAsDecimal * 100.0);
+      this.setTimeout( function(){
+        this.trigger('volumechange');
+      }, 50);
+      
     },
 
     muted: function() {
@@ -413,12 +417,18 @@ THE SOFTWARE. */
       if (!this.ytPlayer) {
         return;
       }
+      else{
+        this.muted(true);
+      }
 
       if (mute) {
         this.ytPlayer.mute();
       } else {
         this.ytPlayer.unMute();
       }
+      this.setTimeout( function(){
+        this.trigger('volumechange');
+      }, 50);
     },
 
     buffered: function() {
