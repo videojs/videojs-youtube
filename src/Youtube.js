@@ -96,6 +96,10 @@ THE SOFTWARE. */
         playerVars.end = this.options_.end;
       }
 
+      if (typeof this.options_.color !== 'undefined') {
+        playerVars.color = this.options_.color;
+      }
+
       if (typeof this.options_.fs !== 'undefined') {
         playerVars.fs = this.options_.fs;
       }
@@ -323,7 +327,7 @@ THE SOFTWARE. */
     },
 
     paused: function() {
-      return (this.ytplayer) ?
+      return (this.ytPlayer) ?
         (this.lastState !== YT.PlayerState.PLAYING && this.lastState !== YT.PlayerState.BUFFERING)
         : true;
     },
@@ -399,6 +403,10 @@ THE SOFTWARE. */
       }
 
       this.ytPlayer.setVolume(percentAsDecimal * 100.0);
+      this.setTimeout( function(){
+        this.trigger('volumechange');
+      }, 50);
+      
     },
 
     muted: function() {
@@ -409,12 +417,18 @@ THE SOFTWARE. */
       if (!this.ytPlayer) {
         return;
       }
+      else{
+        this.muted(true);
+      }
 
       if (mute) {
         this.ytPlayer.mute();
       } else {
         this.ytPlayer.unMute();
       }
+      this.setTimeout( function(){
+        this.trigger('volumechange');
+      }, 50);
     },
 
     buffered: function() {
