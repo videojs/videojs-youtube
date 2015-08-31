@@ -43,17 +43,25 @@ THE SOFTWARE. */
       if (!_isOnMobile && !this.options_.ytControls) {
         var divBlocker = document.createElement('div');
         divBlocker.setAttribute('class', 'vjs-iframe-blocker');
-        divBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%');
+        divBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;display:block');
 
-        // In case the blocker is still there and we want to pause
-        divBlocker.onclick = function() {
-          this.pause();
-        }.bind(this);
+        // Just for IE10 or older
+        if (document.all) {
+          var iframeBlocker = document.createElement('iframe');
+          iframeBlocker.setAttribute('src',' about:blank');
+          iframeBlocker.setAttribute('class', 'vjs-iframe-blocker');
+          iframeBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;display:block');
+          iframeBlocker.setAttribute('frameborder', '0');
 
+          divWrapper.appendChild(iframeBlocker);
+        }
+        
         divWrapper.appendChild(divBlocker);
       }
 
       if (Youtube.isApiReady) {
+        // Has to be reset because it gets lost when the player is not pushed to the apiReadyQueue
+        this.setSrc(this.options_.source, true);
         this.initYTPlayer();
       } else {
         Youtube.apiReadyQueue.push(this);
