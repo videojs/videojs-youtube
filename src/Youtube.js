@@ -167,17 +167,28 @@ THE SOFTWARE. */
 
       this.activeVideoId = this.url.videoId;
       this.activeList = playerVars.list;
+      this.playerVars = playerVars;
 
-      this.ytPlayer = new YT.Player(this.options_.techId, {
-        videoId: this.url.videoId,
-        playerVars: playerVars,
-        events: {
-          onReady: this.onPlayerReady.bind(this),
-          onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
-          onStateChange: this.onPlayerStateChange.bind(this),
-          onError: this.onPlayerError.bind(this)
+      // We must wait for the element to exist, especially when there are some other memory/cpu intensive plugins slowing down the processes.
+      this.launchCheck = setInterval(function() {
+        if (document.getElementById(this.options_.techId) != null) {
+          this.launchPlayer();
+          clearInterval(this.launchCheck);
         }
-      });
+      }.bind(this), 50);     
+    },
+
+    launchPlayer: function(){
+        this.ytPlayer = new YT.Player(this.options_.techId, {
+          videoId: this.url.videoId,
+          playerVars: this.playerVars,
+          events: {
+            onReady: this.onPlayerReady.bind(this),
+            onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
+            onStateChange: this.onPlayerStateChange.bind(this),
+            onError: this.onPlayerError.bind(this)
+          }
+        });
     },
 
     onPlayerReady: function() {
@@ -459,6 +470,21 @@ THE SOFTWARE. */
         start: function() { return 0; },
         end: function() { return end; }
       };
+    },
+
+    readyState: function() {
+      if(!this.ytPlayer || !this.ytPlayer.getVideoLoadedFraction){
+        return 0;
+      }
+      else if(this.ytPlayer.getVideoLoadedFraction() > .1){
+        return 4;
+      }
+      else if(this.ytPlayer.getVideoLoadedFraction() > .01){
+        return 2;
+      }
+      else{
+        return 1;
+      }
     },
 
     supportsFullScreen: function() {
