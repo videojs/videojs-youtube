@@ -154,8 +154,8 @@
           this.player_.off('waiting', this.bindedWaiting);
         }
 
-        // Remove the poster
-        this.playerEl_.querySelectorAll('.vjs-poster')[0].style.backgroundImage = 'none';
+        // Remove the poster + setting to display none
+        this.playerEl_.querySelectorAll('.vjs-poster')[0].className += " vjs-hidden";
 
         // If still connected to the DOM, remove it.
         if(this.el_.parentNode) {
