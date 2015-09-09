@@ -76,7 +76,8 @@ THE SOFTWARE. */
         modestbranding: 1,
         rel: 0,
         showinfo: 0,
-        loop: this.options_.loop ? 1 : 0
+        loop: this.options_.loop ? 1 : 0,
+        wmode: 'transparent'
       };
 
       // Let the user set any YouTube parameter
