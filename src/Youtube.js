@@ -44,17 +44,6 @@ THE SOFTWARE. */
         var divBlocker = document.createElement('div');
         divBlocker.setAttribute('class', 'vjs-iframe-blocker');
         divBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;display:block');
-
-        // Just for IE10 or older
-        if (document.all) {
-          var iframeBlocker = document.createElement('iframe');
-          iframeBlocker.setAttribute('src',' about:blank');
-          iframeBlocker.setAttribute('class', 'vjs-iframe-blocker');
-          iframeBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;display:block');
-          iframeBlocker.setAttribute('frameborder', '0');
-
-          divWrapper.appendChild(iframeBlocker);
-        }
         
         divWrapper.appendChild(divBlocker);
       }
@@ -165,6 +154,12 @@ THE SOFTWARE. */
       if (typeof this.options_.theme !== 'undefined') {
         playerVars.theme = this.options_.theme;
       }
+
+      // FORCE HTML5 FOR FIREFOX
+      if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+        playerVars.html5 = 1;
+      }
+
 
       this.activeVideoId = this.url.videoId;
       this.activeList = playerVars.list;
