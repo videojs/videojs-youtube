@@ -28,7 +28,19 @@ THE SOFTWARE. */
 
     constructor: function(options, ready) {
       Tech.call(this, options, ready);
+
+      this.setPoster(options.poster);
       this.setSrc(this.options_.source, true);
+
+      // Set the vjs-youtube class to the player
+      // Parent is not set yet so we have to wait a tick
+      setTimeout(function() {
+        this.el_.parentNode.className += ' vjs-youtube';
+      }.bind(this));
+    },
+
+    dispose: function() {
+      this.el_.parentNode.className = this.el_.parentNode.className.replace(' vjs-youtube', '');
     },
 
     createEl: function() {
@@ -98,6 +110,9 @@ THE SOFTWARE. */
 
       if (typeof this.options_.fs !== 'undefined') {
         playerVars.fs = this.options_.fs;
+      } else if (!playerVars.controls) {
+        // Let video.js handle the fullscreen unless it is the YouTube native controls
+        playerVars.fs = 0;
       }
 
       if (typeof this.options_.end !== 'undefined') {
@@ -169,10 +184,14 @@ THE SOFTWARE. */
     },
 
     onPlayerReady: function() {
-      this.triggerReady();
+      this.playerReady_ = true;
 
-      if (this.playOnReady) {
-        this.play();
+      if (this.posterReady_) {
+        this.triggerReady();
+
+        if (this.playOnReady) {
+          this.play();
+        }
       }
     },
 
@@ -260,11 +279,11 @@ THE SOFTWARE. */
     },
 
     poster: function() {
-      return this.poster;
+      return this.poster_;
     },
 
     setPoster: function(poster) {
-      this.poster = poster;
+      this.poster_ = poster;
     },
 
     setSrc: function(source) {
@@ -276,10 +295,28 @@ THE SOFTWARE. */
       this.url = Youtube.parseUrl(source.src);
 
       if (!this.options_.poster) {
-        Youtube.loadThumbnailUrl(this.url.videoId, function(poster) {
-          this.setPoster(poster);
-          this.trigger('posterchange');
-        }.bind(this));
+        if (this.url.videoId) {
+          // Set the low resolution first
+          this.poster_ = 'https://img.youtube.com/vi/' + this.url.videoId + '/0.jpg';
+
+          // Check if their is a high res
+          Youtube.checkHighResPoster(this.url.videoId, function(poster) {
+            this.posterReady_ = true;
+
+            // Did it found a higher resolution poster?
+            if (poster) {
+              this.setPoster(poster);
+            }
+
+            if (!this.isReady_ && this.playerReady_) {
+              this.triggerReady();
+
+              if (this.playOnReady) {
+                this.play();
+              }
+            }
+          }.bind(this));
+        }
       }
 
       if (this.options_.autoplay && !_isOnMobile) {
@@ -323,7 +360,7 @@ THE SOFTWARE. */
     },
 
     paused: function() {
-      return (this.ytplayer) ?
+      return (this.ytPlayer) ?
         (this.lastState !== YT.PlayerState.PLAYING && this.lastState !== YT.PlayerState.BUFFERING)
         : true;
     },
@@ -440,14 +477,7 @@ THE SOFTWARE. */
     },
 
     supportsFullScreen: function() {
-      if (typeof this.el_.webkitEnterFullScreen === 'function') {
-        // Seems to be broken in Chromium/Chrome && Safari in Leopard
-        if (/Android/.test(videojs.USER_AGENT) || !/Chrome|Mac OS X 10.5/.test(videojs.USER_AGENT)) {
-          return true;
-        }
-      }
-
-      return false;
+      return true;
     }
 
   });
@@ -485,10 +515,9 @@ THE SOFTWARE. */
   };
 
   // Tries to get the highest resolution thumbnail available for the video
-  Youtube.loadThumbnailUrl = function(id, callback){
+  Youtube.checkHighResPoster = function(id, callback){
 
     var uri = 'https://img.youtube.com/vi/' + id + '/maxresdefault.jpg';
-    var fallback = 'https://img.youtube.com/vi/' + id + '/0.jpg';
 
     try {
       var image = new Image();
@@ -507,11 +536,11 @@ THE SOFTWARE. */
         callback(uri);
       };
       image.onerror = function(){
-        callback(fallback);
+        callback(null);
       };
       image.src = uri;
     }
-    catch(e){ callback(fallback); }
+    catch(e){ callback(null); }
   };
 
   function loadApi() {
@@ -522,8 +551,9 @@ THE SOFTWARE. */
   }
 
   function injectCss() {
-    var css = '.vjs-iframe-blocker { display: none; }' +
-              '.vjs-user-inactive .vjs-iframe-blocker { display: block; }';
+    var css = '.vjs-youtube .vjs-iframe-blocker { display: none; }' +
+              '.vjs-youtube.vjs-user-inactive .vjs-iframe-blocker { display: block; }' +
+              '.vjs-youtube .vjs-poster { background-size: cover; }';
 
     var head = document.head || document.getElementsByTagName('head')[0];
 
