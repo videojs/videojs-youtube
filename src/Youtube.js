@@ -49,7 +49,7 @@ THE SOFTWARE. */
       div.setAttribute('style', 'width:100%;height:100%');
 
       var divWrapper = document.createElement('div');
-      divWrapper.setAttribute('style', 'width:100%;height:100%;position:relative');
+      divWrapper.setAttribute('style', 'width:100%;height:100%;position:absolute;top:0');
       divWrapper.appendChild(div);
 
       if (!_isOnMobile && !this.options_.ytControls) {
