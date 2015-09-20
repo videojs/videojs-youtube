@@ -1,8 +1,75 @@
 # YouTube Playback Technology<br />for [Video.js](https://github.com/videojs/video.js)
 
-Complete rewrite for VJS 5 in progress
+## Install
+You can use bower (`bower install videojs-youtube`), npm (`npm install videojs-youtube`) or the source and build it using `npm run build`. Then, the only file you need is dist/Youtube.min.js.
 
-## Todo coming soon
+## Example
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="../node_modules/video.js/dist/video-js.min.css" />
+</head>
+<body>
+  <video
+    id="vid1"
+    class="video-js vjs-default-skin"
+    controls
+    autoplay
+    width="640" height="264"
+    data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}] }'
+  >
+  </video>
+
+  <script src="../node_modules/video.js/dist/video.min.js"></script>
+  <script src="../dist/Youtube.min.js"></script>
+</body>
+</html>
+```
+
+See the examples folder for more
+
+## How does it work?
+Including the script Youtube.min.js will add the YouTube as a tech. You just have to add it to your techOrder option. Then, you add the option src with your YouTube URL.
+
+It supports:
+- youtube.com as well as youtu.be
+- Regular URLs: http://www.youtube.com/watch?v=xjS6SftYQaQ
+- Embeded URLs: http://www.youtube.com/embed/xjS6SftYQaQ
+- Playlist URLs: http://www.youtube.com/playlist?list=PLA60DCEB33156E51F OR http://www.youtube.com/watch?v=xjS6SftYQaQ&list=SPA60DCEB33156E51F
+
+## Options
+It supports every regular Video.js options. Additionally, you can change any [YouTube parameter](https://developers.google.com/youtube/player_parameters?hl=en#Parameters). Here is an example of setting the `iv_load_policy` parameter to `1`.
+
+```html
+<video
+  id="vid1"
+  class="video-js vjs-default-skin"
+  controls
+  autoplay
+  width="640" height="264"
+  data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}], "Youtube": { "iv_load_policy": 1 } }'
+>
+</video>
+```
+
+### YouTube controls
+Because `controls` is already a Video.js option, to use the YouTube controls, you must set the `ytControls` parameter.
+
+```html
+<video
+  id="vid1"
+  class="video-js vjs-default-skin"
+  controls
+  autoplay
+  width="640" height="264"
+  data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}], "Youtube": { "ytControls": 2 } }'
+>
+</video>
+```
+
+##Special Thank You
+Thanks to Steve Heffernan for the amazing Video.js and to John Hurliman for the original version of the YouTube tech
 
 ## License
 The MIT License (MIT)
