@@ -112,11 +112,11 @@ THE SOFTWARE. */
         playerVars.color = this.options_.color;
       }
 
-      if (typeof this.options_.fs !== 'undefined') {
-        playerVars.fs = this.options_.fs;
-      } else if (!playerVars.controls) {
+      if (!playerVars.controls) {
         // Let video.js handle the fullscreen unless it is the YouTube native controls
         playerVars.fs = 0;
+      } else if (typeof this.options_.fs !== 'undefined') {
+        playerVars.fs = this.options_.fs;
       }
 
       if (typeof this.options_.end !== 'undefined') {
@@ -443,7 +443,7 @@ THE SOFTWARE. */
       this.setTimeout( function(){
         this.trigger('volumechange');
       }, 50);
-      
+
     },
 
     muted: function() {
