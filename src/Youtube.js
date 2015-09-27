@@ -24,7 +24,7 @@ THE SOFTWARE. */
 
   var Tech = videojs.getComponent('Tech');
 
-  var Youtube = videojs.extends(Tech, {
+  var Youtube = videojs.extend(Tech, {
 
     constructor: function(options, ready) {
       Tech.call(this, options, ready);
@@ -43,17 +43,14 @@ THE SOFTWARE. */
       if (!_isOnMobile && !this.options_.ytControls) {
         var divBlocker = document.createElement('div');
         divBlocker.setAttribute('class', 'vjs-iframe-blocker');
-        divBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%');
-
-        // In case the blocker is still there and we want to pause
-        divBlocker.onclick = function() {
-          this.pause();
-        }.bind(this);
-
+        divBlocker.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;display:block');
+        
         divWrapper.appendChild(divBlocker);
       }
 
       if (Youtube.isApiReady) {
+        // Has to be reset because it gets lost when the player is not pushed to the apiReadyQueue
+        this.setSrc(this.options_.source, true);
         this.initYTPlayer();
       } else {
         Youtube.apiReadyQueue.push(this);
@@ -68,7 +65,8 @@ THE SOFTWARE. */
         modestbranding: 1,
         rel: 0,
         showinfo: 0,
-        loop: this.options_.loop ? 1 : 0
+        loop: this.options_.loop ? 1 : 0,
+        wmode: 'transparent'
       };
 
       // Let the user set any YouTube parameter
@@ -157,19 +155,35 @@ THE SOFTWARE. */
         playerVars.theme = this.options_.theme;
       }
 
+      // FORCE HTML5 FOR FIREFOX
+      if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+        playerVars.html5 = 1;
+      }
+
       this.activeVideoId = this.url.videoId;
       this.activeList = playerVars.list;
+      this.playerVars = playerVars;
 
-      this.ytPlayer = new YT.Player(this.options_.techId, {
-        videoId: this.url.videoId,
-        playerVars: playerVars,
-        events: {
-          onReady: this.onPlayerReady.bind(this),
-          onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
-          onStateChange: this.onPlayerStateChange.bind(this),
-          onError: this.onPlayerError.bind(this)
+      // We must wait for the element to exist, especially when there are some other memory/cpu intensive plugins slowing down the processes.
+      this.launchCheck = setInterval(function() {
+        if (document.getElementById(this.options_.techId) != null) {
+          this.launchPlayer();
+          clearInterval(this.launchCheck);
         }
-      });
+      }.bind(this), 50);     
+    },
+
+    launchPlayer: function(){
+        this.ytPlayer = new YT.Player(this.options_.techId, {
+          videoId: this.url.videoId,
+          playerVars: this.playerVars,
+          events: {
+            onReady: this.onPlayerReady.bind(this),
+            onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
+            onStateChange: this.onPlayerStateChange.bind(this),
+            onError: this.onPlayerError.bind(this)
+          }
+        });
     },
 
     onPlayerReady: function() {
@@ -181,7 +195,7 @@ THE SOFTWARE. */
     },
 
     onPlayerPlaybackQualityChange: function() {
-
+      this.trigger('resolutionchange')
     },
 
     onPlayerStateChange: function(e) {
@@ -403,6 +417,10 @@ THE SOFTWARE. */
       }
 
       this.ytPlayer.setVolume(percentAsDecimal * 100.0);
+      this.setTimeout( function(){
+        this.trigger('volumechange');
+      }, 50);
+      
     },
 
     muted: function() {
@@ -413,12 +431,18 @@ THE SOFTWARE. */
       if (!this.ytPlayer) {
         return;
       }
+      else{
+        this.muted(true);
+      }
 
       if (mute) {
         this.ytPlayer.mute();
       } else {
         this.ytPlayer.unMute();
       }
+      this.setTimeout( function(){
+        this.trigger('volumechange');
+      }, 50);
     },
 
     buffered: function() {
@@ -441,6 +465,21 @@ THE SOFTWARE. */
         start: function() { return 0; },
         end: function() { return end; }
       };
+    },
+
+    readyState: function() {
+      if(!this.ytPlayer || !this.ytPlayer.getVideoLoadedFraction){
+        return 0;
+      }
+      else if(this.ytPlayer.getVideoLoadedFraction() > .1){
+        return 4;
+      }
+      else if(this.ytPlayer.getVideoLoadedFraction() > .01){
+        return 2;
+      }
+      else{
+        return 1;
+      }
     },
 
     supportsFullScreen: function() {
