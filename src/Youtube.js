@@ -24,7 +24,7 @@ THE SOFTWARE. */
 
   var Tech = videojs.getComponent('Tech');
 
-  var Youtube = videojs.extends(Tech, {
+  var Youtube = videojs.extend(Tech, {
 
     constructor: function(options, ready) {
       Tech.call(this, options, ready);
