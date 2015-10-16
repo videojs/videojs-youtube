@@ -1,9 +1,10 @@
 {
   "name": "videojs-youtube",
   "description": "YouTube playback technology for Video.js",
-  "version": "2.0.0-beta1",
+  "version": "2.0.0",
   "author": "Benoit Tremblay",
   "main": "src/Youtube.js",
+  "license": "MIT",
   "keywords": [
     "video",
     "videojs",
@@ -16,8 +17,8 @@
     "type": "git",
     "url": "https://github.com/eXon/videojs-youtube.git"
   },
-  "dependencies": {
-    "video.js": "^5.0.0-rc.91"
+  "peerDependencies": {
+    "video.js": "5.x"
   },
   "scripts": {
     "build": "mkdir -p dist && cp src/Youtube.js dist/Youtube.js && uglifyjs src/Youtube.js -o dist/Youtube.min.js",
