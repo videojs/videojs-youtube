@@ -1,32 +1,43 @@
 {
   "name": "videojs-youtube",
   "description": "YouTube playback technology for Video.js",
-  "version": "1.2.13",
+  "version": "2.0.0",
   "author": "Benoit Tremblay",
-  "main": "dist/vjs.youtube.js",
+  "main": "src/Youtube.js",
+  "license": "MIT",
+  "keywords": [
+    "video",
+    "videojs",
+    "video.js",
+    "vjs",
+    "YouTube",
+    "tech"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eXon/videojs-youtube.git"
   },
   "peerDependencies": {
-    "video.js": "^4.12.5"
-  },
-  "dependencies": {
-    "video.js": "^4.12.5"
-  },
-  "devDependencies": {
-    "grunt": "~0.4",
-    "grunt-cli": "~0.1.0",
-    "grunt-contrib-connect": "^0.7.1",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.4.1",
-    "grunt-mocha-phantomjs": "^0.5.0",
-    "grunt-protractor-runner": "^1.0.1",
-    "mocha": "^1.19.0",
-    "protractor": "^0.23.1",
-    "should": "^3.3.2"
+    "video.js": "5.x"
   },
   "scripts": {
-    "test": "grunt test"
+    "build": "mkdir -p dist && cp src/Youtube.js dist/Youtube.js && uglifyjs src/Youtube.js -o dist/Youtube.min.js",
+    "lint": "jshint .",
+    "test": "karma start --single-run",
+    "validate": "npm ls"
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
+  "devDependencies": {
+    "http-server": "^0.8.0",
+    "jasmine-core": "^2.3.4",
+    "jshint": "^2.8.0",
+    "karma": "^0.12.37",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.6",
+    "precommit-hook": "^3.0.0",
+    "uglify-js": "^2.4.23"
   }
 }
