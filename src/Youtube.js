@@ -46,7 +46,7 @@ THE SOFTWARE. */
     createEl: function() {
       var div = document.createElement('div');
       div.setAttribute('id', this.options_.techId);
-      div.setAttribute('style', 'width:100%;height:100%');
+      div.setAttribute('style', 'width:100%;height:100%;top:0;left:0;position:absolute');
 
       var divWrapper = document.createElement('div');
       divWrapper.setAttribute('style', 'width:100%;height:100%;position:relative');
@@ -189,13 +189,10 @@ THE SOFTWARE. */
 
     onPlayerReady: function() {
       this.playerReady_ = true;
+      this.triggerReady();
 
-      if (this.posterReady_) {
-        this.triggerReady();
-
-        if (this.playOnReady) {
-          this.play();
-        }
+      if (this.playOnReady) {
+        this.play();
       }
     },
 
@@ -304,22 +301,7 @@ THE SOFTWARE. */
           this.poster_ = 'https://img.youtube.com/vi/' + this.url.videoId + '/0.jpg';
 
           // Check if their is a high res
-          Youtube.checkHighResPoster(this.url.videoId, function(poster) {
-            this.posterReady_ = true;
-
-            // Did it found a higher resolution poster?
-            if (poster) {
-              this.setPoster(poster);
-            }
-
-            if (!this.isReady_ && this.playerReady_) {
-              this.triggerReady();
-
-              if (this.playOnReady) {
-                this.play();
-              }
-            }
-          }.bind(this));
+          this.checkHighResPoster();
         }
       }
 
@@ -492,8 +474,34 @@ THE SOFTWARE. */
 
     supportsFullScreen: function() {
       return true;
-    }
+    },
 
+    // Tries to get the highest resolution thumbnail available for the video
+    checkHighResPoster: function(){
+      var uri = 'https://img.youtube.com/vi/' + this.url.videoId + '/maxresdefault.jpg';
+
+      try {
+        var image = new Image();
+        image.onload = function(){
+          // Onload may still be called if YouTube returns the 120x90 error thumbnail
+          if('naturalHeight' in this){
+            if(this.naturalHeight <= 90 || this.naturalWidth <= 120) {
+              this.onerror();
+              return;
+            }
+          } else if(this.height <= 90 || this.width <= 120) {
+            this.onerror();
+            return;
+          }
+
+          this.poster_ = uri;
+          this.trigger('posterchange');
+        }.bind(this);
+        image.onerror = function(){};
+        image.src = uri;
+      }
+      catch(e){}
+    }
   });
 
   Youtube.isSupported = function() {
@@ -528,35 +536,6 @@ THE SOFTWARE. */
     return result;
   };
 
-  // Tries to get the highest resolution thumbnail available for the video
-  Youtube.checkHighResPoster = function(id, callback){
-
-    var uri = 'https://img.youtube.com/vi/' + id + '/maxresdefault.jpg';
-
-    try {
-      var image = new Image();
-      image.onload = function(){
-        // Onload may still be called if YouTube returns the 120x90 error thumbnail
-        if('naturalHeight' in this){
-          if(this.naturalHeight <= 90 || this.naturalWidth <= 120) {
-            this.onerror();
-            return;
-          }
-        } else if(this.height <= 90 || this.width <= 120) {
-          this.onerror();
-          return;
-        }
-
-        callback(uri);
-      };
-      image.onerror = function(){
-        callback(null);
-      };
-      image.src = uri;
-    }
-    catch(e){ callback(null); }
-  };
-
   function loadApi() {
     var tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
@@ -565,7 +544,8 @@ THE SOFTWARE. */
   }
 
   function injectCss() {
-    var css = '.vjs-youtube .vjs-iframe-blocker { display: none; }' +
+    var css = // iframe blocker to catch mouse events
+              '.vjs-youtube .vjs-iframe-blocker { display: none; }' +
               '.vjs-youtube.vjs-user-inactive .vjs-iframe-blocker { display: block; }' +
               '.vjs-youtube .vjs-poster { background-size: cover; }';
 
