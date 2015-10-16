@@ -136,7 +136,7 @@ THE SOFTWARE. */
 
       if (typeof this.options_.list !== 'undefined') {
         playerVars.list = this.options_.list;
-      } else if (typeof this.url.listId !== 'undefined') {
+      } else if (this.url && typeof this.url.listId !== 'undefined') {
         playerVars.list = this.url.listId;
       }
 
@@ -172,11 +172,11 @@ THE SOFTWARE. */
         playerVars.theme = this.options_.theme;
       }
 
-      this.activeVideoId = this.url.videoId;
+      this.activeVideoId = this.url ? this.url.videoId : null;
       this.activeList = playerVars.list;
 
       this.ytPlayer = new YT.Player(this.options_.techId, {
-        videoId: this.url.videoId,
+        videoId: this.activeVideoId,
         playerVars: playerVars,
         events: {
           onReady: this.onPlayerReady.bind(this),
