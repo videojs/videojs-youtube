@@ -229,7 +229,7 @@
       fs: fullscreenControls,
       html5: (this.player_.options()['forceHTML5']) ? 1 : null,
       playsinline: (this.player_.options()['playsInline']) ? 1 : 0,
-      showinfo: 0,
+      showinfo: (this.player_.options()['showInfo']) ? 1 : 0,
       rel: 0,
       autoplay: (this.playOnReady) ? 1 : 0,
       loop: (this.player_.options()['loop']) ? 1 : 0,
