@@ -381,8 +381,6 @@ THE SOFTWARE. */
             this.isSeeking = false;
             clearInterval(this.checkSeekedInPauseInterval);
           }
-
-          this.play();
         }.bind(this), 250);
       }
     },
