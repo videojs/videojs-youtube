@@ -223,15 +223,13 @@ THE SOFTWARE. */
           this.trigger('play');
 
           if (this.isSeeking) {
-            this.trigger('seeked');
-            this.isSeeking = false;
+            this.onSeeked();
           }
           break;
 
         case YT.PlayerState.PAUSED:
           if (this.isSeeking) {
-            this.trigger('seeked');
-            this.isSeeking = false;
+            this.onSeeked();
             this.ytPlayer.playVideo();
           } else {
             this.trigger('pause');
@@ -378,14 +376,18 @@ THE SOFTWARE. */
             clearInterval(this.checkSeekedInPauseInterval);
           } else if (this.currentTime() !== this.timeBeforeSeek) {
             this.trigger('timeupdate');
-            this.trigger('seeked');
-            this.isSeeking = false;
-            clearInterval(this.checkSeekedInPauseInterval);
+            this.onSeeked();
           }
 
           this.play();
         }.bind(this), 250);
       }
+    },
+
+    onSeeked: function() {
+      clearInterval(this.checkSeekedInPauseInterval);
+      this.trigger('seeked');
+      this.isSeeking = false;
     },
 
     playbackRate: function() {
