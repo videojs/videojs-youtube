@@ -228,6 +228,7 @@ THE SOFTWARE. */
           break;
 
         case YT.PlayerState.PAUSED:
+          this.trigger('canplay');
           if (this.isSeeking) {
             this.onSeeked();
           } else {
