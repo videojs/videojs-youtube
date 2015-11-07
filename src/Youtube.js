@@ -230,7 +230,6 @@ THE SOFTWARE. */
         case YT.PlayerState.PAUSED:
           if (this.isSeeking) {
             this.onSeeked();
-            this.ytPlayer.playVideo();
           } else {
             this.trigger('pause');
           }
@@ -358,7 +357,9 @@ THE SOFTWARE. */
         this.timeBeforeSeek = this.currentTime();
       }
 
-      this.timeBeforeSeek = this.currentTime();
+      if (!this.isSeeking) {
+        this.wasPausedBeforeSeek = this.paused();
+      }
 
       this.ytPlayer.seekTo(seconds, true);
       this.trigger('timeupdate');
@@ -378,8 +379,6 @@ THE SOFTWARE. */
             this.trigger('timeupdate');
             this.onSeeked();
           }
-
-          this.play();
         }.bind(this), 250);
       }
     },
@@ -388,6 +387,9 @@ THE SOFTWARE. */
       clearInterval(this.checkSeekedInPauseInterval);
       this.trigger('seeked');
       this.isSeeking = false;
+      if (this.wasPausedBeforeSeek) {
+        this.pause();
+      }
     },
 
     playbackRate: function() {
