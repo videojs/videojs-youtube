@@ -370,6 +370,7 @@ THE SOFTWARE. */
       // A seek event during pause does not return an event to trigger a seeked event,
       // so run an interval timer to look for the currentTime to change
       if (this.lastState === YT.PlayerState.PAUSED && this.timeBeforeSeek !== seconds) {
+        clearInterval(this.checkSeekedInPauseInterval);
         this.checkSeekedInPauseInterval = setInterval(function() {
           if (this.lastState !== YT.PlayerState.PAUSED || !this.isSeeking) {
             // If something changed while we were waiting for the currentTime to change,
