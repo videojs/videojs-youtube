@@ -36,6 +36,12 @@ THE SOFTWARE. */
       // Parent is not set yet so we have to wait a tick
       setTimeout(function() {
         this.el_.parentNode.className += ' vjs-youtube';
+
+        if (Youtube.isApiReady) {
+          this.initYTPlayer();
+        } else {
+          Youtube.apiReadyQueue.push(this);
+        }
       }.bind(this));
     },
 
@@ -63,12 +69,6 @@ THE SOFTWARE. */
         }.bind(this);
 
         divWrapper.appendChild(divBlocker);
-      }
-
-      if (Youtube.isApiReady) {
-        this.initYTPlayer();
-      } else {
-        Youtube.apiReadyQueue.push(this);
       }
 
       return divWrapper;
