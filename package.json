@@ -1,7 +1,7 @@
 {
   "name": "videojs-youtube",
   "description": "YouTube playback technology for Video.js",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "author": "Benoit Tremblay",
   "main": "dist/Youtube.js",
   "license": "MIT",
@@ -24,8 +24,7 @@
     "build": "mkdir -p dist && cp src/Youtube.js dist/Youtube.js && uglifyjs src/Youtube.js -o dist/Youtube.min.js",
     "lint": "jshint .",
     "test": "karma start --single-run",
-    "validate": "npm ls",
-    "postinstall": "npm run build"
+    "validate": "npm ls"
   },
   "pre-commit": [
     "lint",
