@@ -32,6 +32,7 @@
     "test"
   ],
   "devDependencies": {
+    "video.js": "^5.0.2",
     "http-server": "^0.8.0",
     "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",
