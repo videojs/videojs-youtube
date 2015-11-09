@@ -223,16 +223,14 @@ THE SOFTWARE. */
           this.trigger('play');
 
           if (this.isSeeking) {
-            this.trigger('seeked');
-            this.isSeeking = false;
+            this.onSeeked();
           }
           break;
 
         case YT.PlayerState.PAUSED:
+          this.trigger('canplay');
           if (this.isSeeking) {
-            this.trigger('seeked');
-            this.isSeeking = false;
-            this.ytPlayer.playVideo();
+            this.onSeeked();
           } else {
             this.trigger('pause');
           }
@@ -360,7 +358,9 @@ THE SOFTWARE. */
         this.timeBeforeSeek = this.currentTime();
       }
 
-      this.timeBeforeSeek = this.currentTime();
+      if (!this.isSeeking) {
+        this.wasPausedBeforeSeek = this.paused();
+      }
 
       this.ytPlayer.seekTo(seconds, true);
       this.trigger('timeupdate');
@@ -370,6 +370,7 @@ THE SOFTWARE. */
       // A seek event during pause does not return an event to trigger a seeked event,
       // so run an interval timer to look for the currentTime to change
       if (this.lastState === YT.PlayerState.PAUSED && this.timeBeforeSeek !== seconds) {
+        clearInterval(this.checkSeekedInPauseInterval);
         this.checkSeekedInPauseInterval = setInterval(function() {
           if (this.lastState !== YT.PlayerState.PAUSED || !this.isSeeking) {
             // If something changed while we were waiting for the currentTime to change,
@@ -377,13 +378,18 @@ THE SOFTWARE. */
             clearInterval(this.checkSeekedInPauseInterval);
           } else if (this.currentTime() !== this.timeBeforeSeek) {
             this.trigger('timeupdate');
-            this.trigger('seeked');
-            this.isSeeking = false;
-            clearInterval(this.checkSeekedInPauseInterval);
+            this.onSeeked();
           }
-
-          this.play();
         }.bind(this), 250);
+      }
+    },
+
+    onSeeked: function() {
+      clearInterval(this.checkSeekedInPauseInterval);
+      this.trigger('seeked');
+      this.isSeeking = false;
+      if (this.wasPausedBeforeSeek) {
+        this.pause();
       }
     },
 
