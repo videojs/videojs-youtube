@@ -24,7 +24,8 @@
     "build": "mkdir -p dist && cp src/Youtube.js dist/Youtube.js && uglifyjs src/Youtube.js -o dist/Youtube.min.js",
     "lint": "jshint .",
     "test": "karma start --single-run",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "postinstall": "npm run build"
   },
   "pre-commit": [
     "lint",
