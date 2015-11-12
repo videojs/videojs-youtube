@@ -495,7 +495,7 @@ THE SOFTWARE. */
               this.onerror();
               return;
             }
-          } else if(this.height <= 90 || this.width <= 120) {
+          } else if(image.height <= 90 || image.width <= 120) {
             this.onerror();
             return;
           }
