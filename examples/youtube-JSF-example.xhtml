@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Video-JS Example</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href="http://vjs.zencdn.net/5.0/video-js.min.css" rel="stylesheet"/>
+    </h:head>
+    <h:body>
+        <ui:composition>
+            <div class="video-js vjs-default-skin vjs-playing vjs-fullscreen" style="height: 500px">
+                <video id="my-video-1" 
+                       class="vjs-tech" 
+                       height="500px" 
+                       width="100%" 
+                       controls="" 
+                       poster="assets/images/x2.png"
+                       data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}] }'>
+                </video>
+            </div>
+        </ui:composition>
+    </h:body>
+    <h:footer>
+
+        <!--video js min script-->
+        <script src="assets/js/video.min.js"></script>
+
+        <!--Youtube.min script-->
+        <script src="assets/js/YouTube.min.js"></script>
+        <!--</h:footer>-->
+</html>
