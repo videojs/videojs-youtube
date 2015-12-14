@@ -290,7 +290,12 @@ THE SOFTWARE. */
       return { code: 'YouTube unknown error (' + this.errorNumber + ')' };
     },
 
-    src: function() {
+    src: function(src) {
+      if (src) {
+        this.setSrc({ src: src });
+        this.play();
+      }
+
       return this.source;
     },
 
@@ -348,7 +353,9 @@ THE SOFTWARE. */
             this.ytPlayer.loadPlaylist(this.url.listId);
             this.activeList = this.url.listId;
           }
-        } if (this.activeVideoId === this.url.videoId) {
+        }
+
+        if (this.activeVideoId === this.url.videoId) {
           this.ytPlayer.playVideo();
         } else {
           this.ytPlayer.loadVideoById(this.url.videoId);

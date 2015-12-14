@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="../node_modules/video.js/dist/video-js.min.css" />
+</head>
+<body>
+  <video
+    id="vid1"
+    class="video-js vjs-default-skin"
+    controls
+    width="640" height="264"
+    data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}] }'
+  >
+  </video>
+
+  <script src="../node_modules/video.js/dist/video.min.js"></script>
+  <script src="../dist/Youtube.min.js"></script>
+  <script>
+  // An example of playing with the Video.js javascript API
+  // Will start the video and then switch the source 3 seconds latter
+  // You can look at the doc there: http://docs.videojs.com/docs/guides/api.html
+  videojs('vid1').ready(function() {
+    var myPlayer = this;
+    myPlayer.src({ type: 'video/youtube', src: 'https://www.youtube.com/watch?v=y6Sxv-sUYtM' });
+  });
+  </script>
+</body>
+</html>
