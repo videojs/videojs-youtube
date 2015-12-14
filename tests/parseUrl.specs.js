@@ -1,4 +1,4 @@
-var Youtube = videojs.getComponent('Youtube');
+var Youtube = videojs.getTech('Youtube');
 
 describe('parseUrl', function() {
   it('should read the correct video ID', function() {
