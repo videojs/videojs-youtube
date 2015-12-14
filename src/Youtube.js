@@ -66,7 +66,6 @@ THE SOFTWARE. */
       div.setAttribute('style', 'width:100%;height:100%;top:0;left:0;position:absolute');
 
       var divWrapper = document.createElement('div');
-      divWrapper.setAttribute('style', 'width:100%;height:100%;position:relative');
       divWrapper.appendChild(div);
 
       if (!_isOnMobile && !this.options_.ytControls) {
