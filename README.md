@@ -63,7 +63,7 @@ Because `controls` is already a Video.js option, to use the YouTube controls, yo
   controls
   autoplay
   width="640" height="264"
-  data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}], "Youtube": { "ytControls": 2 } }'
+  data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}], "youtube": { "ytControls": 2 } }'
 >
 </video>
 ```
