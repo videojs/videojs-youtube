@@ -209,6 +209,7 @@ THE SOFTWARE. */
 
       switch (state) {
         case -1:
+          this.trigger('loadedmetadata');
           this.trigger('durationchange');
           break;
 
