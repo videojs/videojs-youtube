@@ -48,7 +48,7 @@ It supports every regular Video.js options. Additionally, you can change any [Yo
   controls
   autoplay
   width="640" height="264"
-  data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}], "Youtube": { "iv_load_policy": 1 } }'
+  data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}], "youtube": { "iv_load_policy": 1 } }'
 >
 </video>
 ```
