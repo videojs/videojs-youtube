@@ -1,5 +1,5 @@
 module.exports = function(config) {
-  config.set({
+  var configuration = {
     basePath: '',
     frameworks: ['jasmine'],
     files: [
@@ -7,6 +7,18 @@ module.exports = function(config) {
       'src/Youtube.js',
       'tests/**/*.specs.js'
     ],
-    browsers: ['Chrome']
-  });
+    browsers: ['Chrome'],
+    customLaunchers: {
+        'ChromeTravisCI': {
+            base: 'Chrome',
+            flags: ['--no-sandbox']
+        }
+    }
+  };
+
+  if (process.env.TRAVIS) {
+    configuration.browsers = ['ChromeTravisCI'];
+  }
+
+  config.set(configuration);
 };

@@ -27,8 +27,7 @@
     "validate": "npm ls"
   },
   "pre-commit": [
-    "lint",
-    "test"
+    "lint"
   ],
   "devDependencies": {
     "video.js": "^5.3.0",
