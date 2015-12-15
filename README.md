@@ -3,6 +3,9 @@
 ## Install
 You can use bower (`bower install videojs-youtube`), npm (`npm install videojs-youtube`) or the source and build it using `npm run build`. Then, the only file you need is dist/Youtube.min.js.
 
+## Version Note
+Use branch `vjs4` if you still using old VideoJS `v4.x`.
+
 ## Example
 ```html
 <!DOCTYPE html>
