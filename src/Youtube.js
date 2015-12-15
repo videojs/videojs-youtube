@@ -522,8 +522,8 @@ THE SOFTWARE. */
         var image = new Image();
         image.onload = function(){
           // Onload may still be called if YouTube returns the 120x90 error thumbnail
-          if('naturalHeight' in this){
-            if(this.naturalHeight <= 90 || this.naturalWidth <= 120) {
+          if('naturalHeight' in image){
+            if(image.naturalHeight <= 90 || image.naturalWidth <= 120) {
               this.onerror();
               return;
             }
