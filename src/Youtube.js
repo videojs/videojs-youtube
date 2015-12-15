@@ -26,7 +26,7 @@ THE SOFTWARE. */
       return (root.Youtube = factory(videojs));
     });
   } else if(typeof module === 'object' && module.exports) {
-    module.exports = (root.Youtube = factory(require('videojs')));
+    module.exports = (root.Youtube = factory(require('video.js')));
   } else {
     root.Youtube = factory(root.videojs);
   }
