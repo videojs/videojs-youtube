@@ -48,10 +48,6 @@ THE SOFTWARE. */
       setTimeout(function() {
         this.el_.parentNode.className += ' vjs-youtube';
 
-        if (_isOnMobile) {
-          this.el_.parentNode.className += ' vjs-youtube-mobile';
-        }
-
         if (Youtube.isApiReady) {
           this.initYTPlayer();
         } else {
@@ -61,9 +57,7 @@ THE SOFTWARE. */
     },
 
     dispose: function() {
-      this.el_.parentNode.className = this.el_.parentNode.className
-        .replace(' vjs-youtube', '')
-        .replace(' vjs-youtube-mobile', '');
+      this.el_.parentNode.className = this.el_.parentNode.className.replace(' vjs-youtube', '');
     },
 
     createEl: function() {
@@ -300,12 +294,6 @@ THE SOFTWARE. */
     },
 
     poster: function() {
-      // You can't start programmaticlly a video with a mobile
-      // through the iframe so we hide the poster and the play button (with CSS)
-      if (_isOnMobile) {
-        return null;
-      }
-
       return this.poster_;
     },
 
@@ -508,8 +496,6 @@ THE SOFTWARE. */
       };
     },
 
-
-
     supportsFullScreen: function() {
       return true;
     },
@@ -585,8 +571,7 @@ THE SOFTWARE. */
     var css = // iframe blocker to catch mouse events
               '.vjs-youtube .vjs-iframe-blocker { display: none; }' +
               '.vjs-youtube.vjs-user-inactive .vjs-iframe-blocker { display: block; }' +
-              '.vjs-youtube .vjs-poster { background-size: cover; }' +
-              '.vjs-youtube-mobile .vjs-big-play-button { display: none; }';
+              '.vjs-youtube .vjs-poster { background-size: cover; }';
 
     var head = document.head || document.getElementsByTagName('head')[0];
 
