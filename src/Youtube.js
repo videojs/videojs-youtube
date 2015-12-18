@@ -328,12 +328,22 @@ THE SOFTWARE. */
       }
     },
 
+    parentPlayer: function(){
+        return videojs.getPlayers()[this.el_.parentNode.id];
+    },
+
     play: function() {
       if (!this.url || !this.url.videoId) {
         return;
       }
 
       if (this.isReady_) {
+          if(_isOnMobile && !this.hasPlayed){
+            this.parentPlayer().bigPlayButton.hide();
+            this.parentPlayer().posterImage.hide();
+            this.hasPlayed = true;
+            return;
+          }
         if (this.url.listId) {
           if (this.activeList === this.url.listId) {
             this.ytPlayer.playVideo();
