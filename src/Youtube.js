@@ -22,7 +22,7 @@ THE SOFTWARE. */
 /*global define, YT*/
 (function (root, factory) {
   if(typeof define === 'function' && define.amd) {
-    define(['videojs'], function(videojs){
+    define(['video.js'], function(videojs){
       return (root.Youtube = factory(videojs));
     });
   } else if(typeof module === 'object' && module.exports) {
