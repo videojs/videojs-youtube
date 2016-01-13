@@ -175,6 +175,14 @@ THE SOFTWARE. */
           this.userActive(true);
       });
         
+      // Disable VJS controls for iPad only
+      var iPad = /iPad/.test(navigator.userAgent) && !window.MSStream;
+      if(iPad) {
+          playerVars.controls = 1; // Enable YouTube controls
+          playerVars.fs = this.options_.fs;
+          this.parentPlayer().controlBar.dispose(); // Remove VJS controls
+      }
+
       this.activeVideoId = this.url ? this.url.videoId : null;
       this.activeList = playerVars.list;
 
