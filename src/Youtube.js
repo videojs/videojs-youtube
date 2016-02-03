@@ -514,7 +514,9 @@ THE SOFTWARE. */
       };
     },
 
-
+    // TODO: Can we really do something with this on YouTUbe?
+    load: function() {},
+    reset: function() {},
 
     supportsFullScreen: function() {
       return true;
