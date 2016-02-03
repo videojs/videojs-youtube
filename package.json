@@ -30,7 +30,6 @@
     "lint"
   ],
   "devDependencies": {
-    "video.js": "^5.3.0",
     "http-server": "^0.8.0",
     "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",
@@ -39,5 +38,8 @@
     "karma-jasmine": "^0.3.6",
     "precommit-hook": "^3.0.0",
     "uglify-js": "^2.4.23"
+  },
+  "dependencies": {
+    "video.js": "^5.6.0"
   }
 }
