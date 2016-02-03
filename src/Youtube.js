@@ -501,7 +501,7 @@ THE SOFTWARE. */
       var end = this.ytPlayer.getVideoLoadedFraction() * this.ytPlayer.getDuration();
 
       return {
-        length: 1,
+        length: this.ytPlayer.getDuration(),
         start: function() { return 0; },
         end: function() { return end; }
       };
