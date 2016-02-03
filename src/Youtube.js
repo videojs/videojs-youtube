@@ -612,5 +612,10 @@ THE SOFTWARE. */
   loadApi();
   injectCss();
 
-  videojs.registerTech('Youtube', Youtube);
+  videojs.registerComponent('Youtube', Youtube);
+
+  // Older versions of VJS5 doesn't have the registerTech function
+  if (typeof videojs.registerTech !== 'undefined') {
+    videojs.registerTech('Youtube', Youtube);
+  }
 }));
