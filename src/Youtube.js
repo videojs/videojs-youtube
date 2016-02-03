@@ -291,7 +291,10 @@ THE SOFTWARE. */
     src: function(src) {
       if (src) {
         this.setSrc({ src: src });
-        this.play();
+
+        if (this.options_.autoplay && !_isOnMobile) {
+          this.play();
+        }
       }
 
       return this.source;
