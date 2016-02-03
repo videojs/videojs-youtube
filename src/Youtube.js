@@ -22,7 +22,7 @@ THE SOFTWARE. */
 /*global define, YT*/
 (function (root, factory) {
   if(typeof define === 'function' && define.amd) {
-    define(['videojs'], function(videojs){
+    define(['video.js'], function(videojs){
       return (root.Youtube = factory(videojs));
     });
   } else if(typeof module === 'object' && module.exports) {
@@ -219,7 +219,7 @@ THE SOFTWARE. */
     onPlayerStateChange: function(e) {
       var state = e.data;
 
-      if (state === this.lastState) {
+      if (state === this.lastState || this.errorNumber) {
         return;
       }
 
@@ -273,17 +273,15 @@ THE SOFTWARE. */
 
     error: function() {
       switch (this.errorNumber) {
-        case 2:
-          return { code: 'Unable to find the video' };
-
         case 5:
           return { code: 'Error while trying to play the video' };
 
+        case 2:
         case 100:
+        case 150:
           return { code: 'Unable to find the video' };
 
         case 101:
-        case 150:
           return { code: 'Playback on other Websites has been disabled by the video owner.' };
       }
 
@@ -318,6 +316,7 @@ THE SOFTWARE. */
         return;
       }
 
+      delete this.errorNumber;
       this.source = source;
       this.url = Youtube.parseUrl(source.src);
 
@@ -523,12 +522,10 @@ THE SOFTWARE. */
         image.onload = function(){
           // Onload may still be called if YouTube returns the 120x90 error thumbnail
           if('naturalHeight' in image){
-            if(image.naturalHeight <= 90 || image.naturalWidth <= 120) {
-              this.onerror();
+            if (image.naturalHeight <= 90 || image.naturalWidth <= 120) {
               return;
             }
           } else if(image.height <= 90 || image.width <= 120) {
-            this.onerror();
             return;
           }
 
