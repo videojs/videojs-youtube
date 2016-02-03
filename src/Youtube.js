@@ -344,6 +344,8 @@ THE SOFTWARE. */
         return;
       }
 
+      this.wasPausedBeforeSeek = false;
+
       if (this.isReady_) {
         if (this.url.listId) {
           if (this.activeList === this.url.listId) {
@@ -415,11 +417,13 @@ THE SOFTWARE. */
 
     onSeeked: function() {
       clearInterval(this.checkSeekedInPauseInterval);
-      this.trigger('seeked');
       this.isSeeking = false;
+
       if (this.wasPausedBeforeSeek) {
         this.pause();
       }
+
+      this.trigger('seeked');
     },
 
     playbackRate: function() {
