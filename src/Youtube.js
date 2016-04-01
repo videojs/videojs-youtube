@@ -33,6 +33,10 @@ THE SOFTWARE. */
 }(this, function(videojs) {
   'use strict';
 
+  if (!videojs.getComponent) {
+    //Old version of videojs being used, which means no YouTube support
+    return;
+  }
   var Tech = videojs.getComponent('Tech');
 
   var Youtube = videojs.extend(Tech, {
@@ -209,6 +213,9 @@ THE SOFTWARE. */
 
       if (this.playOnReady) {
         this.play();
+      } else if (this.cueOnReady) {
+        this.ytPlayer.cueVideoById(this.url.videoId);
+        this.activeVideoId = this.url.videoId;
       }
     },
 
@@ -223,13 +230,17 @@ THE SOFTWARE. */
         return;
       }
 
+      this.lastState = state;
+
       switch (state) {
         case -1:
+          this.trigger('loadstart');
           this.trigger('loadedmetadata');
           this.trigger('durationchange');
           break;
 
         case YT.PlayerState.ENDED:
+          this.trigger('loadstart');
           this.trigger('ended');
           break;
 
@@ -258,8 +269,6 @@ THE SOFTWARE. */
           this.player_.trigger('waiting');
           break;
       }
-
-      this.lastState = state;
     },
 
     onPlayerError: function(e) {
@@ -291,10 +300,6 @@ THE SOFTWARE. */
     src: function(src) {
       if (src) {
         this.setSrc({ src: src });
-
-        if (this.options_.autoplay && !_isOnMobile) {
-          this.play();
-        }
       }
 
       return this.source;
@@ -327,6 +332,7 @@ THE SOFTWARE. */
         if (this.url.videoId) {
           // Set the low resolution first
           this.poster_ = 'https://img.youtube.com/vi/' + this.url.videoId + '/0.jpg';
+          this.trigger('posterchange');
 
           // Check if their is a high res
           this.checkHighResPoster();
@@ -339,8 +345,17 @@ THE SOFTWARE. */
         } else {
           this.playOnReady = true;
         }
+      } else if (this.activeVideoId !== this.url.videoId) {
+        if (this.isReady_) {
+          this.ytPlayer.cueVideoById(this.url.videoId);
+          this.activeVideoId = this.url.videoId;
+        } else {
+          this.cueOnReady = true;
+        }
       }
     },
+
+    setAutoplay: function() {},
 
     play: function() {
       if (!this.url || !this.url.videoId) {
@@ -556,7 +571,7 @@ THE SOFTWARE. */
     return (e.type === 'video/youtube');
   };
 
-  var _isOnMobile = /(iPad|iPhone|iPod|Android)/g.test(navigator.userAgent);
+  var _isOnMobile = videojs.browser.IS_IPHONE || useNativeControlsOnAndroid();
 
   Youtube.parseUrl = function(url) {
     var result = {
@@ -606,6 +621,14 @@ THE SOFTWARE. */
     }
 
     head.appendChild(style);
+  }
+
+  function useNativeControlsOnAndroid() {
+    var stockRegex = window.navigator.userAgent.match(/applewebkit\/(\d*).*Version\/(\d*.\d*)/i);
+    //True only Android Stock Browser on OS versions 4.X and below
+    //where a Webkit version and a "Version/X.X" String can be found in
+    //user agent.
+    return videojs.browser.IS_ANDROID && videojs.browser.ANDROID_VERSION < 5 && stockRegex && stockRegex[2] > 0;
   }
 
   Youtube.apiReadyQueue = [];
