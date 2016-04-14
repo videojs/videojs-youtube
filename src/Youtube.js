@@ -74,6 +74,7 @@ THE SOFTWARE. */
       var div = document.createElement('div');
       div.setAttribute('id', this.options_.techId);
       div.setAttribute('style', 'width:100%;height:100%;top:0;left:0;position:absolute');
+      div.setAttribute('class', 'vjs-tech');
 
       var divWrapper = document.createElement('div');
       divWrapper.appendChild(div);
@@ -240,7 +241,6 @@ THE SOFTWARE. */
           break;
 
         case YT.PlayerState.ENDED:
-          this.trigger('loadstart');
           this.trigger('ended');
           break;
 
@@ -462,7 +462,7 @@ THE SOFTWARE. */
     },
 
     currentSrc: function() {
-      return this.source;
+      return this.source && this.source.src;
     },
 
     ended: function() {
