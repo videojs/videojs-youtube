@@ -553,7 +553,11 @@ THE SOFTWARE. */
   };
 
   Youtube.canPlaySource = function(e) {
-    return (e.type === 'video/youtube');
+    return Youtube.canPlayType(e.type);
+  };
+
+  Youtube.canPlayType = function(e) {
+    return (e === 'video/youtube');
   };
 
   var _isOnMobile = /(iPad|iPhone|iPod|Android)/g.test(navigator.userAgent);
