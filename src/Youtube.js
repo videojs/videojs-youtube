@@ -355,7 +355,17 @@ THE SOFTWARE. */
       }
     },
 
-    setAutoplay: function() {},
+    autoplay: function() {
+      return this.options_.autoplay;
+    },
+
+    setAutoplay: function(val) {
+      this.options_.autoplay = val;
+    },
+
+    loop: function() {
+      return this.options_.loop;
+    },
 
     play: function() {
       if (!this.url || !this.url.videoId) {
@@ -431,6 +441,31 @@ THE SOFTWARE. */
           }
         }.bind(this), 250);
       }
+    },
+
+    seeking: function () {
+      return this.isSeeking;
+    },
+
+    seekable: function () {
+      if(!this.ytPlayer || !this.ytPlayer.getVideoLoadedFraction) {
+        return {
+          length: 0,
+          start: function() {
+            throw new Error('This TimeRanges object is empty');
+          },
+          end: function() {
+            throw new Error('This TimeRanges object is empty');
+          }
+        };
+      }
+      var end = this.ytPlayer.getDuration();
+
+      return {
+        length: this.ytPlayer.getDuration(),
+        start: function() { return 0; },
+        end: function() { return end; }
+      };
     },
 
     onSeeked: function() {
@@ -530,6 +565,7 @@ THE SOFTWARE. */
     },
 
     // TODO: Can we really do something with this on YouTUbe?
+    preload: function() {},
     load: function() {},
     reset: function() {},
 
