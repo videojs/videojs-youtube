@@ -1,9 +1,9 @@
 module.exports = function(config) {
   var configuration = {
-    basePath: '',
+    basePath: '../),
     frameworks: ['jasmine'],
     files: [
-      'node_modules/video.js/dist/video.js',
+      '../node_modules/video.js/dist/video.js',
       'src/Youtube.js',
       'tests/**/*.specs.js'
     ],

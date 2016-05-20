@@ -3,7 +3,7 @@
   "description": "YouTube playback technology for Video.js",
   "version": "2.0.8",
   "author": "Benoit Tremblay",
-  "main": "dist/Youtube.js",
+  "main": "es5/Youtube.js",
   "license": "MIT",
   "keywords": [
     "video",
@@ -21,16 +21,69 @@
     "video.js": "5.x"
   },
   "scripts": {
-    "build": "mkdirp dist && cp src/Youtube.js dist/Youtube.js && uglifyjs src/Youtube.js -o dist/Youtube.min.js",
+    "prebuild": "npm run clean",
+    "build": "npm-run-all -p build:*",
+    "build:js": "npm-run-all mkdirs build:js:babel build:js:browserify build:js:bannerize build:js:uglify",
+    "build:js:babel": "babel src -d es5",
+    "build:js:bannerize": "bannerize dist/Youtube.js --banner=scripts/banner.ejs",
+    "build:js:browserify": "browserify . -s Youtube -o dist/Youtube.js",
+    "build:js:uglify": "uglifyjs dist/Youtube.js --comments --mangle --compress -o dist/Youtube.min.js",
     "lint": "jshint .",
+    "clean": "rm -rf dist dist-test es5",
+    "mkdirs": "mkdir -p dist dist-test es5",
+    "prepublish": "npm run build",
+    "prestart": "npm-run-all -p docs build",
+    "dev": "npm-run-all -p start watch",
+    "start": "npm-run-all -p start:serve",
+    "start:serve": "babel-node --optional es7.functionBind,es7.classProperties,es7.decorators  scripts/server.js",
+    "pretest": "npm-run-all build:test",
     "test": "karma start --single-run",
+    "watch": "npm run mkdirs && npm-run-all -p watch:*",
+    "watch:js": "watchify src/Youtube.js -t babelify -v -o dist/Youtube.js",
     "validate": "npm ls"
   },
   "pre-commit": [
     "lint"
   ],
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "qunit": "global:QUnit",
+    "sinon": "global:sinon",
+    "video.js": "global:videojs"
+  },
+  "babel": {
+    "optional": [
+      "es7.functionBind",
+      "es7.classProperties",
+      "es7.decorators"
+    ]
+  },
+  "vjsstandard": {
+    "ignore": [
+      "dist",
+      "dist-test",
+      "docs",
+      "es5",
+      "tests",
+      "scripts"
+    ]
+  },
   "devDependencies": {
-    "http-server": "^0.8.0",
+    "babel": "^5.8.0",
+    "babelify": "^6.0.0",
+    "bannerize": "^1.0.0",
+    "browserify": "^11.0.0",
+    "browserify-shim": "^3.0.0",
+    "connect": "^3.4.0",
+    "cowsay": "^1.1.0",
+    "portscanner": "^1.0.0",
+    "npm-run-all": "~1.2.0",
+    "videojs-standard": "^4.0.0",
+    "watchify": "^3.6.0",
     "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",
     "karma": "^0.12.37",
@@ -38,7 +91,8 @@
     "karma-jasmine": "^0.3.6",
     "mkdirp": "^0.5.1",
     "precommit-hook": "^3.0.0",
-    "uglify-js": "^2.4.23"
+    "uglify-js": "^2.5.0",
+    "videojs-standard": "^4.0.0"
   },
   "dependencies": {
     "video.js": "^5.6.0"
