@@ -62,16 +62,6 @@
       "es7.decorators"
     ]
   },
-  "vjsstandard": {
-    "ignore": [
-      "dist",
-      "dist-test",
-      "docs",
-      "es5",
-      "tests",
-      "scripts"
-    ]
-  },
   "devDependencies": {
     "babel": "^5.8.0",
     "babelify": "^6.0.0",
@@ -82,7 +72,6 @@
     "cowsay": "^1.1.0",
     "portscanner": "^1.0.0",
     "npm-run-all": "~1.2.0",
-    "videojs-standard": "^4.0.0",
     "watchify": "^3.6.0",
     "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",
@@ -91,8 +80,7 @@
     "karma-jasmine": "^0.3.6",
     "mkdirp": "^0.5.1",
     "precommit-hook": "^3.0.0",
-    "uglify-js": "^2.5.0",
-    "videojs-standard": "^4.0.0"
+    "uglify-js": "^2.5.0"
   },
   "dependencies": {
     "video.js": "^5.6.0"
