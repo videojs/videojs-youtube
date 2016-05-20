@@ -1,6 +1,6 @@
 {
   "name": "videojs-youtube",
-  "version": "2.0.0",
+  "version": "2.0.8",
   "homepage": "https://github.com/eXon/videojs-youtube",
   "authors": [
     "Benoit Tremblay <trembl.ben@gmail.com>"
@@ -22,7 +22,7 @@
     ".jshintrc",
     ".jshintignore",
     "src",
-    "tests",
+    "test",
     "karma.conf.js"
   ],
   "dependencies": {
