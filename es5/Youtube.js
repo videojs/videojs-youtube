@@ -96,7 +96,7 @@ var Youtube = (function (_Tech) {
   }, {
     key: 'initYTPlayer',
     value: function initYTPlayer() {
-      var playerlets = {
+      var playerVars = {
         controls: 0,
         modestbranding: 1,
         rel: 0,
@@ -110,95 +110,95 @@ var Youtube = (function (_Tech) {
       // To use the loop or autoplay, use the video.js settings
 
       if (typeof this.options_.autohide !== 'undefined') {
-        playerlets.autohide = this.options_.autohide;
+        playerVars.autohide = this.options_.autohide;
       }
 
       if (typeof this.options_['cc_load_policy'] !== 'undefined') {
-        playerlets['cc_load_policy'] = this.options_['cc_load_policy'];
+        playerVars['cc_load_policy'] = this.options_['cc_load_policy'];
       }
 
       if (typeof this.options_.ytControls !== 'undefined') {
-        playerlets.controls = this.options_.ytControls;
+        playerVars.controls = this.options_.ytControls;
       }
 
       if (typeof this.options_.disablekb !== 'undefined') {
-        playerlets.disablekb = this.options_.disablekb;
+        playerVars.disablekb = this.options_.disablekb;
       }
 
       if (typeof this.options_.end !== 'undefined') {
-        playerlets.end = this.options_.end;
+        playerVars.end = this.options_.end;
       }
 
       if (typeof this.options_.color !== 'undefined') {
-        playerlets.color = this.options_.color;
+        playerVars.color = this.options_.color;
       }
 
-      if (!playerlets.controls) {
+      if (!playerVars.controls) {
         // Let video.js handle the fullscreen unless it is the YouTube native controls
-        playerlets.fs = 0;
+        playerVars.fs = 0;
       } else if (typeof this.options_.fs !== 'undefined') {
-        playerlets.fs = this.options_.fs;
+        playerVars.fs = this.options_.fs;
       }
 
       if (typeof this.options_.end !== 'undefined') {
-        playerlets.end = this.options_.end;
+        playerVars.end = this.options_.end;
       }
 
       if (typeof this.options_.hl !== 'undefined') {
-        playerlets.hl = this.options_.hl;
+        playerVars.hl = this.options_.hl;
       } else if (typeof this.options_.language !== 'undefined') {
         // Set the YouTube player on the same language than video.js
-        playerlets.hl = this.options_.language.substr(0, 2);
+        playerVars.hl = this.options_.language.substr(0, 2);
       }
 
       if (typeof this.options_['iv_load_policy'] !== 'undefined') {
-        playerlets['iv_load_policy'] = this.options_['iv_load_policy'];
+        playerVars['iv_load_policy'] = this.options_['iv_load_policy'];
       }
 
       if (typeof this.options_.list !== 'undefined') {
-        playerlets.list = this.options_.list;
+        playerVars.list = this.options_.list;
       } else if (this.url && typeof this.url.listId !== 'undefined') {
-        playerlets.list = this.url.listId;
+        playerVars.list = this.url.listId;
       }
 
       if (typeof this.options_.listType !== 'undefined') {
-        playerlets.listType = this.options_.listType;
+        playerVars.listType = this.options_.listType;
       }
 
       if (typeof this.options_.modestbranding !== 'undefined') {
-        playerlets.modestbranding = this.options_.modestbranding;
+        playerVars.modestbranding = this.options_.modestbranding;
       }
 
       if (typeof this.options_.playlist !== 'undefined') {
-        playerlets.playlist = this.options_.playlist;
+        playerVars.playlist = this.options_.playlist;
       }
 
       if (typeof this.options_.playsinline !== 'undefined') {
-        playerlets.playsinline = this.options_.playsinline;
+        playerVars.playsinline = this.options_.playsinline;
       }
 
       if (typeof this.options_.rel !== 'undefined') {
-        playerlets.rel = this.options_.rel;
+        playerVars.rel = this.options_.rel;
       }
 
       if (typeof this.options_.showinfo !== 'undefined') {
-        playerlets.showinfo = this.options_.showinfo;
+        playerVars.showinfo = this.options_.showinfo;
       }
 
       if (typeof this.options_.start !== 'undefined') {
-        playerlets.start = this.options_.start;
+        playerVars.start = this.options_.start;
       }
 
       if (typeof this.options_.theme !== 'undefined') {
-        playerlets.theme = this.options_.theme;
+        playerVars.theme = this.options_.theme;
       }
 
       this.activeVideoId = this.url ? this.url.videoId : null;
-      this.activeList = playerlets.list;
+      this.activeList = playerVars.list;
 
       this.ytPlayer = new YT.Player(this.options_.techId, {
         videoId: this.activeVideoId,
-        playerlets: playerlets,
+        playerVars: playerVars,
         events: {
           onReady: this.onPlayerReady.bind(this),
           onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
