@@ -22,7 +22,7 @@
     ".jshintrc",
     ".jshintignore",
     "src",
-    "tests",
+    "test",
     "karma.conf.js"
   ],
   "dependencies": {

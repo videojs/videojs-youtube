@@ -1,5 +1,6 @@
 node_modules
 dist
+dist-test
 es5
-tests
+test
 scripts
