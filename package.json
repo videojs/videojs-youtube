@@ -36,7 +36,6 @@
     "dev": "npm-run-all -p start watch",
     "start": "npm-run-all -p start:serve",
     "start:serve": "babel-node --optional es7.functionBind,es7.classProperties,es7.decorators  scripts/server.js",
-    "pretest": "npm-run-all build:test",
     "test": "karma start --single-run",
     "watch": "npm run mkdirs && npm-run-all -p watch:*",
     "watch:js": "watchify src/Youtube.js -t babelify -v -o dist/Youtube.js",
