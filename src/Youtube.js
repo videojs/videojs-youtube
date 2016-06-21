@@ -607,7 +607,7 @@ THE SOFTWARE. */
     return (e.type === 'video/youtube');
   };
 
-  var _isOnMobile = videojs.browser.IS_IPHONE || useNativeControlsOnAndroid();
+  var _isOnMobile = videojs.browser.IS_IOS || useNativeControlsOnAndroid();
 
   Youtube.parseUrl = function(url) {
     var result = {
