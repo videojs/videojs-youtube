@@ -64,6 +64,7 @@ THE SOFTWARE. */
       this.el_.parentNode.className = this.el_.parentNode.className
         .replace(' vjs-youtube', '')
         .replace(' vjs-youtube-mobile', '');
+      this.el_.remove();
     },
 
     createEl: function() {
