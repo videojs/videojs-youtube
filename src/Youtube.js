@@ -33,10 +33,6 @@ THE SOFTWARE. */
 }(this, function(videojs) {
   'use strict';
 
-  if (!videojs.getComponent) {
-    //Old version of videojs being used, which means no YouTube support
-    return;
-  }
   var Tech = videojs.getComponent('Tech');
 
   var Youtube = videojs.extend(Tech, {
@@ -365,6 +361,10 @@ THE SOFTWARE. */
 
     loop: function() {
       return this.options_.loop;
+    },
+
+    setLoop: function(val) {
+      this.options_.loop = val;
     },
 
     play: function() {
