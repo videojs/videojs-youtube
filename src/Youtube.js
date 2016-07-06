@@ -631,11 +631,34 @@ THE SOFTWARE. */
     return result;
   };
 
-  function loadApi() {
+  function apiLoaded() {
+    YT.ready(function() {
+      Youtube.isApiReady = true;
+
+      for (var i = 0; i < Youtube.apiReadyQueue.length; ++i) {
+        Youtube.apiReadyQueue[i].initYTPlayer();
+      }
+    });
+  }
+
+  function loadScript(src, callback) {
+    var loaded = false;
     var tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    tag.onload = function () {
+      if (!loaded) {
+        loaded = true;
+        callback();
+      }
+    };
+    tag.onreadystatechange = function () {
+      if (!loaded && (this.readyState === 'complete' || this.readyState === 'loaded')) {
+        loaded = true;
+        callback();
+      }
+    };
+    tag.src = src;
   }
 
   function injectCss() {
@@ -669,15 +692,7 @@ THE SOFTWARE. */
 
   Youtube.apiReadyQueue = [];
 
-  window.onYouTubeIframeAPIReady = function() {
-    Youtube.isApiReady = true;
-
-    for (var i = 0; i < Youtube.apiReadyQueue.length; ++i) {
-      Youtube.apiReadyQueue[i].initYTPlayer();
-    }
-  };
-
-  loadApi();
+  loadScript('https://www.youtube.com/iframe_api', apiLoaded);
   injectCss();
 
   // Older versions of VJS5 doesn't have the registerTech function
