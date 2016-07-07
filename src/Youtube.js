@@ -70,6 +70,7 @@ THE SOFTWARE. */
       var div = document.createElement('div');
       div.setAttribute('id', this.options_.techId);
       div.setAttribute('style', 'width:100%;height:100%;top:0;left:0;position:absolute');
+      div.setAttribute('class', 'vjs-tech');
 
       var divWrapper = document.createElement('div');
       divWrapper.appendChild(div);
@@ -209,6 +210,9 @@ THE SOFTWARE. */
 
       if (this.playOnReady) {
         this.play();
+      } else if (this.cueOnReady) {
+        this.ytPlayer.cueVideoById(this.url.videoId);
+        this.activeVideoId = this.url.videoId;
       }
     },
 
@@ -223,8 +227,11 @@ THE SOFTWARE. */
         return;
       }
 
+      this.lastState = state;
+
       switch (state) {
         case -1:
+          this.trigger('loadstart');
           this.trigger('loadedmetadata');
           this.trigger('durationchange');
           break;
@@ -258,8 +265,6 @@ THE SOFTWARE. */
           this.player_.trigger('waiting');
           break;
       }
-
-      this.lastState = state;
     },
 
     onPlayerError: function(e) {
@@ -291,10 +296,6 @@ THE SOFTWARE. */
     src: function(src) {
       if (src) {
         this.setSrc({ src: src });
-
-        if (this.options_.autoplay && !_isOnMobile) {
-          this.play();
-        }
       }
 
       return this.source;
@@ -327,6 +328,7 @@ THE SOFTWARE. */
         if (this.url.videoId) {
           // Set the low resolution first
           this.poster_ = 'https://img.youtube.com/vi/' + this.url.videoId + '/0.jpg';
+          this.trigger('posterchange');
 
           // Check if their is a high res
           this.checkHighResPoster();
@@ -339,7 +341,30 @@ THE SOFTWARE. */
         } else {
           this.playOnReady = true;
         }
+      } else if (this.activeVideoId !== this.url.videoId) {
+        if (this.isReady_) {
+          this.ytPlayer.cueVideoById(this.url.videoId);
+          this.activeVideoId = this.url.videoId;
+        } else {
+          this.cueOnReady = true;
+        }
       }
+    },
+
+    autoplay: function() {
+      return this.options_.autoplay;
+    },
+
+    setAutoplay: function(val) {
+      this.options_.autoplay = val;
+    },
+
+    loop: function() {
+      return this.options_.loop;
+    },
+
+    setLoop: function(val) {
+      this.options_.loop = val;
     },
 
     play: function() {
@@ -418,6 +443,31 @@ THE SOFTWARE. */
       }
     },
 
+    seeking: function () {
+      return this.isSeeking;
+    },
+
+    seekable: function () {
+      if(!this.ytPlayer || !this.ytPlayer.getVideoLoadedFraction) {
+        return {
+          length: 0,
+          start: function() {
+            throw new Error('This TimeRanges object is empty');
+          },
+          end: function() {
+            throw new Error('This TimeRanges object is empty');
+          }
+        };
+      }
+      var end = this.ytPlayer.getDuration();
+
+      return {
+        length: this.ytPlayer.getDuration(),
+        start: function() { return 0; },
+        end: function() { return end; }
+      };
+    },
+
     onSeeked: function() {
       clearInterval(this.checkSeekedInPauseInterval);
       this.isSeeking = false;
@@ -447,7 +497,7 @@ THE SOFTWARE. */
     },
 
     currentSrc: function() {
-      return this.source;
+      return this.source && this.source.src;
     },
 
     ended: function() {
@@ -515,6 +565,7 @@ THE SOFTWARE. */
     },
 
     // TODO: Can we really do something with this on YouTUbe?
+    preload: function() {},
     load: function() {},
     reset: function() {},
 
@@ -560,7 +611,7 @@ THE SOFTWARE. */
     return (e === 'video/youtube');
   };
 
-  var _isOnMobile = /(iPad|iPhone|iPod|Android)/g.test(navigator.userAgent);
+  var _isOnMobile = videojs.browser.IS_IOS || useNativeControlsOnAndroid();
 
   Youtube.parseUrl = function(url) {
     var result = {
@@ -584,11 +635,34 @@ THE SOFTWARE. */
     return result;
   };
 
-  function loadApi() {
+  function apiLoaded() {
+    YT.ready(function() {
+      Youtube.isApiReady = true;
+
+      for (var i = 0; i < Youtube.apiReadyQueue.length; ++i) {
+        Youtube.apiReadyQueue[i].initYTPlayer();
+      }
+    });
+  }
+
+  function loadScript(src, callback) {
+    var loaded = false;
     var tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    tag.onload = function () {
+      if (!loaded) {
+        loaded = true;
+        callback();
+      }
+    };
+    tag.onreadystatechange = function () {
+      if (!loaded && (this.readyState === 'complete' || this.readyState === 'loaded')) {
+        loaded = true;
+        callback();
+      }
+    };
+    tag.src = src;
   }
 
   function injectCss() {
@@ -612,17 +686,17 @@ THE SOFTWARE. */
     head.appendChild(style);
   }
 
+  function useNativeControlsOnAndroid() {
+    var stockRegex = window.navigator.userAgent.match(/applewebkit\/(\d*).*Version\/(\d*.\d*)/i);
+    //True only Android Stock Browser on OS versions 4.X and below
+    //where a Webkit version and a "Version/X.X" String can be found in
+    //user agent.
+    return videojs.browser.IS_ANDROID && videojs.browser.ANDROID_VERSION < 5 && stockRegex && stockRegex[2] > 0;
+  }
+
   Youtube.apiReadyQueue = [];
 
-  window.onYouTubeIframeAPIReady = function() {
-    Youtube.isApiReady = true;
-
-    for (var i = 0; i < Youtube.apiReadyQueue.length; ++i) {
-      Youtube.apiReadyQueue[i].initYTPlayer();
-    }
-  };
-
-  loadApi();
+  loadScript('https://www.youtube.com/iframe_api', apiLoaded);
   injectCss();
 
   // Older versions of VJS5 doesn't have the registerTech function
