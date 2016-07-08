@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/eXon/videojs-youtube.git"
+    "url": "https://github.com/videojs/videojs-youtube.git"
   },
   "peerDependencies": {
     "video.js": "5.x"
