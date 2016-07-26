@@ -71,6 +71,21 @@ Because `controls` is already a Video.js option, to use the YouTube controls, yo
 </video>
 ```
 
+### Custom Player Options
+If you need to set any additional options on the YouTube player, you may do so with the `customVars` parameter:
+
+```html
+<video
+  id="vid1"
+  class="video-js vjs-default-skin"
+  controls
+  autoplay
+  width="640" height="264"
+  data-setup='{ "techOrder": ["youtube"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}], "youtube": { "customVars": { "wmode": "transparent" } } }'
+>
+</video>
+```
+
 ##Special Thank You
 Thanks to Steve Heffernan for the amazing Video.js and to John Hurliman for the original version of the YouTube tech
 

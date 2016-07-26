@@ -190,6 +190,14 @@ THE SOFTWARE. */
         playerVars.theme = this.options_.theme;
       }
 
+      // Allow undocumented options to be passed along via customVars
+      if (typeof this.options_.customVars !== 'undefined') {
+        var self = this;
+        Object.keys(this.options_.customVars).forEach(function(key) {
+          playerVars[key] = self.options_.customVars[key];
+        });
+      }
+
       this.activeVideoId = this.url ? this.url.videoId : null;
       this.activeList = playerVars.list;
 
