@@ -225,6 +225,7 @@ THE SOFTWARE. */
         events: {
           onReady: this.onPlayerReady.bind(this),
           onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
+          onPlaybackRateChange: this.onPlayerPlaybackRateChange.bind(this),
           onStateChange: this.onPlayerStateChange.bind(this),
           onError: this.onPlayerError.bind(this)
         }
@@ -251,6 +252,10 @@ THE SOFTWARE. */
 
     },
 
+    onPlayerPlaybackRateChange: function() {
+      this.trigger('ratechange');
+    },
+
     onPlayerStateChange: function(e) {
       var state = e.data;
 
@@ -265,6 +270,7 @@ THE SOFTWARE. */
           this.trigger('loadstart');
           this.trigger('loadedmetadata');
           this.trigger('durationchange');
+          this.trigger('ratechange');
           break;
 
         case YT.PlayerState.ENDED:
@@ -534,7 +540,6 @@ THE SOFTWARE. */
       }
 
       this.ytPlayer.setPlaybackRate(suggestedRate);
-      this.trigger('ratechange');
     },
 
     duration: function() {
@@ -631,6 +636,8 @@ THE SOFTWARE. */
       catch(e){}
     }
   });
+
+  Youtube.prototype.featuresPlaybackRate = true;
 
   Youtube.isSupported = function() {
     return true;
