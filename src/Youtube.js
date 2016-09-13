@@ -284,10 +284,10 @@ THE SOFTWARE. */
 
         case 2:
         case 100:
-        case 150:
           return { code: 'Unable to find the video' };
 
         case 101:
+        case 150:
           return { code: 'Playback on other Websites has been disabled by the video owner.' };
       }
 
