@@ -61,10 +61,26 @@ THE SOFTWARE. */
     },
 
     dispose: function() {
+      if (this.ytPlayer) {
+        //Dispose of the YouTube Player
+        this.ytPlayer.stopVideo();
+        this.ytPlayer.destroy();
+      } else {
+        //YouTube API hasn't finished loading or the player is already disposed
+        var index = Youtube.apiReadyQueue.indexOf(this);
+        if (index !== -1) {
+          Youtube.apiReadyQueue.splice(index, 1);
+        }
+      }
+      this.ytPlayer = null;
+
       this.el_.parentNode.className = this.el_.parentNode.className
         .replace(' vjs-youtube', '')
         .replace(' vjs-youtube-mobile', '');
       this.el_.remove();
+
+      //Needs to be called after the YouTube player is destroyed, otherwise there will be a null reference exception
+      Tech.prototype.dispose.call(this);
     },
 
     createEl: function() {
@@ -273,8 +289,6 @@ THE SOFTWARE. */
       this.trigger('error');
 
       this.ytPlayer.stopVideo();
-      this.ytPlayer.destroy();
-      this.ytPlayer = null;
     },
 
     error: function() {
