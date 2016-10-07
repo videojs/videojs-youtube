@@ -77,7 +77,7 @@ THE SOFTWARE. */
       this.el_.parentNode.className = this.el_.parentNode.className
         .replace(' vjs-youtube', '')
         .replace(' vjs-youtube-mobile', '');
-      this.el_.remove();
+      this.el_.parentNode.removeChild(this.el_);
 
       //Needs to be called after the YouTube player is destroyed, otherwise there will be a null reference exception
       Tech.prototype.dispose.call(this);
@@ -477,7 +477,7 @@ THE SOFTWARE. */
       var end = this.ytPlayer.getDuration();
 
       return {
-        length: this.ytPlayer.getDuration(),
+        length: 1,
         start: function() { return 0; },
         end: function() { return end; }
       };
@@ -573,7 +573,7 @@ THE SOFTWARE. */
       var end = this.ytPlayer.getVideoLoadedFraction() * this.ytPlayer.getDuration();
 
       return {
-        length: this.ytPlayer.getDuration(),
+        length: 1,
         start: function() { return 0; },
         end: function() { return end; }
       };
