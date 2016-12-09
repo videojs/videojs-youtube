@@ -485,7 +485,7 @@ THE SOFTWARE. */
       var end = this.ytPlayer.getDuration();
 
       return {
-        length: this.ytPlayer.getDuration(),
+        length: 1,
         start: function() { return 0; },
         end: function() { return end; }
       };
@@ -581,7 +581,7 @@ THE SOFTWARE. */
       var end = this.ytPlayer.getVideoLoadedFraction() * this.ytPlayer.getDuration();
 
       return {
-        length: this.ytPlayer.getDuration(),
+        length: 1,
         start: function() { return 0; },
         end: function() { return end; }
       };
