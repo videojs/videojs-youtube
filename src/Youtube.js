@@ -230,6 +230,10 @@ THE SOFTWARE. */
     },
 
     onPlayerReady: function() {
+      if (this.options_.muted) {
+        this.ytPlayer.mute();
+      }
+
       this.playerReady_ = true;
       this.triggerReady();
 
