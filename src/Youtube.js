@@ -192,9 +192,9 @@ THE SOFTWARE. */
 
       // Allow undocumented options to be passed along via customVars
       if (typeof this.options_.customVars !== 'undefined') {
-        var self = this;
-        Object.keys(this.options_.customVars).forEach(function(key) {
-          playerVars[key] = self.options_.customVars[key];
+        var customVars = this.options_.customVars;
+        Object.keys(customVars).forEach(function(key) {
+          playerVars[key] = customVars[key];
         });
       }
 
