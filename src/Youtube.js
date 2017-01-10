@@ -240,7 +240,7 @@ THE SOFTWARE. */
       if (this.playOnReady) {
         this.play();
       } else if (this.cueOnReady) {
-        this.ytPlayer.cueVideoById(this.url.videoId);
+        this.cueVideoById_(this.url.videoId);
         this.activeVideoId = this.url.videoId;
       }
     },
@@ -320,6 +320,32 @@ THE SOFTWARE. */
       return { code: 'YouTube unknown error (' + this.errorNumber + ')' };
     },
 
+    loadVideoById_: function(id) {
+      var options = {
+        videoId: id
+      };
+      if (this.options_.start) {
+        options.startSeconds = this.options_.start;
+      }
+      if (this.options_.end) {
+        options.endEnd = this.options_.end;
+      }
+      this.ytPlayer.loadVideoById(options);
+    },
+
+    cueVideoById_: function(id) {
+      var options = {
+        videoId: id
+      };
+      if (this.options_.start) {
+        options.startSeconds = this.options_.start;
+      }
+      if (this.options_.end) {
+        options.endEnd = this.options_.end;
+      }
+      this.ytPlayer.cueVideoById(options);
+    },
+
     src: function(src) {
       if (src) {
         this.setSrc({ src: src });
@@ -370,7 +396,7 @@ THE SOFTWARE. */
         }
       } else if (this.activeVideoId !== this.url.videoId) {
         if (this.isReady_) {
-          this.ytPlayer.cueVideoById(this.url.videoId);
+          this.cueVideoById_(this.url.videoId);
           this.activeVideoId = this.url.videoId;
         } else {
           this.cueOnReady = true;
@@ -414,7 +440,7 @@ THE SOFTWARE. */
         if (this.activeVideoId === this.url.videoId) {
           this.ytPlayer.playVideo();
         } else {
-          this.ytPlayer.loadVideoById(this.url.videoId);
+          this.loadVideoById_(this.url.videoId);
           this.activeVideoId = this.url.videoId;
         }
       } else {
