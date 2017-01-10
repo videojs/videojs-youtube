@@ -475,24 +475,11 @@ THE SOFTWARE. */
     },
 
     seekable: function () {
-      if(!this.ytPlayer || !this.ytPlayer.getVideoLoadedFraction) {
-        return {
-          length: 0,
-          start: function() {
-            throw new Error('This TimeRanges object is empty');
-          },
-          end: function() {
-            throw new Error('This TimeRanges object is empty');
-          }
-        };
+      if(!this.ytPlayer) {
+        return videojs.createTimeRange();
       }
-      var end = this.ytPlayer.getDuration();
 
-      return {
-        length: 1,
-        start: function() { return 0; },
-        end: function() { return end; }
-      };
+      return videojs.createTimeRange(0, this.ytPlayer.getDuration());
     },
 
     onSeeked: function() {
@@ -571,24 +558,12 @@ THE SOFTWARE. */
 
     buffered: function() {
       if(!this.ytPlayer || !this.ytPlayer.getVideoLoadedFraction) {
-        return {
-          length: 0,
-          start: function() {
-            throw new Error('This TimeRanges object is empty');
-          },
-          end: function() {
-            throw new Error('This TimeRanges object is empty');
-          }
-        };
+        return videojs.createTimeRange();
       }
 
-      var end = this.ytPlayer.getVideoLoadedFraction() * this.ytPlayer.getDuration();
+      var bufferedEnd = this.ytPlayer.getVideoLoadedFraction() * this.ytPlayer.getDuration();
 
-      return {
-        length: 1,
-        start: function() { return 0; },
-        end: function() { return end; }
-      };
+      return videojs.createTimeRange(0, bufferedEnd);
     },
 
     // TODO: Can we really do something with this on YouTUbe?
