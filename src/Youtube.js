@@ -638,7 +638,7 @@ THE SOFTWARE. */
     return (e === 'video/youtube');
   };
 
-  var _isOnMobile = videojs.browser.IS_IOS || useNativeControlsOnAndroid();
+  var _isOnMobile = videojs.browser.IS_IOS || videojs.browser.IS_ANDROID;
 
   Youtube.parseUrl = function(url) {
     var result = {
@@ -711,14 +711,6 @@ THE SOFTWARE. */
     }
 
     head.appendChild(style);
-  }
-
-  function useNativeControlsOnAndroid() {
-    var stockRegex = window.navigator.userAgent.match(/applewebkit\/(\d*).*Version\/(\d*.\d*)/i);
-    //True only Android Stock Browser on OS versions 4.X and below
-    //where a Webkit version and a "Version/X.X" String can be found in
-    //user agent.
-    return videojs.browser.IS_ANDROID && videojs.browser.ANDROID_VERSION < 5 && stockRegex && stockRegex[2] > 0;
   }
 
   Youtube.apiReadyQueue = [];
