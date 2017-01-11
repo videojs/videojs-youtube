@@ -33,6 +33,8 @@ THE SOFTWARE. */
 }(this, function(videojs) {
   'use strict';
 
+  var _isOnMobile = videojs.browser.IS_IOS || videojs.browser.IS_ANDROID;
+
   var Tech = videojs.getComponent('Tech');
 
   var Youtube = videojs.extend(Tech, {
@@ -637,8 +639,6 @@ THE SOFTWARE. */
   Youtube.canPlayType = function(e) {
     return (e === 'video/youtube');
   };
-
-  var _isOnMobile = videojs.browser.IS_IOS || videojs.browser.IS_ANDROID;
 
   Youtube.parseUrl = function(url) {
     var result = {
