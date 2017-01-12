@@ -300,26 +300,29 @@ THE SOFTWARE. */
 
     onPlayerError: function(e) {
       this.errorNumber = e.data;
+      this.trigger('pause');
       this.trigger('error');
-
-      this.ytPlayer.stopVideo();
     },
 
     error: function() {
+      var code = 1000 + this.errorNumber; // as smaller codes are reserved
       switch (this.errorNumber) {
         case 5:
-          return { code: 'Error while trying to play the video' };
+          return { code: code, message: 'Error while trying to play the video' };
 
         case 2:
         case 100:
-          return { code: 'Unable to find the video' };
+          return { code: code, message: 'Unable to find the video' };
 
         case 101:
         case 150:
-          return { code: 'Playback on other Websites has been disabled by the video owner.' };
+          return { 
+            code: code, 
+            message: 'Playback on other Websites has been disabled by the video owner.' 
+          };
       }
 
-      return { code: 'YouTube unknown error (' + this.errorNumber + ')' };
+      return { code: code, message: 'YouTube unknown error (' + this.errorNumber + ')' };
     },
 
     loadVideoById_: function(id) {
