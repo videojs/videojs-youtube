@@ -237,6 +237,11 @@ THE SOFTWARE. */
         this.ytPlayer.mute();
       }
 
+      var playbackRates = this.ytPlayer.getAvailablePlaybackRates();
+      if (playbackRates.length > 1) {
+        this.featuresPlaybackRate = true;
+      }
+
       this.playerReady_ = true;
       this.triggerReady();
 
@@ -636,8 +641,6 @@ THE SOFTWARE. */
       catch(e){}
     }
   });
-
-  Youtube.prototype.featuresPlaybackRate = true;
 
   Youtube.isSupported = function() {
     return true;
