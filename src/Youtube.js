@@ -225,6 +225,7 @@ THE SOFTWARE. */
         events: {
           onReady: this.onPlayerReady.bind(this),
           onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
+          onPlaybackRateChange: this.onPlayerPlaybackRateChange.bind(this),
           onStateChange: this.onPlayerStateChange.bind(this),
           onError: this.onPlayerError.bind(this)
         }
@@ -234,6 +235,11 @@ THE SOFTWARE. */
     onPlayerReady: function() {
       if (this.options_.muted) {
         this.ytPlayer.mute();
+      }
+
+      var playbackRates = this.ytPlayer.getAvailablePlaybackRates();
+      if (playbackRates.length > 1) {
+        this.featuresPlaybackRate = true;
       }
 
       this.playerReady_ = true;
@@ -251,6 +257,10 @@ THE SOFTWARE. */
 
     },
 
+    onPlayerPlaybackRateChange: function() {
+      this.trigger('ratechange');
+    },
+
     onPlayerStateChange: function(e) {
       var state = e.data;
 
@@ -265,6 +275,7 @@ THE SOFTWARE. */
           this.trigger('loadstart');
           this.trigger('loadedmetadata');
           this.trigger('durationchange');
+          this.trigger('ratechange');
           break;
 
         case YT.PlayerState.ENDED:
@@ -534,7 +545,6 @@ THE SOFTWARE. */
       }
 
       this.ytPlayer.setPlaybackRate(suggestedRate);
-      this.trigger('ratechange');
     },
 
     duration: function() {
