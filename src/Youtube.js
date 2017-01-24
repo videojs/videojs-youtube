@@ -64,8 +64,12 @@ THE SOFTWARE. */
     dispose: function() {
       if (this.ytPlayer) {
         //Dispose of the YouTube Player
-        this.ytPlayer.stopVideo();
-        this.ytPlayer.destroy();
+        if (this.ytPlayer.stopVideo) {
+          this.ytPlayer.stopVideo();
+        }
+        if (this.ytPlayer.destroy) {
+          this.ytPlayer.destroy();
+        }
       } else {
         //YouTube API hasn't finished loading or the player is already disposed
         var index = Youtube.apiReadyQueue.indexOf(this);
