@@ -34,8 +34,7 @@ THE SOFTWARE. */
   'use strict';
 
   var _isOnMobile = videojs.browser.IS_IOS || videojs.browser.IS_ANDROID;
-
-  var Tech = videojs.getComponent('Tech');
+  var Tech = videojs.getTech('Tech');
 
   var Youtube = videojs.extend(Tech, {
 
@@ -327,9 +326,9 @@ THE SOFTWARE. */
 
         case 101:
         case 150:
-          return { 
-            code: code, 
-            message: 'Playback on other Websites has been disabled by the video owner.' 
+          return {
+            code: code,
+            message: 'Playback on other Websites has been disabled by the video owner.'
           };
       }
 
