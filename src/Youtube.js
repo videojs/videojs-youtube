@@ -47,16 +47,18 @@ THE SOFTWARE. */
       // Set the vjs-youtube class to the player
       // Parent is not set yet so we have to wait a tick
       setTimeout(function() {
-        this.el_.parentNode.className += ' vjs-youtube';
+        if (this.el_) {
+          this.el_.parentNode.className += ' vjs-youtube';
 
-        if (_isOnMobile) {
-          this.el_.parentNode.className += ' vjs-youtube-mobile';
-        }
+          if (_isOnMobile) {
+            this.el_.parentNode.className += ' vjs-youtube-mobile';
+          }
 
-        if (Youtube.isApiReady) {
-          this.initYTPlayer();
-        } else {
-          Youtube.apiReadyQueue.push(this);
+          if (Youtube.isApiReady) {
+            this.initYTPlayer();
+          } else {
+            Youtube.apiReadyQueue.push(this);
+          }
         }
       }.bind(this));
     },
