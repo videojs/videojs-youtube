@@ -226,6 +226,7 @@ THE SOFTWARE. */
           onPlaybackQualityChange: this.onPlayerPlaybackQualityChange.bind(this),
           onPlaybackRateChange: this.onPlayerPlaybackRateChange.bind(this),
           onStateChange: this.onPlayerStateChange.bind(this),
+          onVolumeChange: this.onPlayerVolumeChange.bind(this),
           onError: this.onPlayerError.bind(this)
         }
       });
@@ -306,6 +307,10 @@ THE SOFTWARE. */
           this.player_.trigger('waiting');
           break;
       }
+    },
+
+    onPlayerVolumeChange: function() {
+      this.trigger('volumechange');
     },
 
     onPlayerError: function(e) {
@@ -568,10 +573,6 @@ THE SOFTWARE. */
       }
 
       this.ytPlayer.setVolume(percentAsDecimal * 100.0);
-      this.setTimeout( function(){
-        this.trigger('volumechange');
-      }, 50);
-
     },
 
     muted: function() {
