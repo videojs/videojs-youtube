@@ -46,7 +46,7 @@ THE SOFTWARE. */
 
       // Set the vjs-youtube class to the player
       // Parent is not set yet so we have to wait a tick
-      setTimeout(function() {
+      this.setTimeout(function() {
         if (this.el_) {
           this.el_.parentNode.className += ' vjs-youtube';
 
