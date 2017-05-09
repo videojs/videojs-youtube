@@ -728,8 +728,10 @@ THE SOFTWARE. */
 
   Youtube.apiReadyQueue = [];
 
-  loadScript('https://www.youtube.com/iframe_api', apiLoaded);
-  injectCss();
+  if (typeof document !== 'undefined'){
+    loadScript('https://www.youtube.com/iframe_api', apiLoaded);
+    injectCss();
+  }
 
   // Older versions of VJS5 doesn't have the registerTech function
   if (typeof videojs.registerTech !== 'undefined') {
