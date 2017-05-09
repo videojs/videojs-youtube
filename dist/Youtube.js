@@ -46,17 +46,19 @@ THE SOFTWARE. */
 
       // Set the vjs-youtube class to the player
       // Parent is not set yet so we have to wait a tick
-      setTimeout(function() {
-        this.el_.parentNode.className += ' vjs-youtube';
+      this.setTimeout(function() {
+        if (this.el_) {
+          this.el_.parentNode.className += ' vjs-youtube';
 
-        if (_isOnMobile) {
-          this.el_.parentNode.className += ' vjs-youtube-mobile';
-        }
+          if (_isOnMobile) {
+            this.el_.parentNode.className += ' vjs-youtube-mobile';
+          }
 
-        if (Youtube.isApiReady) {
-          this.initYTPlayer();
-        } else {
-          Youtube.apiReadyQueue.push(this);
+          if (Youtube.isApiReady) {
+            this.initYTPlayer();
+          } else {
+            Youtube.apiReadyQueue.push(this);
+          }
         }
       }.bind(this));
     },
@@ -64,8 +66,12 @@ THE SOFTWARE. */
     dispose: function() {
       if (this.ytPlayer) {
         //Dispose of the YouTube Player
-        this.ytPlayer.stopVideo();
-        this.ytPlayer.destroy();
+        if (this.ytPlayer.stopVideo) {
+          this.ytPlayer.stopVideo();
+        }
+        if (this.ytPlayer.destroy) {
+          this.ytPlayer.destroy();
+        }
       } else {
         //YouTube API hasn't finished loading or the player is already disposed
         var index = Youtube.apiReadyQueue.indexOf(this);
@@ -729,8 +735,10 @@ THE SOFTWARE. */
 
   Youtube.apiReadyQueue = [];
 
-  loadScript('https://www.youtube.com/iframe_api', apiLoaded);
-  injectCss();
+  if (typeof document !== 'undefined'){
+    loadScript('https://www.youtube.com/iframe_api', apiLoaded);
+    injectCss();
+  }
 
   // Older versions of VJS5 doesn't have the registerTech function
   if (typeof videojs.registerTech !== 'undefined') {
