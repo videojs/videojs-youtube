@@ -619,7 +619,9 @@ THE SOFTWARE. */
     reset: function() {},
 
     supportsFullScreen: function() {
-      return true;
+      return document.webkitFullscreenEnabled ||
+             document.mozFullScreenEnabled ||
+             document.msFullscreenEnabled;
     },
 
     // Tries to get the highest resolution thumbnail available for the video
