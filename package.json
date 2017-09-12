@@ -42,6 +42,6 @@
     "uglify-js": "^2.4.23"
   },
   "dependencies": {
-    "video.js": "^5.6.0"
+    "video.js": "^6.2.7"
   }
 }
