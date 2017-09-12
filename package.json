@@ -18,7 +18,7 @@
     "url": "https://github.com/videojs/videojs-youtube.git"
   },
   "peerDependencies": {
-    "video.js": "5.x"
+    "video.js": "6.x"
   },
   "scripts": {
     "build": "mkdirp dist && cp src/Youtube.js dist/Youtube.js && uglifyjs src/Youtube.js -o dist/Youtube.min.js",
