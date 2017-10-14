@@ -86,7 +86,7 @@ If you need to set any additional options on the YouTube player, you may do so w
 </video>
 ```
 
-##Special Thank You
+## Special Thank You
 Thanks to Steve Heffernan for the amazing Video.js and to John Hurliman for the original version of the YouTube tech
 
 ## License
