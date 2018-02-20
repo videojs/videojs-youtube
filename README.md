@@ -1,5 +1,7 @@
 # YouTube Playback Technology<br />for [Video.js](https://github.com/videojs/video.js)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/videojs/videojs-youtube.svg)](https://greenkeeper.io/)
+
 ## Install
 You can use bower (`bower install videojs-youtube`), npm (`npm install videojs-youtube`) or the source and build it using `npm run build`. Then, the only file you need is dist/Youtube.min.js.
 
