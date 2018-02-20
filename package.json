@@ -31,15 +31,15 @@
     "lint"
   ],
   "devDependencies": {
-    "http-server": "^0.11.1",
+    "http-server": "^0.10.0",
     "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",
-    "karma": "^2.0.0",
+    "karma": "^1.3.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-jasmine": "^1.0.2",
     "mkdirp": "^0.5.1",
     "precommit-hook": "^3.0.0",
-    "uglify-js": "^3.3.11"
+    "uglify-js": "^2.4.23"
   },
   "dependencies": {
     "video.js": "^5.6.0 || ^6.2.8"
