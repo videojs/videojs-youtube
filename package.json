@@ -1,7 +1,7 @@
 {
   "name": "videojs-youtube",
   "description": "YouTube playback technology for Video.js",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "author": "Benoit Tremblay",
   "main": "dist/Youtube.js",
   "license": "MIT",
