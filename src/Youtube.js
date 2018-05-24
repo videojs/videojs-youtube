@@ -33,7 +33,7 @@ THE SOFTWARE. */
 }(this, function(videojs) {
   'use strict';
 
-  var _isOnMobile = videojs.browser.IS_IOS || useNativeControlsOnAndroid();
+  var _isOnMobile = videojs.browser.IS_IOS || videojs.browser.IS_NATIVE_ANDROID;
   var Tech = videojs.getTech('Tech');
 
   var Youtube = videojs.extend(Tech, {
@@ -618,10 +618,32 @@ THE SOFTWARE. */
     load: function() {},
     reset: function() {},
     networkState: function () {
-      return 0;
+      if (!this.ytPlayer) {
+        return 0; //NETWORK_EMPTY
+      }
+      switch (this.ytPlayer.getPlayerState()) {
+        case -1: //unstarted
+          return 0; //NETWORK_EMPTY
+        case 3: //buffering
+          return 2; //NETWORK_LOADING
+        default:
+          return 1; //NETWORK_IDLE
+      }
     },
     readyState: function () {
-      return 0;
+      if (!this.ytPlayer) {
+        return 0; //HAVE_NOTHING
+      }
+      switch (this.ytPlayer.getPlayerState()) {
+        case -1: //unstarted
+          return 0; //HAVE_NOTHING
+        case 5: //video cued
+          return 1; //HAVE_METADATA
+        case 3: //buffering
+          return 2; //HAVE_CURRENT_DATA
+        default:
+          return 4; //HAVE_ENOUGH_DATA
+      }
     },
 
     supportsFullScreen: function() {
@@ -737,14 +759,6 @@ THE SOFTWARE. */
     }
 
     head.appendChild(style);
-  }
-
-  function useNativeControlsOnAndroid() {
-    var stockRegex = window.navigator.userAgent.match(/applewebkit\/(\d*).*Version\/(\d*.\d*)/i);
-    //True only Android Stock Browser on OS versions 4.X and below
-    //where a Webkit version and a "Version/X.X" String can be found in
-    //user agent.
-    return videojs.browser.IS_ANDROID && videojs.browser.ANDROID_VERSION < 5 && stockRegex && stockRegex[2] > 0;
   }
 
   Youtube.apiReadyQueue = [];
