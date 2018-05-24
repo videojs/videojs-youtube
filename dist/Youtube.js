@@ -224,7 +224,7 @@ THE SOFTWARE. */
       this.activeVideoId = this.url ? this.url.videoId : null;
       this.activeList = playerVars.list;
 
-      this.ytPlayer = new YT.Player(this.options_.techId, {
+      var playerConfig = {
         videoId: this.activeVideoId,
         playerVars: playerVars,
         events: {
@@ -235,7 +235,13 @@ THE SOFTWARE. */
           onVolumeChange: this.onPlayerVolumeChange.bind(this),
           onError: this.onPlayerError.bind(this)
         }
-      });
+      };
+
+      if (typeof this.options_.enablePrivacyEnhancedMode !== 'undefined' && this.options_.enablePrivacyEnhancedMode) {
+        playerConfig.host = 'https://www.youtube-nocookie.com';
+      }
+
+      this.ytPlayer = new YT.Player(this.options_.techId, playerConfig);
     },
 
     onPlayerReady: function() {
