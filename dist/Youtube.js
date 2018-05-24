@@ -33,7 +33,7 @@ THE SOFTWARE. */
 }(this, function(videojs) {
   'use strict';
 
-  var _isOnMobile = videojs.browser.IS_IOS || videojs.browser.IS_ANDROID;
+  var _isOnMobile = videojs.browser.IS_IOS || videojs.browser.IS_NATIVE_ANDROID;
   var Tech = videojs.getTech('Tech');
 
   var Youtube = videojs.extend(Tech, {
@@ -623,6 +623,34 @@ THE SOFTWARE. */
     preload: function() {},
     load: function() {},
     reset: function() {},
+    networkState: function () {
+      if (!this.ytPlayer) {
+        return 0; //NETWORK_EMPTY
+      }
+      switch (this.ytPlayer.getPlayerState()) {
+        case -1: //unstarted
+          return 0; //NETWORK_EMPTY
+        case 3: //buffering
+          return 2; //NETWORK_LOADING
+        default:
+          return 1; //NETWORK_IDLE
+      }
+    },
+    readyState: function () {
+      if (!this.ytPlayer) {
+        return 0; //HAVE_NOTHING
+      }
+      switch (this.ytPlayer.getPlayerState()) {
+        case -1: //unstarted
+          return 0; //HAVE_NOTHING
+        case 5: //video cued
+          return 1; //HAVE_METADATA
+        case 3: //buffering
+          return 2; //HAVE_CURRENT_DATA
+        default:
+          return 4; //HAVE_ENOUGH_DATA
+      }
+    },
 
     supportsFullScreen: function() {
       return true;
