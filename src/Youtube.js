@@ -156,12 +156,14 @@ THE SOFTWARE. */
         playerVars.fs = this.options_.fs;
       }
 
+      if (this.options_.source.src.indexOf('end=') !== -1) {
+        var srcEndTime = this.options_.source.src.match(/end=([0-9]*)/);
+        this.options_.end = parseInt(srcEndTime[1]);
+      }
+
       if (typeof this.options_.end !== 'undefined') {
         playerVars.end = this.options_.end;
-      } else if (this.options_.source.src.indexOf('end=') !== -1) {
-        var srcEndTime = this.options_.source.src.match(/end=([0-9]*)/);
-        playerVars.end = parseInt(srcEndTime[1]);
-      }
+      } 
 
       if (typeof this.options_.hl !== 'undefined') {
         playerVars.hl = this.options_.hl;
@@ -204,11 +206,13 @@ THE SOFTWARE. */
         playerVars.showinfo = this.options_.showinfo;
       }
 
+      if (this.options_.source.src.indexOf('start=') !== -1) {
+        var srcStartTime = this.options_.source.src.match(/start=([0-9]*)/);
+        this.options_.start = parseInt(srcStartTime[1]);
+      }
+
       if (typeof this.options_.start !== 'undefined') {
         playerVars.start = this.options_.start;
-      } else if (this.options_.source.src.indexOf('start=') !== -1) {
-        var srcStartTime = this.options_.source.src.match(/start=([0-9]*)/);
-        playerVars.start = parseInt(srcStartTime[1]);
       }
 
       if (typeof this.options_.theme !== 'undefined') {
