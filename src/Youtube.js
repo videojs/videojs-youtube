@@ -207,6 +207,9 @@ THE SOFTWARE. */
 
       if (typeof this.options_.start !== 'undefined') {
         playerVars.start = this.options_.start;
+      } else if (this.options_.source.src.indexOf('start=') !== -1) {
+        var srcStartTime = this.options_.source.src.match(/start=([0-9]*)/);
+        playerVars.start = parseInt(srcStartTime[1]);
       }
 
       if (typeof this.options_.theme !== 'undefined') {
