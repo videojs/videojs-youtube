@@ -145,10 +145,6 @@ THE SOFTWARE. */
         playerVars.disablekb = this.options_.disablekb;
       }
 
-      if (typeof this.options_.end !== 'undefined') {
-        playerVars.end = this.options_.end;
-      }
-
       if (typeof this.options_.color !== 'undefined') {
         playerVars.color = this.options_.color;
       }
@@ -162,6 +158,9 @@ THE SOFTWARE. */
 
       if (typeof this.options_.end !== 'undefined') {
         playerVars.end = this.options_.end;
+      } else if (this.options_.source.src.indexOf('end=') !== -1) {
+        var srcEndTime = this.options_.source.src.match(/end=([0-9]*)/);
+        playerVars.end = parseInt(srcEndTime[1]);
       }
 
       if (typeof this.options_.hl !== 'undefined') {
