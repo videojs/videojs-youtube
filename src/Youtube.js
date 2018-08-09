@@ -619,7 +619,8 @@ THE SOFTWARE. */
     reset: function() {},
 
     supportsFullScreen: function() {
-      return document.webkitFullscreenEnabled ||
+      return document.fullscreenEnabled ||
+             document.webkitFullscreenEnabled ||
              document.mozFullScreenEnabled ||
              document.msFullscreenEnabled;
     },
