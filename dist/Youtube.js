@@ -22,7 +22,8 @@ THE SOFTWARE. */
 /*global define, YT*/
 (function (root, factory) {
   if(typeof exports==='object' && typeof module!=='undefined') {
-    module.exports = factory(require('video.js'));
+    var videojs = require('video.js');
+    module.exports = factory(videojs.default || videojs);
   } else if(typeof define === 'function' && define.amd) {
     define(['videojs'], function(videojs){
       return (root.Youtube = factory(videojs));
@@ -653,7 +654,10 @@ THE SOFTWARE. */
     },
 
     supportsFullScreen: function() {
-      return true;
+      return document.fullscreenEnabled ||
+             document.webkitFullscreenEnabled ||
+             document.mozFullScreenEnabled ||
+             document.msFullscreenEnabled;
     },
 
     // Tries to get the highest resolution thumbnail available for the video
