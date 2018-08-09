@@ -163,7 +163,7 @@ THE SOFTWARE. */
 
       if (typeof this.options_.end !== 'undefined') {
         playerVars.end = this.options_.end;
-      } 
+      }
 
       if (typeof this.options_.hl !== 'undefined') {
         playerVars.hl = this.options_.hl;
