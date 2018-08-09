@@ -146,10 +146,6 @@ THE SOFTWARE. */
         playerVars.disablekb = this.options_.disablekb;
       }
 
-      if (typeof this.options_.end !== 'undefined') {
-        playerVars.end = this.options_.end;
-      }
-
       if (typeof this.options_.color !== 'undefined') {
         playerVars.color = this.options_.color;
       }
@@ -159,6 +155,11 @@ THE SOFTWARE. */
         playerVars.fs = 0;
       } else if (typeof this.options_.fs !== 'undefined') {
         playerVars.fs = this.options_.fs;
+      }
+
+      if (this.options_.source.src.indexOf('end=') !== -1) {
+        var srcEndTime = this.options_.source.src.match(/end=([0-9]*)/);
+        this.options_.end = parseInt(srcEndTime[1]);
       }
 
       if (typeof this.options_.end !== 'undefined') {
@@ -204,6 +205,11 @@ THE SOFTWARE. */
 
       if (typeof this.options_.showinfo !== 'undefined') {
         playerVars.showinfo = this.options_.showinfo;
+      }
+
+      if (this.options_.source.src.indexOf('start=') !== -1) {
+        var srcStartTime = this.options_.source.src.match(/start=([0-9]*)/);
+        this.options_.start = parseInt(srcStartTime[1]);
       }
 
       if (typeof this.options_.start !== 'undefined') {
