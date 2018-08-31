@@ -367,7 +367,7 @@ THE SOFTWARE. */
         options.startSeconds = this.options_.start;
       }
       if (this.options_.end) {
-        options.endEnd = this.options_.end;
+        options.endSeconds = this.options_.end;
       }
       this.ytPlayer.loadVideoById(options);
     },
@@ -380,7 +380,7 @@ THE SOFTWARE. */
         options.startSeconds = this.options_.start;
       }
       if (this.options_.end) {
-        options.endEnd = this.options_.end;
+        options.endSeconds = this.options_.end;
       }
       this.ytPlayer.cueVideoById(options);
     },
