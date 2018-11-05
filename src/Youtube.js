@@ -758,7 +758,6 @@ THE SOFTWARE. */
 
   function injectCss() {
     var css = // iframe blocker to catch mouse events
-              '.vjs-youtube .vjs-iframe-blocker { display: none; }' +
               '.vjs-youtube.vjs-user-inactive .vjs-iframe-blocker { display: block; }' +
               '.vjs-youtube .vjs-poster { background-size: cover; }' +
               '.vjs-youtube-mobile .vjs-big-play-button { display: none; }';
