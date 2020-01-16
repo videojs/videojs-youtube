@@ -7,7 +7,7 @@ module.exports = function(config) {
       'src/Youtube.js',
       'tests/**/*.specs.js'
     ],
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     customLaunchers: {
         'ChromeTravisCI': {
             base: 'Chrome',
