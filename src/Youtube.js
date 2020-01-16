@@ -740,7 +740,11 @@ THE SOFTWARE. */
     var loaded = false;
     var tag = document.createElement('script');
     var firstScriptTag = document.getElementsByTagName('script')[0];
-    if (!firstScriptTag) return // when loaded in jest without jsdom setup it doesn't get any element. In jest it doesn't really make sense to do anything, because no one is watching youtube in jest
+    if (!firstScriptTag) {
+      // when loaded in jest without jsdom setup it doesn't get any element.
+      // In jest it doesn't really make sense to do anything, because no one is watching youtube in jest
+      return;
+    }
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     tag.onload = function () {
       if (!loaded) {
