@@ -3,7 +3,7 @@
   "description": "YouTube playback technology for Video.js",
   "version": "2.6.0",
   "author": "Benoit Tremblay",
-  "main": "dist/Youtube.js",
+  "main": "src/Youtube.js",
   "license": "MIT",
   "keywords": [
     "video",
