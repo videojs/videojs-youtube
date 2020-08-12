@@ -25,7 +25,7 @@ THE SOFTWARE. */
     var videojs = require('video.js');
     module.exports = factory(videojs.default || videojs);
   } else if(typeof define === 'function' && define.amd) {
-    define(['videojs'], function(videojs){
+    define(['video.js'], function(videojs){
       return (root.Youtube = factory(videojs));
     });
   } else {
