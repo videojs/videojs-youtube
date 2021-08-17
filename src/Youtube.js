@@ -36,6 +36,7 @@ THE SOFTWARE. */
 
   var _isOnMobile = videojs.browser.IS_IOS || videojs.browser.IS_NATIVE_ANDROID;
   var Tech = videojs.getTech('Tech');
+  var isLazy = !!(videojs.options && videojs.options.youtube && videojs.options.youtube.lazyLoadScript);
 
   var Youtube = videojs.extend(Tech, {
 
@@ -59,6 +60,10 @@ THE SOFTWARE. */
             this.initYTPlayer();
           } else {
             Youtube.apiReadyQueue.push(this);
+            if (isLazy) {
+              isLazy = false;
+              loadScript('https://www.youtube.com/iframe_api', apiLoaded);
+            }
           }
         }
       }.bind(this));
@@ -752,6 +757,9 @@ THE SOFTWARE. */
         callback();
       }
     };
+
+    // tag.onerror = function (event) { callback(true); };
+    
     tag.onreadystatechange = function () {
       if (!loaded && (this.readyState === 'complete' || this.readyState === 'loaded')) {
         loaded = true;
@@ -785,7 +793,9 @@ THE SOFTWARE. */
   Youtube.apiReadyQueue = [];
 
   if (typeof document !== 'undefined'){
-    loadScript('https://www.youtube.com/iframe_api', apiLoaded);
+    if (!isLazy) {
+      loadScript('https://www.youtube.com/iframe_api', apiLoaded);
+    }
     injectCss();
   }
 
