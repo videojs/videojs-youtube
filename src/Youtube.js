@@ -709,7 +709,9 @@ THE SOFTWARE. */
       videoId: null
     };
 
-    var regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    var regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|shorts\/&v=)([^#\&\?]*).*/;
+
+    
     var match = url.match(regex);
 
     if (match && match[2].length === 11) {
