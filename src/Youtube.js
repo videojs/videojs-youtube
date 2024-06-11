@@ -541,10 +541,10 @@ THE SOFTWARE. */
 
     seekable() {
       if(!this.ytPlayer) {
-        return videojs.createTimeRange();
+        return videojs.time.createTimeRanges();
       }
 
-      return videojs.createTimeRange(0, this.ytPlayer.getDuration());
+      return videojs.time.createTimeRanges(0, this.ytPlayer.getDuration());
     }
 
     onSeeked() {
@@ -618,12 +618,12 @@ THE SOFTWARE. */
 
     buffered() {
       if(!this.ytPlayer || !this.ytPlayer.getVideoLoadedFraction) {
-        return videojs.createTimeRange();
+        return videojs.time.createTimeRanges();
       }
 
       var bufferedEnd = this.ytPlayer.getVideoLoadedFraction() * this.ytPlayer.getDuration();
 
-      return videojs.createTimeRange(0, bufferedEnd);
+      return videojs.time.createTimeRanges(0, bufferedEnd);
     }
 
     // TODO: Can we really do something with this on YouTUbe?
