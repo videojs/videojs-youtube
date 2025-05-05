@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!-- You can go to the link to see the file working:
+https://html-preview.github.io/?url=https://raw.githubusercontent.com/videojs/videojs-youtube/refs/heads/main/examples/simple-cdn.html
+-->
+<html>
+<head>
+  <link href="//vjs.zencdn.net/8.23.3/video-js.min.css" rel="stylesheet">
+  <script src="//vjs.zencdn.net/8.23.3/video.min.js"></script>
+</head>
+<body>
+  <video
+    id="vid1"
+    class="video-js vjs-default-skin"
+    controls
+    autoplay
+    width="640" height="264"
+    data-setup='{ "techOrder": ["youtube", "html5"], "sources": [{ "type": "video/youtube", "src": "https://www.youtube.com/watch?v=xjS6SftYQaQ"}] }'
+  >
+  </video>
+
+  <script src="https://cdn.jsdelivr.net/npm/videojs-youtube@3.0.1/dist/Youtube.min.js"></script>
+</body>
+</html>
