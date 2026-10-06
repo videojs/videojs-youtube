@@ -57,6 +57,8 @@ THE SOFTWARE. */
 
           if (Youtube.isApiReady) {
             this.initYTPlayer();
+          } else if (Youtube.apiFailed) {
+            this.onApiFailed();
           } else {
             Youtube.apiReadyQueue.push(this);
           }
@@ -332,6 +334,12 @@ THE SOFTWARE. */
       this.trigger('volumechange');
     }
 
+    // The IFrame API script was blocked or failed to load, so there will never be a player
+    onApiFailed() {
+      this.apiFailed_ = true;
+      this.trigger('error');
+    }
+
     onPlayerError(e) {
       this.errorNumber = e.data;
       this.trigger('pause');
@@ -339,6 +347,10 @@ THE SOFTWARE. */
     }
 
     error() {
+      if (this.apiFailed_) {
+        return { code: 2, message: 'The YouTube player API could not be loaded' };
+      }
+
       var code = 1000 + this.errorNumber; // as smaller codes are reserved
       switch (this.errorNumber) {
         case 5:
@@ -727,6 +739,12 @@ THE SOFTWARE. */
   };
 
   function apiLoaded() {
+    // The script can load without defining YT, for example when a blocker replaces it
+    if (typeof YT === 'undefined' || typeof YT.ready !== 'function') {
+      apiFailed();
+      return;
+    }
+
     YT.ready(function() {
       Youtube.isApiReady = true;
 
@@ -736,7 +754,17 @@ THE SOFTWARE. */
     });
   }
 
-  function loadScript(src, callback) {
+  function apiFailed() {
+    Youtube.apiFailed = true;
+
+    var queue = Youtube.apiReadyQueue;
+    Youtube.apiReadyQueue = [];
+    for (var i = 0; i < queue.length; ++i) {
+      queue[i].onApiFailed();
+    }
+  }
+
+  function loadScript(src, callback, onError) {
     var loaded = false;
     var tag = document.createElement('script');
     var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -750,6 +778,12 @@ THE SOFTWARE. */
       if (!loaded) {
         loaded = true;
         callback();
+      }
+    };
+    tag.onerror = function () {
+      if (!loaded) {
+        loaded = true;
+        onError();
       }
     };
     tag.onreadystatechange = function () {
@@ -785,7 +819,7 @@ THE SOFTWARE. */
   Youtube.apiReadyQueue = [];
 
   if (typeof document !== 'undefined'){
-    loadScript('https://www.youtube.com/iframe_api', apiLoaded);
+    loadScript('https://www.youtube.com/iframe_api', apiLoaded, apiFailed);
     injectCss();
   }
 
