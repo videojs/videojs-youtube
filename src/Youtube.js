@@ -249,6 +249,7 @@ THE SOFTWARE. */
       }
 
       this.ytPlayer = new YT.Player(this.options_.techId, playerConfig);
+      this.watchForIframeReload_();
     }
 
     onPlayerReady() {
@@ -270,6 +271,45 @@ THE SOFTWARE. */
         this.cueVideoById_(this.url.videoId);
         this.activeVideoId = this.url.videoId;
       }
+    }
+
+    // Moving the player in the page reloads YouTube's iframe. The reloaded iframe no longer
+    // talks to the API, so no state events arrive and the controls stop matching the video.
+    // When that happens, start a new YouTube player in its place.
+    watchForIframeReload_() {
+      var iframe = document.getElementById(this.options_.techId);
+      if (!iframe || iframe.tagName !== 'IFRAME') {
+        return;
+      }
+      this.watchedIframe_ = iframe;
+
+      var loads = 0;
+      iframe.addEventListener('load', function() {
+        loads++;
+        // The first load is YouTube starting up, a second one is a reload
+        if (loads > 1 && this.ytPlayer && this.watchedIframe_ === iframe) {
+          this.reloadYTPlayer_();
+        }
+      }.bind(this));
+    }
+
+    reloadYTPlayer_() {
+      this.ytPlayer.destroy();
+      this.ytPlayer = null;
+      this.watchedIframe_ = null;
+      this.lastState = undefined;
+
+      // destroy() removes the iframe, so put back the element YouTube replaces
+      if (!document.getElementById(this.options_.techId)) {
+        var div = document.createElement('div');
+        div.setAttribute('id', this.options_.techId);
+        div.setAttribute('style', 'width:100%;height:100%;top:0;left:0;position:absolute');
+        div.setAttribute('class', 'vjs-tech');
+        this.el_.insertBefore(div, this.el_.firstChild);
+      }
+
+      this.trigger('pause');
+      this.initYTPlayer();
     }
 
     onPlayerPlaybackQualityChange() {
@@ -501,7 +541,7 @@ THE SOFTWARE. */
     }
 
     currentTime() {
-      return this.ytPlayer ? this.ytPlayer.getCurrentTime() : 0;
+      return this.ytPlayer && this.ytPlayer.getCurrentTime ? this.ytPlayer.getCurrentTime() : 0;
     }
 
     setCurrentTime(seconds) {
@@ -559,7 +599,7 @@ THE SOFTWARE. */
     }
 
     playbackRate() {
-      return this.ytPlayer ? this.ytPlayer.getPlaybackRate() : 1;
+      return this.ytPlayer && this.ytPlayer.getPlaybackRate ? this.ytPlayer.getPlaybackRate() : 1;
     }
 
     setPlaybackRate(suggestedRate) {
@@ -571,7 +611,7 @@ THE SOFTWARE. */
     }
 
     duration() {
-      return this.ytPlayer ? this.ytPlayer.getDuration() : 0;
+      return this.ytPlayer && this.ytPlayer.getDuration ? this.ytPlayer.getDuration() : 0;
     }
 
     currentSrc() {
@@ -583,7 +623,7 @@ THE SOFTWARE. */
     }
 
     volume() {
-      return this.ytPlayer ? this.ytPlayer.getVolume() / 100.0 : 1;
+      return this.ytPlayer && this.ytPlayer.getVolume ? this.ytPlayer.getVolume() / 100.0 : 1;
     }
 
     setVolume(percentAsDecimal) {
@@ -595,7 +635,7 @@ THE SOFTWARE. */
     }
 
     muted() {
-      return this.ytPlayer ? this.ytPlayer.isMuted() : false;
+      return this.ytPlayer && this.ytPlayer.isMuted ? this.ytPlayer.isMuted() : false;
     }
 
     setMuted(mute) {
