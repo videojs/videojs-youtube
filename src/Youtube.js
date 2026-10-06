@@ -302,6 +302,7 @@ THE SOFTWARE. */
           break;
 
         case YT.PlayerState.PLAYING:
+          this.playPending_ = false;
           this.trigger('timeupdate');
           this.trigger('durationchange');
           this.trigger('playing');
@@ -324,6 +325,17 @@ THE SOFTWARE. */
         case YT.PlayerState.BUFFERING:
           this.player_.trigger('timeupdate');
           this.player_.trigger('waiting');
+          break;
+
+        case YT.PlayerState.CUED:
+          // Play was asked for while YouTube was still cueing the video, and cueing finished
+          // after it, so the video sits cued. Ask once more instead of spinning forever.
+          if (this.playPending_) {
+            this.playPending_ = false;
+            this.ytPlayer.playVideo();
+          } else {
+            this.trigger('canplay');
+          }
           break;
       }
     }
@@ -467,6 +479,8 @@ THE SOFTWARE. */
       this.wasPausedBeforeSeek = false;
 
       if (this.isReady_) {
+        this.playPending_ = true;
+
         if (this.url.listId) {
           if (this.activeList === this.url.listId) {
             this.ytPlayer.playVideo();
@@ -489,6 +503,8 @@ THE SOFTWARE. */
     }
 
     pause() {
+      this.playPending_ = false;
+
       if (this.ytPlayer) {
         this.ytPlayer.pauseVideo();
       }
